@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Modern Pharmacy & Drugstore Palette */
+  --primary: #00A86B;          /* Fresh pharmacy emerald green */
+  --primary-dark: #008755;     /* Darker emerald for hover */
+  --primary-light: #10B981;    /* Vibrant mint green */
+  --primary-surface: #F0FDF4;  /* Very soft mint surface */
+  
+  --secondary: #00A896;        /* Clean clinical teal / cyan */
+  --secondary-dark: #008073;
+  --secondary-light: #E6FFFA;
+  
+  --accent: #10B981;           /* Positive action green */
+  --accent-dark: #059669;
+  --accent-light: #ECFDF5;
+
+  --promo: #F59E0B;            /* Subtle warm promotional amber */
+  --promo-light: #FEF3C7;
+  
+  --corporate: #0B2545;        /* Deep petroleum / navy only for corporate B2B accents */
+  
+  --background: #FFFFFF;       /* Crisp clean white */
+  --surface: #FFFFFF;
+  --surface-alt: #F8FAFC;      /* Soft light grey */
+  --surface-mint: #F0FDF4;     /* Fresh pharmacy card bg */
+  --text: #0F172A;             /* Slate 900 */
+  --muted: #64748B;            /* Slate 500 */
+  --border: #E2E8F0;           /* Clean subtle border */
+  
+  --font-sans: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Base resets & typography */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  color: var(--text);
+  background-color: var(--background);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Minimalist pharmacy scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #A7F3D0;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6EE7B7;
+}
+
+/* Mobile touch targets standard */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Safe area insets for modern mobile devices (iPhone notch/bar) */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+.bottom-safe {
+  bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Pharmacy Glassmorphism */
+.pharmacy-glass {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Subtle microinteractions */
+.hover-lift {
+  transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.product-card {
+  transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px -6px rgba(0, 168, 107, 0.12);
+  border-color: rgba(0, 168, 107, 0.4);
+}
+
+/* Hide scrollbar for category swipe on mobile while keeping smooth scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Pulse animation for active indicators */
+@keyframes pulsePharmacy {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 168, 107, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(0, 168, 107, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 168, 107, 0);
+  }
+}
+
+.animate-pulse-pharmacy {
+  animation: pulsePharmacy 2.2s infinite;
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

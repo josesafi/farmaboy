@@ -1,0 +1,21 @@
+{
+  "name": "Farmaboy - Droguería y Farmacia en Boyacá",
+  "short_name": "Farmaboy",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#00A86B",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+}
