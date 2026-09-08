@@ -46,7 +46,12 @@ export default function ContactoPage() {
     farmaboyConfig.contact.whatsapp,
     farmaboyConfig.whatsappMessages.general
   );
+  const whatsappSecondaryUrl = getWhatsAppUrl(
+    farmaboyConfig.contact.secondaryPhone || "573212651303",
+    farmaboyConfig.whatsappMessages.general
+  );
   const telUrl = getTelUrl(farmaboyConfig.contact.phone);
+  const telSecondaryUrl = getTelUrl(farmaboyConfig.contact.secondaryPhone || "+573212651303");
 
   const handleParticularSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +98,7 @@ export default function ContactoPage() {
                 </p>
               </div>
 
-              {/* 3 Prominent Quick Action Buttons */}
+              {/* Prominent Quick Action Buttons */}
               <div className="space-y-3">
                 <a
                   href={whatsappUrl}
@@ -104,36 +109,55 @@ export default function ContactoPage() {
                   <div className="flex items-center gap-3">
                     <MessageCircle className="w-6 h-6" />
                     <div className="text-left">
-                      <span className="block text-xs uppercase tracking-wider opacity-90">Respuesta inmediata</span>
-                      <span className="block font-black">Escribir por WhatsApp</span>
+                      <span className="block text-xs uppercase tracking-wider opacity-90">Línea Principal WhatsApp</span>
+                      <span className="block font-black">+57 313 427 9559</span>
                     </div>
                   </div>
-                  <span className="text-xs bg-white/20 px-2.5 py-1 rounded-lg">Abrir chat &rarr;</span>
+                  <span className="text-xs bg-white/20 px-2.5 py-1 rounded-lg">Chatear &rarr;</span>
                 </a>
 
                 <a
-                  href={telUrl}
-                  className="w-full p-4 rounded-2xl bg-primary hover:bg-primary-dark text-white font-bold text-sm sm:text-base flex items-center justify-between shadow-clinical transition-all touch-target"
+                  href={whatsappSecondaryUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full p-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm sm:text-base flex items-center justify-between shadow-clinical transition-all touch-target"
                 >
                   <div className="flex items-center gap-3">
-                    <Phone className="w-5 h-5 text-teal-300" />
+                    <MessageCircle className="w-6 h-6" />
                     <div className="text-left">
-                      <span className="block text-xs uppercase tracking-wider opacity-80">Línea telefónica</span>
-                      <span className="block font-black">{farmaboyConfig.contact.phoneDisplay}</span>
+                      <span className="block text-xs uppercase tracking-wider opacity-90">Línea Alterna WhatsApp / Llamadas</span>
+                      <span className="block font-black">+57 321 265 1303</span>
                     </div>
                   </div>
-                  <span className="text-xs bg-white/10 px-2.5 py-1 rounded-lg">Llamar ahora</span>
+                  <span className="text-xs bg-white/20 px-2.5 py-1 rounded-lg">Chatear &rarr;</span>
                 </a>
+
+                <div className="grid grid-cols-2 gap-2.5">
+                  <a
+                    href={telUrl}
+                    className="p-3.5 rounded-2xl bg-primary hover:bg-primary-dark text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-clinical transition-all touch-target"
+                  >
+                    <Phone className="w-4 h-4 text-teal-300 shrink-0" />
+                    <span className="truncate">Llamar 313 427 9559</span>
+                  </a>
+                  <a
+                    href={telSecondaryUrl}
+                    className="p-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-clinical transition-all touch-target"
+                  >
+                    <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span className="truncate">Llamar 321 265 1303</span>
+                  </a>
+                </div>
 
                 <a
                   href="#mapa-ubicacion"
-                  className="w-full p-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm sm:text-base flex items-center justify-between transition-all touch-target"
+                  className="w-full p-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm flex items-center justify-between transition-all touch-target"
                 >
                   <div className="flex items-center gap-3">
                     <Compass className="w-5 h-5 text-secondary" />
                     <div className="text-left">
-                      <span className="block text-xs uppercase tracking-wider text-slate-500">Sede principal</span>
-                      <span className="block font-bold text-primary">Cómo llegar</span>
+                      <span className="block text-[11px] uppercase tracking-wider text-slate-500">Dirección Sede Duitama</span>
+                      <span className="block font-bold text-primary">Transversal 29 # 10-63</span>
                     </div>
                   </div>
                   <span className="text-xs text-slate-500">&darr; Ver mapa</span>
