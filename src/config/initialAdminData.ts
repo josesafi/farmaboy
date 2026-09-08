@@ -1308,12 +1308,12 @@ export const initialDeliveryRates: DeliveryRate[] = [
 export const initialPickupPoints: PickupPoint[] = [
   {
     id: "pickup-duitama-centro",
-    name: "Sede Principal Farmaboy - Duitama Centro",
-    address: "Carrera 16 # 15-20, Centro, Duitama, Boyacá",
+    name: "Sede Principal Farmaboy - Duitama",
+    address: "Transversal 29 # 10-63, Duitama, Boyacá",
     municipality: "Duitama",
-    phone: "+57 (608) 760-4422",
-    coordinates: "5.8268, -73.0335",
-    schedule: "Lunes a Sábado: 7:00 am - 9:00 pm | Domingos y Festivos: 8:00 am - 7:00 pm",
+    phone: "+57 313 427 9559 / 321 265 1303",
+    coordinates: "5.8172853, -73.0295171",
+    schedule: "Lunes a Sábado: 7:00 a.m. – 8:30 p.m. | Domingos y Festivos: 8:00 a.m. – 5:00 p.m.",
     days: "Lunes a Domingo",
     status: "ACTIVO",
     capacityOrdersPerDay: 80,

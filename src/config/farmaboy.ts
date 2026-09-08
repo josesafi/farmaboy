@@ -91,7 +91,12 @@ export const farmaboyConfig = {
     addressShort: "Transversal 29 # 10-63, Duitama",
     city: "Duitama, Boyacá",
     operatingHours: "Lunes a Sábado: 7:00 a.m. – 8:30 p.m. | Domingos y Festivos: 8:00 a.m. – 5:00 p.m.",
-    googleMapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.218556635817!2d-73.0360!3d5.8268!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e6a39281!2sDuitama%2C%20Boyac%C3%A1!5e0!3m2!1ses!2sco!4v1700000000000!5m2!1ses!2sco",
+    latitude: 5.8172853,
+    longitude: -73.0295171,
+    googleMapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1985.6!2d-73.0295171!3d5.8172853!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e6a3f01d0b41f3d%3A0x3f2f0298e4b78051!2sFarmaboy%20integrales%20de%20servicios%20en%20salud%20sas!5e0!3m2!1ses!2sco!4v1710000000000!5m2!1ses!2sco",
+    googleMapsPlaceUrl: "https://www.google.com/maps/place/Farmaboy+integrales+de+servicios+en+salud+sas/@5.8172853,-73.0295171,17z/data=!3m1!4b1!4m6!3m5!1s0x8e6a3f01d0b41f3d:0x3f2f0298e4b78051!8m2!3d5.8172853!4d-73.0295171",
+    googleMapsDirectionsUrl: "https://www.google.com/maps/dir/?api=1&destination=5.8172853,-73.0295171",
+    wazeUrl: "https://waze.com/ul?ll=5.8172853,-73.0295171&navigate=yes",
   },
 
   // Misión y Visión Oficiales de FARMABOY INTEGRALES DE SERVICIOS EN SALUD S.A.S.

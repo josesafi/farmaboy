@@ -16,6 +16,8 @@ import {
   Compass,
   Briefcase,
   ShieldCheck,
+  ExternalLink,
+  Navigation,
 } from "lucide-react";
 
 export default function ContactoPage() {
@@ -485,30 +487,143 @@ export default function ContactoPage() {
       {/* Google Maps Location Section */}
       <section id="mapa-ubicacion" className="py-16 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-6">
-            <span className="text-xs font-bold uppercase tracking-wider text-secondary block mb-1">
-              Georreferenciación en Boyacá
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-primary">
-              Cómo llegar a nuestra sede
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1">
-              Punto de referencia para atención presencial y coordinación logística en Boyacá.
-            </p>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-secondary block mb-1">
+                Georreferenciación en Boyacá
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-primary">
+                Cómo llegar a nuestra sede
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                Ubicación oficial de Farmaboy integrales de servicios en salud sas en Duitama, Boyacá.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2.5">
+              <a
+                href={farmaboyConfig.contact.googleMapsPlaceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-xs sm:text-sm font-bold hover:bg-primary-dark shadow-sm transition-all touch-target"
+              >
+                <MapPin className="w-4 h-4 text-emerald-400" />
+                <span>Abrir en Google Maps</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+              </a>
+
+              <a
+                href={farmaboyConfig.contact.googleMapsDirectionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-800 text-xs sm:text-sm font-bold hover:bg-slate-100 shadow-sm transition-all touch-target"
+              >
+                <Navigation className="w-4 h-4 text-secondary" />
+                <span>Cómo Llegar / GPS</span>
+              </a>
+
+              <a
+                href={farmaboyConfig.contact.wazeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 text-xs sm:text-sm font-bold hover:bg-sky-100 shadow-sm transition-all touch-target"
+              >
+                <span>🚗 Waze</span>
+              </a>
+            </div>
           </div>
 
-          <div className="relative rounded-3xl overflow-hidden shadow-clinical border border-slate-200 aspect-[16/9] sm:aspect-[21/9] bg-slate-200">
-            <iframe
-              src={farmaboyConfig.contact.googleMapsEmbedUrl}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Ubicación de Farmaboy en Boyacá"
-              className="w-full h-full"
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Map Frame */}
+            <div className="lg:col-span-2 relative rounded-3xl overflow-hidden shadow-clinical border border-slate-200 min-h-[380px] sm:min-h-[460px] bg-slate-200">
+              <iframe
+                src={farmaboyConfig.contact.googleMapsEmbedUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen={true}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Ubicación oficial de Farmaboy en Google Maps"
+                className="w-full h-full min-h-[380px] sm:min-h-[460px]"
+              />
+            </div>
+
+            {/* Quick Location Card */}
+            <div className="bg-white rounded-3xl p-6 shadow-clinical border border-slate-200 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Sede Abierta al Público
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-bold text-primary">
+                    Farmaboy integrales de servicios en salud sas
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Droguería, Insumos Hospitalarios y Salud</p>
+                </div>
+
+                <div className="space-y-3 pt-2 text-xs text-slate-600">
+                  <div className="flex items-start gap-2.5">
+                    <MapPin className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-slate-900 block">Dirección:</span>
+                      <span>Transversal 29 # 10-63, Duitama, Boyacá</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2.5">
+                    <Compass className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-slate-900 block">Coordenadas GPS:</span>
+                      <span className="font-mono text-[11px] text-slate-500">5.8172853, -73.0295171</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2.5">
+                    <Clock className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-slate-900 block">Horario de Atención:</span>
+                      <span>Lunes a Sábado: 7:00 a.m. – 8:30 p.m.</span>
+                      <span className="block text-slate-500">Domingos y Festivos: 8:00 a.m. – 5:00 p.m.</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2.5">
+                    <Phone className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold text-slate-900 block">Líneas de Atención:</span>
+                      <span className="block font-medium text-primary">+57 313 427 9559</span>
+                      <span className="block font-medium text-slate-700">+57 321 265 1303</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2 pt-4 border-t border-slate-100">
+                <a
+                  href={farmaboyConfig.contact.googleMapsPlaceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 px-4 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-xs flex items-center justify-center gap-2 transition-all touch-target text-center"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Ver ficha en Google Maps</span>
+                  <ExternalLink className="w-3 h-3 opacity-80" />
+                </a>
+
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all touch-target text-center"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>Preguntar por WhatsApp</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>

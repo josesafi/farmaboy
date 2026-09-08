@@ -177,8 +177,19 @@ export const Footer: React.FC = () => {
                 </a>
               </li>
               <li className="flex items-start gap-2 text-slate-400">
-                <MapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                <span>{activeAddress}</span>
+                <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <a
+                  href={farmaboyConfig.contact.googleMapsPlaceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-emerald-300 transition-colors"
+                  title="Ver ubicación en Google Maps"
+                >
+                  <span>{activeAddress}</span>
+                  <span className="block text-[10px] text-emerald-400 font-semibold mt-0.5">
+                    Ver en Google Maps &rarr;
+                  </span>
+                </a>
               </li>
               <li className="flex items-start gap-2 text-slate-400">
                 <Clock className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
