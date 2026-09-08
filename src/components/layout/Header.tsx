@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { AvailabilityModal } from "../common/AvailabilityModal";
 import { useAdminStore } from "@/context/AdminStoreContext";
+import { LiveSearchBar } from "../catalog/LiveSearchBar";
 
 export const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -131,26 +132,9 @@ export const Header: React.FC = () => {
               </Link>
             </div>
 
-            {/* 2. Centered Soft Pill Search Bar with Blue & Orange Touches (Desktop) */}
+            {/* 2. Centered Live Search Bar with Dual Ring Capsule (Desktop) */}
             <div className="hidden md:flex flex-1 max-w-xl xl:max-w-2xl mx-1 lg:mx-3">
-              <form onSubmit={handleSearchSubmit} className="w-full relative flex items-center">
-                <div className="w-full relative flex items-center">
-                  <Search className="w-4 h-4 text-[#04428B] absolute left-4 pointer-events-none" />
-                  <input
-                    type="text"
-                    placeholder="¿Qué medicamento o producto buscas?"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-11 pr-24 py-2.5 rounded-full bg-[#F1F4F8] hover:bg-[#EEF2F6] focus:bg-white border border-transparent focus:border-[#04428B] text-sm text-slate-800 placeholder:text-slate-400 outline-none transition-all focus:ring-2 focus:ring-[#04428B]/15"
-                  />
-                  <button
-                    type="submit"
-                    className="absolute right-1.5 px-5 py-1.5 rounded-full bg-[#00A86B] hover:bg-[#008f5a] text-white font-bold text-xs shadow-xs hover:shadow-sm active:scale-95 transition-all"
-                  >
-                    Buscar
-                  </button>
-                </div>
-              </form>
+              <LiveSearchBar />
             </div>
 
             {/* 3. Action Badges with Blue & Orange Branding */}
@@ -250,23 +234,8 @@ export const Header: React.FC = () => {
           </div>
 
           {/* Mobile Search Bar row */}
-          <div className="mt-2.5 md:hidden">
-            <form onSubmit={handleSearchSubmit} className="w-full relative flex items-center">
-              <input
-                type="text"
-                placeholder="¿Qué medicamento o producto buscas?"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-20 py-2 rounded-full bg-[#F1F4F8] border border-slate-200/90 text-xs text-slate-800 focus:bg-white focus:border-[#04428B] outline-none"
-              />
-              <Search className="w-3.5 h-3.5 text-[#04428B] absolute left-3.5 pointer-events-none" />
-              <button
-                type="submit"
-                className="absolute right-1 top-1 bottom-1 px-3.5 rounded-full bg-[#00A86B] text-white font-bold text-[11px]"
-              >
-                Buscar
-              </button>
-            </form>
+          <div className="mt-2 md:hidden">
+            <LiveSearchBar isMobile={true} />
           </div>
         </div>
 
@@ -479,12 +448,38 @@ export const Header: React.FC = () => {
         </div>
       )}
 
-      {/* Quick Search / Availability Modal */}
-      <AvailabilityModal
-        isOpen={isSearchModalOpen}
-        onClose={() => setIsSearchModalOpen(false)}
-        initialQuery={searchQuery}
-      />
+      {/* Mobile Live Search Modal Overlay */}
+      {isSearchModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-start p-3 pt-12 sm:pt-16 bg-slate-900/60 backdrop-blur-sm animate-fadeIn"
+          onClick={() => setIsSearchModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-4 border border-slate-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100">
+              <span className="text-xs font-black uppercase tracking-wider text-[#04428B] flex items-center gap-1.5">
+                <Search className="w-4 h-4 text-[#FF6B00]" />
+                Buscador en vivo FarmaBoy
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsSearchModalOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                aria-label="Cerrar búsqueda"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <LiveSearchBar
+              autoFocus={true}
+              isMobile={true}
+              onSelect={() => setIsSearchModalOpen(false)}
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 };
