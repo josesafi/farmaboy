@@ -165,6 +165,182 @@ export default function NosotrosPage() {
         </div>
       </section>
 
+      {/* 2.5. Nuestro Personal & Equipo Humano FarmaBoy */}
+      <section className="py-16 bg-gradient-to-b from-white via-slate-50 to-slate-50 border-t border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-200 mb-3">
+              <UserCheck className="w-4 h-4 text-emerald-600" />
+              Nuestro Personal & Equipo de Salud
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-primary tracking-tight">
+              Calidez humana, vocación y atención profesional
+            </h2>
+            <p className="text-slate-600 text-sm sm:text-base mt-3 leading-relaxed">
+              Detrás de cada fórmula dispensada, cada medicamento entregado y cada asesoría en Farmaboy, está nuestro equipo humano: personas capacitadas, empáticas y comprometidas con cuidar la salud de tu familia e institución en Boyacá.
+            </p>
+          </div>
+
+          {/* Grid of Team Members */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto items-stretch">
+            
+            {/* Miembro 1 */}
+            <div className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-clinical hover:shadow-clinical-lg transition-all duration-300 flex flex-col group">
+              <div className="relative aspect-[3/4] overflow-hidden bg-slate-100">
+                <img
+                  src="/images/personal-farmaboy-1.jpg"
+                  alt="Personal de Atención Farmacéutica y Dispensación - Farmaboy Duitama"
+                  className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+                
+                {/* Badges on image */}
+                <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-xs text-xs font-bold text-[#04428B] shadow-sm">
+                    <Sparkles className="w-3.5 h-3.5 text-[#FF6B00]" />
+                    Atención Farmacéutica
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#00A86B] text-white text-[11px] font-extrabold shadow-sm">
+                    ✓ Sede Duitama
+                  </span>
+                </div>
+
+                <div className="absolute bottom-4 left-4 right-4 text-white">
+                  <h3 className="text-xl font-black text-white drop-shadow-xs">
+                    Dispensación & Orientación al Paciente
+                  </h3>
+                  <p className="text-xs text-emerald-300 font-bold mt-0.5">
+                    FARMABOY INTEGRALES DE SERVICIOS EN SALUD S.A.S.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 sm:p-7 flex flex-col justify-between flex-1 space-y-4">
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Acompañamiento cercano en el mostrador y canales digitales para resolver dudas sobre posología, administración correcta de medicamentos de control y productos de venta libre con máxima calidez y respeto.
+                </p>
+
+                <div className="space-y-2 pt-2 border-t border-slate-100 text-xs font-semibold text-slate-700">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Verificación rigurosa de fórmulas médicas y fechas de vencimiento</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Atención humanizada y confidencialidad en cada consulta</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Dispensación oportuna para familias y convenios institucionales</span>
+                  </div>
+                </div>
+
+                <div className="pt-3">
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-emerald-50 text-[#04428B] hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 text-xs font-bold transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4 text-[#00A86B]" />
+                    <span>Consultar por WhatsApp con este equipo</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Miembro 2 */}
+            <div className="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-clinical hover:shadow-clinical-lg transition-all duration-300 flex flex-col group">
+              <div className="relative aspect-[3/4] overflow-hidden bg-slate-100">
+                <img
+                  src="/images/personal-farmaboy-2.jpg"
+                  alt="Personal de Asesoría Clínica y Dermocosmética - Farmaboy Duitama"
+                  className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-transparent" />
+                
+                {/* Badges on image */}
+                <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-xs text-xs font-bold text-[#04428B] shadow-sm">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    Asesoría Clínica & Insumos
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#00A86B] text-white text-[11px] font-extrabold shadow-sm">
+                    ✓ Sede Duitama
+                  </span>
+                </div>
+
+                <div className="absolute bottom-4 left-4 right-4 text-white">
+                  <h3 className="text-xl font-black text-white drop-shadow-xs">
+                    Asesoría en Salud & Insumos Hospitalarios
+                  </h3>
+                  <p className="text-xs text-emerald-300 font-bold mt-0.5">
+                    FARMABOY INTEGRALES DE SERVICIOS EN SALUD S.A.S.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-6 sm:p-7 flex flex-col justify-between flex-1 space-y-4">
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Especialistas en la gestión técnica de insumos hospitalarios, dispositivos médicos de diagnóstico, nutrición clínica y líneas avanzadas de dermocosmética y protección cutánea en Boyacá.
+                </p>
+
+                <div className="space-y-2 pt-2 border-t border-slate-100 text-xs font-semibold text-slate-700">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Conocimiento técnico en bioseguridad y material médico-quirúrgico</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Orientación especializada en fotoprotección y cuidado dermatológico</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Respaldo continuo a profesionales de la salud y particulares</span>
+                  </div>
+                </div>
+
+                <div className="pt-3">
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-50 hover:bg-emerald-50 text-[#04428B] hover:text-emerald-700 border border-slate-200 hover:border-emerald-300 text-xs font-bold transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4 text-[#00A86B]" />
+                    <span>Pedir orientación técnica personalizada</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Banner de Valores del Equipo */}
+          <div className="mt-12 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+              <div className="space-y-1">
+                <span className="text-2xl font-black text-[#04428B]">100%</span>
+                <p className="text-xs font-bold uppercase text-slate-700">Personal Certificado</p>
+                <p className="text-xs text-slate-500">Formación continua en buenas prácticas de dispensación y normatividad sanitaria.</p>
+              </div>
+              <div className="space-y-1 border-y md:border-y-0 md:border-x border-slate-100 py-4 md:py-0">
+                <span className="text-2xl font-black text-[#00A86B]">Duitama</span>
+                <p className="text-xs font-bold uppercase text-slate-700">Atención en Sede y Domicilios</p>
+                <p className="text-xs text-slate-500">Presencia física y despachos inmediatos a todos los municipios de Boyacá.</p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-2xl font-black text-[#FF6B00]">Ética & Cercanía</span>
+                <p className="text-xs font-bold uppercase text-slate-700">Servicio Humanizado</p>
+                <p className="text-xs text-slate-500">Cuidamos de ti con calidez, transparencia en precios y asesoría honesta.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* 3. Misión y Visión Oficiales */}
       <section className="py-16 bg-slate-50 border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
