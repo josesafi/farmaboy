@@ -141,16 +141,25 @@ export default function RegisterPage() {
     const userEmail = formData.email || `${formData.phone}@farmaboy.com.co`;
     const fullName = `${formData.name} ${formData.lastName}`.trim();
 
-    await register({
+    // Crear nuevo usuario (en un entorno real esto va al backend)
+    const newUser = {
+      id: `usr-${Date.now()}`,
       name: formData.name,
       lastName: formData.lastName,
-      documentType: formData.documentType,
-      documentNumber: formData.documentNumber,
       phone: formData.phone,
       whatsapp: formData.phone,
-      email: userEmail,
-      birthDate: formData.birthDate,
-    });
+      email: authMethod === "correo" ? formData.email : undefined,
+      registrationDate: new Date().toISOString(),
+      status: "ACTIVO" as const,
+      isVerified: true,
+      acceptsMarketing: formData.acceptMarketing,
+      totalOrders: 0,
+      totalSpentCOP: 0,
+      averageTicketCOP: 0,
+      tags: ["Nuevo Cliente", "Web"],
+    };
+
+    await register(newUser);
 
     // Dispatch welcome email and admin notification
     triggerEmailEvent({
