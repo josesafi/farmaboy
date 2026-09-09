@@ -56,18 +56,31 @@ export default function TransporteAsistencialPage() {
             <div className="lg:col-span-7 space-y-6">
               <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-teal-400/20 text-teal-300 border border-teal-400/30">
                 <Ambulance className="w-3.5 h-3.5" />
-                <span>Servicio de Traslado & Apoyo Asistencial</span>
+                <span>INSERBOY – SERVICIOS DE SALUD</span>
               </span>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                Transporte asistencial con atención profesional
+                Brindamos soluciones confiables para el cuidado y traslado de pacientes
               </h1>
 
-              <p className="text-base sm:text-xl text-slate-300 leading-relaxed font-normal">
-                Acompañamos y movilizamos a pacientes que requieren traslados programados y asistidos con respeto, confort y altos estándares de cuidado en Boyacá.
-              </p>
+              <div className="space-y-5 pt-2">
+                <div className="flex items-start gap-4">
+                  <span className="text-3xl drop-shadow-lg">🚑</span>
+                  <div>
+                    <h3 className="font-extrabold text-white text-lg tracking-wide">Ambulancia Básica</h3>
+                    <p className="text-slate-300 text-sm leading-relaxed mt-1">Servicio de traslado asistencial con personal capacitado y dotación requerida para la atención y movilización segura de pacientes.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <span className="text-3xl drop-shadow-lg">🫁</span>
+                  <div>
+                    <h3 className="font-extrabold text-white text-lg tracking-wide">Alquiler de Oxígeno Medicinal</h3>
+                    <p className="text-slate-300 text-sm leading-relaxed mt-1">Disponibilidad de equipos y elementos para suministro de oxígeno medicinal, según las necesidades del paciente.</p>
+                  </div>
+                </div>
+              </div>
 
-              <div className="pt-2 flex flex-col sm:flex-row gap-4">
+              <div className="pt-4 flex flex-col sm:flex-row gap-4">
                 <a
                   href="#solicitar-traslado"
                   className="py-3.5 px-6 rounded-xl bg-teal-400 text-slate-950 font-extrabold text-sm sm:text-base hover:bg-teal-300 shadow-clinical transition-all flex items-center justify-center gap-2 touch-target"
@@ -76,13 +89,13 @@ export default function TransporteAsistencialPage() {
                   <ArrowRight className="w-4 h-4" />
                 </a>
                 <a
-                  href={whatsappTransport}
+                  href="https://wa.me/573223863977?text=Hola INSERBOY, requiero información de sus servicios."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="py-3.5 px-6 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm sm:text-base border border-white/20 transition-all flex items-center justify-center gap-2 touch-target"
                 >
                   <MessageCircle className="w-5 h-5 text-[#25D366]" />
-                  <span>Hablar con un asesor</span>
+                  <span>322 386 3977</span>
                 </a>
               </div>
             </div>
@@ -90,18 +103,18 @@ export default function TransporteAsistencialPage() {
             <div className="lg:col-span-5">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10 aspect-[4/3] bg-slate-800">
                 <Image
-                  src="https://images.unsplash.com/photo-1587745416684-47953f16f02f?q=80&w=1000&auto=format&fit=crop"
-                  alt="Vehículo y equipo de transporte asistencial en Boyacá"
+                  src="/images/inserboy.jpg"
+                  alt="Equipo INSERBOY - Servicios de Salud"
                   fill
                   sizes="(max-width: 768px) 100vw, 500px"
                   className="object-cover object-center"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 text-white text-xs">
-                  <span className="font-bold text-teal-300 block">
-                    Atención Programada en Boyacá
+                  <span className="font-bold text-teal-300 block text-sm mb-0.5">
+                    INSERBOY – SERVICIOS DE SALUD
                   </span>
-                  <span>Coordinación ágil para familias y centros médicos</span>
+                  <span className="text-slate-300">Personal capacitado y movilización segura</span>
                 </div>
               </div>
             </div>
