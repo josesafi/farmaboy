@@ -116,11 +116,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AUTH_STORAGE_KEY = "farmaboy_account_v2";
+const AUTH_STORAGE_KEY = "farmaboy_account_v3";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | null>(initialMockUser);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [activeMode, setActiveMode] = useState<"personal" | "empresa">("personal");
 
   const [addresses, setAddresses] = useState<Address[]>(initialMockAddresses);
