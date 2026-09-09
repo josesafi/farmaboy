@@ -10,22 +10,13 @@ import { AdminRoleName } from "@/types/admin";
 export default function AdminLoginPage() {
   const router = useRouter();
   const { loginAs, showToast } = useAdminStore();
-  const [email, setEmail] = useState("admin@farmaboy.com.co");
-  const [password, setPassword] = useState("••••••••••••");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [selectedRole, setSelectedRole] = useState<AdminRoleName>("SUPER_ADMIN");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const success = loginAs(email, selectedRole);
-    if (success) {
-      router.push("/admin");
-    }
-  };
-
-  const handleQuickDemoLogin = (role: AdminRoleName, demoEmail: string) => {
-    setEmail(demoEmail);
-    setSelectedRole(role);
-    const success = loginAs(demoEmail, role);
     if (success) {
       router.push("/admin");
     }
@@ -99,52 +90,6 @@ export default function AdminLoginPage() {
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </form>
-
-          {/* Quick Demo Access Bar */}
-          <div className="pt-4 border-t border-slate-800/80 space-y-2.5">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Acceso Rápido por Perfil (1-Click)</span>
-            </div>
-            <p className="text-[11px] text-slate-400">
-              Prueba los distintos roles y permisos de seguridad sin contraseñas:
-            </p>
-
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickDemoLogin("SUPER_ADMIN", "admin@farmaboy.com.co")}
-                className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500/50 text-left transition group cursor-pointer"
-              >
-                <p className="text-xs font-bold text-white group-hover:text-emerald-400">Super Admin</p>
-                <p className="text-[10px] text-slate-400">Control total y seguridad</p>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickDemoLogin("FARMACEUTICO", "farmacia@farmaboy.com.co")}
-                className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500/50 text-left transition group cursor-pointer"
-              >
-                <p className="text-xs font-bold text-white group-hover:text-emerald-400">Farmacéutico (Q.F.)</p>
-                <p className="text-[10px] text-slate-400">INVIMA, Lotes y Kardex</p>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickDemoLogin("VENTAS", "ventas@farmaboy.com.co")}
-                className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500/50 text-left transition group cursor-pointer"
-              >
-                <p className="text-xs font-bold text-white group-hover:text-emerald-400">Ventas & Pedidos</p>
-                <p className="text-[10px] text-slate-400">Despachos y CRM</p>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickDemoLogin("EDITOR", "editor@farmaboy.com.co")}
-                className="p-2.5 rounded-xl bg-slate-800/80 hover:bg-emerald-500/20 border border-slate-700 hover:border-emerald-500/50 text-left transition group cursor-pointer"
-              >
-                <p className="text-xs font-bold text-white group-hover:text-emerald-400">Editor Web</p>
-                <p className="text-[10px] text-slate-400">Banners, Blog y Diseño</p>
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Security Warning Footnote */}

@@ -39,11 +39,8 @@ export default function RegisterPage() {
   const [formData, setFormData] = useState({
     name: "",
     lastName: "",
-    documentType: "CC" as const,
-    documentNumber: "",
     phone: "",
     email: "",
-    birthDate: "",
     password: "",
     confirmPassword: "",
     acceptTerms: true,
@@ -72,7 +69,6 @@ export default function RegisterPage() {
     const errs: Record<string, string> = {};
     if (!formData.name.trim()) errs.name = "El nombre es obligatorio.";
     if (!formData.lastName.trim()) errs.lastName = "El apellido es obligatorio.";
-    if (!formData.documentNumber.trim()) errs.documentNumber = "Ingresa tu número de documento.";
     if (!formData.phone.trim() || formData.phone.length < 7) {
       errs.phone = "Ingresa un número de celular válido.";
     }
@@ -101,7 +97,25 @@ export default function RegisterPage() {
     if (!validate()) return;
 
     setIsLoading(true);
-    // Simulate verification step
+    
+    // Si eligió correo, enviamos un OTP real al correo
+    if (authMethod === "correo" && formData.email) {
+      const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      // Guardaríamos el OTP en un estado real en prod, aquí simulamos el envío
+      console.log("OTP Generado:", generatedOtp); // Para poder probarlo
+
+      triggerEmailEvent({
+        event: "AUTH_VERIFY_EMAIL",
+        recipient: formData.email,
+        recipientName: formData.name,
+        data: {
+          token: generatedOtp,
+          ip: "192.168.1.1",
+          dispositivo: "Navegador Web",
+        },
+      });
+    }
+
     setTimeout(() => {
       setIsLoading(false);
       setStep(2);
@@ -227,37 +241,10 @@ export default function RegisterPage() {
 
           {step === 1 ? (
             <div>
-              {/* Social Login Buttons */}
-              <div className="grid grid-cols-2 gap-3 mb-6">
-                <button
-                  type="button"
-                  onClick={() => handleSocialRegister("Google")}
-                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 transition-colors shadow-xs"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                  </svg>
-                  <span>Google</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSocialRegister("Apple")}
-                  className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 transition-colors shadow-xs"
-                >
-                  <svg className="w-4 h-4 fill-current text-slate-900" viewBox="0 0 24 24">
-                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.86c.62-.77 1.05-1.84.93-2.91-.91.04-2.02.61-2.67 1.38-.58.68-1.08 1.76-.94 2.81 1.02.08 2.06-.51 2.68-1.28z"/>
-                  </svg>
-                  <span>Apple</span>
-                </button>
-              </div>
-
               {/* Method Switcher Tab */}
               <div className="flex items-center justify-center gap-4 mb-6">
                 <span className="h-px flex-1 bg-slate-200" />
-                <span className="text-[11px] uppercase font-bold text-slate-400">O regístrate con</span>
+                <span className="text-[11px] uppercase font-bold text-slate-400">Regístrate con</span>
                 <span className="h-px flex-1 bg-slate-200" />
               </div>
 
@@ -313,39 +300,6 @@ export default function RegisterPage() {
                       className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-[#00A86B] text-xs font-medium outline-none focus:ring-2 focus:ring-[#00A86B]/20"
                     />
                     {errors.lastName && <p className="text-[11px] text-rose-500 mt-1">{errors.lastName}</p>}
-                  </div>
-                </div>
-
-                {/* Document Type & Number */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Tipo Doc. *
-                    </label>
-                    <select
-                      value={formData.documentType}
-                      onChange={(e) => setFormData({ ...formData, documentType: e.target.value as any })}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 focus:border-[#00A86B] text-xs font-medium outline-none bg-white"
-                    >
-                      <option value="CC">Cédula (CC)</option>
-                      <option value="CE">Cédula Ext. (CE)</option>
-                      <option value="TI">Tarjeta Identidad (TI)</option>
-                      <option value="NIT">NIT Empresa</option>
-                      <option value="PAS">Pasaporte</option>
-                    </select>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Número de Documento *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Sin puntos ni guiones"
-                      value={formData.documentNumber}
-                      onChange={(e) => setFormData({ ...formData, documentNumber: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:border-[#00A86B] text-xs font-medium outline-none focus:ring-2 focus:ring-[#00A86B]/20"
-                    />
-                    {errors.documentNumber && <p className="text-[11px] text-rose-500 mt-1">{errors.documentNumber}</p>}
                   </div>
                 </div>
 
@@ -448,19 +402,6 @@ export default function RegisterPage() {
                 {errors.password && <p className="text-[11px] text-rose-500">{errors.password}</p>}
                 {errors.confirmPassword && <p className="text-[11px] text-rose-500">{errors.confirmPassword}</p>}
 
-                {/* Optional Birthday */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-500 mb-1">
-                    Fecha de nacimiento (Opcional - Para beneficios y descuentos de cumpleaños)
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.birthDate}
-                    onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 focus:border-[#00A86B] text-xs font-medium outline-none bg-white text-slate-700"
-                  />
-                </div>
-
                 {/* Checkboxes */}
                 <div className="space-y-2 pt-2 border-t border-slate-100">
                   <label className="flex items-start gap-2 cursor-pointer text-xs text-slate-600">
@@ -528,9 +469,6 @@ export default function RegisterPage() {
                 <p className="text-xs text-slate-600 mt-1 max-w-sm mx-auto">
                   Enviamos un código de seguridad de 6 dígitos a{" "}
                   <strong className="text-slate-900">{formData.phone || formData.email}</strong>.
-                </p>
-                <p className="text-[11px] text-emerald-700 font-bold mt-1">
-                  (Para esta demostración puedes ingresar cualquier número, e.g. 1 2 3 4 5 6)
                 </p>
               </div>
 
