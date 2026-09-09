@@ -1,5 +1,6 @@
 export type EmailEventType =
   // Account & Security
+  | "AUTH_VERIFY_EMAIL"
   | "USER_REGISTERED"
   | "USER_EMAIL_VERIFIED"
   | "USER_LOGIN"

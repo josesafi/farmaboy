@@ -15,6 +15,41 @@ export const emailTemplates: Record<EmailEventType, EmailTemplateDefinition> = {
   // ==========================================
   // 1. ACCOUNT & SECURITY
   // ==========================================
+  AUTH_VERIFY_EMAIL: {
+    id: "auth_verify_email",
+    event: "AUTH_VERIFY_EMAIL",
+    name: "Código de Verificación OTP",
+    category: "ACCOUNT",
+    defaultSubject: "Tu código de acceso Farmaboy: {{token}}",
+    allowedVariables: ["token", "ip", "dispositivo"],
+    description: "Enviado cuando el usuario solicita iniciar sesión o registrarse vía OTP.",
+    render: (data) => {
+      const token = data.token || "000000";
+      const html = renderEmailLayout({
+        title: "Código de Seguridad",
+        category: "ACCOUNT",
+        content: `
+          <h2 style="font-size: 20px; font-weight: 900; color: #0F172A; margin: 0 0 12px 0; text-align: center;">Tu código de seguridad</h2>
+          <p style="font-size: 15px; color: #475569; line-height: 1.6; margin: 0 0 24px 0; text-align: center;">
+            Ingresa el siguiente código de 6 dígitos en la página de Farmaboy para continuar.
+          </p>
+          <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 24px;">
+            <span style="font-family: monospace; font-size: 32px; font-weight: 900; letter-spacing: 8px; color: #00A86B;">
+              ${token}
+            </span>
+          </div>
+          <p style="font-size: 13px; color: #64748B; text-align: center; margin: 0;">
+            Si no solicitaste este código, puedes ignorar este correo de forma segura.
+          </p>
+        `,
+      });
+      return {
+        subject: `Tu código de acceso Farmaboy: ${token}`,
+        html,
+        text: `Tu código de acceso es: ${token}. Ingresa este código en la página para continuar.`,
+      };
+    },
+  },
   USER_REGISTERED: {
     id: "user_registered",
     event: "USER_REGISTERED",
