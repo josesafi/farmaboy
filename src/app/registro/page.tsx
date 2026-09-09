@@ -182,7 +182,7 @@ export default function RegisterPage() {
         nombre: fullName,
         correo: userEmail,
         telefono: formData.phone,
-        documento: formData.documentNumber,
+        documento: "No especificado (Registro Simplificado)",
       },
     });
 
