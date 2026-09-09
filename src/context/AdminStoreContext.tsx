@@ -1137,6 +1137,9 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         );
       }
 
+      const orderInitialStatus: AdminOrderStatus =
+        input.initialStatus || (input.paymentMethod?.includes("QR") ? "PENDIENTE" : "PAGADO");
+
       // 5. Create new AdminOrder
       const newOrder: AdminOrder = {
         id: generatedId,
@@ -1145,7 +1148,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         customerPhone: custPhone,
         customerDocument: custDoc,
         date: nowTimestamp,
-        status: "PAGADO",
+        status: orderInitialStatus,
         items: input.items.map((it) => ({
           id: it.id || it.productId || "item",
           name: it.name || it.productName || "Producto",
@@ -1159,6 +1162,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         shippingCOP: orderShipping,
         totalCOP: orderTotal,
         paymentMethod: input.paymentMethod,
+        paymentProofUrl: input.paymentProofUrl,
+        paymentApprovalCode: input.paymentApprovalCode,
         deliveryMethod: input.deliveryMethod || (input.pickupPointId ? "PUNTO_RECOGIDA" : "DOMICILIO"),
         pickupPointId: input.pickupPointId,
         pickupPointName: input.pickupPointName,
@@ -1170,9 +1175,11 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         isStockRestocked: false,
         trackingHistory: [
           {
-            status: "PAGADO",
+            status: orderInitialStatus,
             timestamp: nowTimestamp,
-            note: `Pago verificado vía ${input.paymentMethod}. Pedido creado e inventario descontado.`,
+            note: orderInitialStatus === "PENDIENTE"
+              ? `Pedido registrado con pago QR Bancolombia / Bre-B (Llave 0092016726). En espera de verificación manual del comprobante.${input.paymentApprovalCode ? ` Comprobante / Aprobación: ${input.paymentApprovalCode}` : ""}`
+              : `Pago verificado vía ${input.paymentMethod}. Pedido creado e inventario descontado.`,
           },
         ],
       };

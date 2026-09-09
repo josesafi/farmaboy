@@ -118,6 +118,8 @@ export default function AdminPedidosPage() {
             className="px-3 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-slate-300 focus:outline-none"
           >
             <option value="TODOS">Todos los Estados</option>
+            <option value="PENDIENTE">⏳ Pendiente de Verificación (QR)</option>
+            <option value="PAGADO">💳 Pagado (Verificado)</option>
             <option value="NUEVO">Nuevo</option>
             <option value="CONFIRMADO">Confirmado</option>
             <option value="EN_PREPARACION">En preparación</option>
@@ -199,6 +201,8 @@ export default function AdminPedidosPage() {
                             statusBadges[order.status]
                           }`}
                         >
+                          <option value="PENDIENTE">⏳ PENDIENTE (QR)</option>
+                          <option value="PAGADO">💳 PAGADO</option>
                           <option value="NUEVO">NUEVO</option>
                           <option value="CONFIRMADO">CONFIRMADO</option>
                           <option value="EN_PREPARACION">EN PREPARACIÓN</option>
@@ -342,6 +346,59 @@ export default function AdminPedidosPage() {
                   ${activeOrderModal.totalCOP.toLocaleString("es-CO")} COP
                 </span>
               </div>
+            </div>
+
+            {/* Payment & Manual Verification Box */}
+            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-300 uppercase text-[10px] tracking-wider">
+                  Verificación de Pago (Bancolombia / Bre-B)
+                </span>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${statusBadges[activeOrderModal.status]}`}>
+                  {activeOrderModal.status}
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-400 text-xs">
+                <div>
+                  <span>Método registrado: </span>
+                  <strong className="text-white">{activeOrderModal.paymentMethod}</strong>
+                </div>
+                {activeOrderModal.paymentApprovalCode && (
+                  <div>
+                    <span>Comprobante / Cód. Aprobación: </span>
+                    <strong className="text-emerald-400 font-mono">{activeOrderModal.paymentApprovalCode}</strong>
+                  </div>
+                )}
+              </div>
+
+              {canWrite && (activeOrderModal.status === "PENDIENTE" || activeOrderModal.status === "NUEVO") ? (
+                <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <p className="text-[11px] text-amber-400">
+                    ¿Ya revisaste el comprobante enviado a WhatsApp o la cuenta?
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateOrderStatus(
+                        activeOrderModal.id,
+                        "PAGADO",
+                        "Pago verificado y aprobado manualmente por administración (QR Bancolombia)"
+                      );
+                      setActiveOrderModal((prev) => (prev ? { ...prev, status: "PAGADO" } : null));
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-sm shrink-0"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Aprobar Pago Manualmente (QR)</span>
+                  </button>
+                </div>
+              ) : activeOrderModal.status === "PAGADO" ? (
+                <div className="pt-1.5 border-t border-slate-800/80 flex items-center gap-1.5 text-[11px] text-emerald-400 font-semibold">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Pago verificado y aprobado por administración. Listo para despacho.</span>
+                </div>
+              ) : null}
             </div>
 
             {/* Actions */}

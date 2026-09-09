@@ -75,7 +75,7 @@ export interface Order {
   total: number;
   deliveryAddress: Address;
   paymentMethod: {
-    type: "WOMPI" | "TARJETA" | "PSE" | "NEQUI" | "CONTRA_ENTREGA";
+    type: "WOMPI" | "TARJETA" | "PSE" | "NEQUI" | "CONTRA_ENTREGA" | "QR_BANCOLOMBIA";
     brand?: string;
     lastFour?: string;
   };

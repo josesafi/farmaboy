@@ -149,9 +149,10 @@ export default function AdminOrderDetailPage() {
               onChange={(e) => updateOrderStatus(order.id, e.target.value as AdminOrderStatus)}
               className="px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-emerald-500 cursor-pointer"
             >
+              <option value="PENDIENTE">⏳ Pendiente Verificación QR</option>
+              <option value="PAGADO">💳 Pagado</option>
               <option value="NUEVO">✨ Nuevo</option>
               <option value="CONFIRMADO">✓ Confirmado</option>
-              <option value="PAGADO">💳 Pagado</option>
               <option value="PREPARANDO">📦 Preparando</option>
               <option value="LISTO_RECOGER">📍 Listo en punto</option>
               <option value="EN_CAMINO">🛵 En camino</option>
@@ -306,8 +307,14 @@ export default function AdminOrderDetailPage() {
           <div className="space-y-2 text-xs">
             <div className="flex justify-between py-1 border-b border-slate-800">
               <span className="text-slate-400">Método de pago:</span>
-              <span className="font-bold text-white">{order.paymentMethod || "Wompi Pasarela"}</span>
+              <span className="font-bold text-white">{order.paymentMethod || "Código QR Bancolombia & Bre-B"}</span>
             </div>
+            {order.paymentApprovalCode && (
+              <div className="flex justify-between py-1 border-b border-slate-800">
+                <span className="text-slate-400">Cód. Comprobante / Aprobación:</span>
+                <span className="font-mono font-bold text-emerald-400">{order.paymentApprovalCode}</span>
+              </div>
+            )}
             <div className="flex justify-between py-1 border-b border-slate-800">
               <span className="text-slate-400">Moneda:</span>
               <span className="font-semibold text-slate-200">COP (Pesos Colombianos)</span>
@@ -322,6 +329,29 @@ export default function AdminOrderDetailPage() {
                 <span className="font-bold">
                   {order.customerLifetimeDiscount.percentage}% OFF ({order.customerLifetimeDiscount.reason || "De por vida"})
                 </span>
+              </div>
+            )}
+
+            {(order.status === "PENDIENTE" || order.status === "NUEVO") && (
+              <div className="pt-3 border-t border-slate-800 space-y-2">
+                <p className="text-[11px] text-amber-400">
+                  ⚠️ Este pedido requiere verificación manual del comprobante de transferencia bancaria.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateOrderStatus(
+                      order.id,
+                      "PAGADO",
+                      "Pago aprobado manualmente por administración (QR Bancolombia / Bre-B)"
+                    );
+                    showToast("Pago aprobado y marcado como PAGADO", "success");
+                  }}
+                  className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition shadow-sm"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Aprobar Pago Manualmente (QR)</span>
+                </button>
               </div>
             )}
           </div>

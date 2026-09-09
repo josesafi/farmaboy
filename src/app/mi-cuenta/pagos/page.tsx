@@ -53,7 +53,7 @@ export default function PagosPage() {
             Métodos de Pago
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5 max-w-xl">
-            Administra tus medios de pago protegidos con cifrado Wompi Bancolombia para compras más veloces en Boyacá.
+            Administra tus medios de pago protegidos con cifrado de nivel bancario para compras más veloces en Boyacá.
           </p>
         </div>
 
@@ -72,10 +72,10 @@ export default function PagosPage() {
         <Lock className="w-5 h-5 text-[#00A86B] shrink-0 mt-0.5" />
         <div className="space-y-1">
           <p className="font-bold text-emerald-900">
-            Estándar de Seguridad PCI-DSS y Criptografía Wompi
+            Estándar de Seguridad Bancaria y Criptografía Financiera
           </p>
           <p className="text-emerald-800 text-[11px] leading-relaxed">
-            FarmaBoy <strong>nunca almacena tu número completo de tarjeta ni el código CVV</strong> en sus servidores. Toda la información financiera se almacena directamente en la pasarela bancaria mediante tokens criptográficos inviolables.
+            FarmaBoy <strong>nunca almacena tu número completo de tarjeta ni el código CVV</strong> en sus servidores. Toda la información financiera se almacena directamente mediante tokens criptográficos inviolables.
           </p>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function PagosPage() {
             </div>
 
             <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-[11px] text-slate-400">Token activo con Wompi</span>
+              <span className="text-[11px] text-slate-400">Token de pago seguro activo</span>
               {paymentMethods.length > 1 && (
                 <button
                   type="button"
@@ -238,7 +238,7 @@ export default function PagosPage() {
               </div>
 
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-[11px] text-slate-500">
-                Se realizará una validación criptográfica de $0 COP a través de Wompi Bancolombia para autenticar el medio.
+                Se realizará una validación criptográfica de seguridad bancaria para autenticar el medio.
               </div>
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">

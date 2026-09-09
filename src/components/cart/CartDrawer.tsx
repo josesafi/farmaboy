@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
-import { wompiConfig } from "@/config/wompi";
+import { paymentConfig } from "@/config/payment";
 import { farmaboyConfig } from "@/config/farmaboy";
 import { getWhatsAppUrl } from "@/lib/utils";
 import {
@@ -53,9 +53,9 @@ export const CartDrawer: React.FC = () => {
 
   // Build WhatsApp prefilled order message
   const itemsText = items
-    .map((i) => `• ${i.name} (x${i.quantity}) - ${wompiConfig.formatCOP(i.price * i.quantity)}`)
+    .map((i) => `• ${i.name} (x${i.quantity}) - ${paymentConfig.formatCOP(i.price * i.quantity)}`)
     .join("\n");
-  const whatsappMsg = `Hola Farmaboy, deseo realizar el siguiente pedido de farmacia en Boyacá:\n\n${itemsText}\n\n*Subtotal:* ${wompiConfig.formatCOP(subtotal)}\n*Envío estimado:* ${shippingCost === 0 ? "GRATIS" : wompiConfig.formatCOP(shippingCost)}\n*Total:* ${wompiConfig.formatCOP(total)}\n\n¿Me indican cómo proceder con la entrega?`;
+  const whatsappMsg = `Hola Farmaboy, deseo realizar el siguiente pedido de farmacia en Boyacá:\n\n${itemsText}\n\n*Subtotal:* ${paymentConfig.formatCOP(subtotal)}\n*Envío estimado:* ${shippingCost === 0 ? "GRATIS" : paymentConfig.formatCOP(shippingCost)}\n*Total:* ${paymentConfig.formatCOP(total)}\n\n¿Me indican cómo proceder con la entrega?`;
 
   const whatsappOrderUrl = getWhatsAppUrl(
     farmaboyConfig.contact.whatsapp,
@@ -143,7 +143,7 @@ export const CartDrawer: React.FC = () => {
                     {item.name}
                   </h4>
                   <span className="font-black text-xs text-[#00A86B] block mt-0.5">
-                    {wompiConfig.formatCOP(item.price)}
+                    {paymentConfig.formatCOP(item.price)}
                   </span>
 
                   {/* Quantity Controls */}
@@ -184,7 +184,7 @@ export const CartDrawer: React.FC = () => {
                 {/* Line Total */}
                 <div className="text-right shrink-0">
                   <span className="font-extrabold text-xs text-slate-900 block">
-                    {wompiConfig.formatCOP(item.price * item.quantity)}
+                    {paymentConfig.formatCOP(item.price * item.quantity)}
                   </span>
                 </div>
               </div>
@@ -199,9 +199,9 @@ export const CartDrawer: React.FC = () => {
             <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200/80 text-[11px] text-emerald-900 flex items-center justify-between">
               <span className="flex items-center gap-1.5 font-medium">
                 <Truck className="w-3.5 h-3.5 text-[#00A86B]" />
-                {subtotal >= wompiConfig.shipping.freeShippingThreshold
+                {subtotal >= paymentConfig.shipping.freeShippingThreshold
                   ? "¡Tienes Envío GRATIS en Boyacá!"
-                  : `Faltan ${wompiConfig.formatCOP(wompiConfig.shipping.freeShippingThreshold - subtotal)} para envío gratis`}
+                  : `Faltan ${paymentConfig.formatCOP(paymentConfig.shipping.freeShippingThreshold - subtotal)} para envío gratis`}
               </span>
             </div>
 
@@ -212,7 +212,7 @@ export const CartDrawer: React.FC = () => {
                   <div className="flex items-center gap-1.5">
                     <span className="font-bold text-emerald-800">Cupón: {appliedCoupon.code}</span>
                     <span className="text-[11px] text-emerald-600 font-semibold">
-                      (-{wompiConfig.formatCOP(discountAmount)})
+                      (-{paymentConfig.formatCOP(discountAmount)})
                     </span>
                   </div>
                   <button
@@ -282,7 +282,7 @@ export const CartDrawer: React.FC = () => {
               <div className="flex justify-between">
                 <span>Subtotal:</span>
                 <span className="font-bold text-slate-800">
-                  {wompiConfig.formatCOP(subtotal)}
+                  {paymentConfig.formatCOP(subtotal)}
                 </span>
               </div>
               {lifetimeDiscountAmount > 0 && (
@@ -291,39 +291,39 @@ export const CartDrawer: React.FC = () => {
                     <Tag className="w-3 h-3 text-emerald-600" />
                     <span>Descuento de tu Cuenta ({lifetimeDiscountPercentage}%):</span>
                   </span>
-                  <span>-{wompiConfig.formatCOP(lifetimeDiscountAmount)}</span>
+                  <span>-{paymentConfig.formatCOP(lifetimeDiscountAmount)}</span>
                 </div>
               )}
               {couponDiscountAmount > 0 && (
                 <div className="flex justify-between text-emerald-600 font-bold">
                   <span>Descuento cupón ({appliedCoupon?.code}):</span>
-                  <span>-{wompiConfig.formatCOP(couponDiscountAmount)}</span>
+                  <span>-{paymentConfig.formatCOP(couponDiscountAmount)}</span>
                 </div>
               )}
               <div className="flex justify-between">
                 <span>Domicilio (Boyacá):</span>
                 <span className="font-bold text-slate-800">
-                  {shippingCost === 0 ? "GRATIS" : wompiConfig.formatCOP(shippingCost)}
+                  {shippingCost === 0 ? "GRATIS" : paymentConfig.formatCOP(shippingCost)}
                 </span>
               </div>
               <div className="flex justify-between text-sm font-black text-slate-900 pt-1.5 border-t border-slate-200">
                 <span>Total a pagar:</span>
                 <span className="text-[#00A86B] text-base">
-                  {wompiConfig.formatCOP(total)}
+                  {paymentConfig.formatCOP(total)}
                 </span>
               </div>
             </div>
 
             {/* Payment CTAs */}
             <div className="space-y-2 pt-1">
-              {/* Wompi Checkout Button */}
+              {/* QR Bancolombia & Bre-B Checkout Button */}
               <button
                 type="button"
                 onClick={handleProceedToCheckout}
                 className="w-full py-3.5 px-4 rounded-xl bg-[#00A86B] hover:bg-[#008755] text-white font-black text-xs sm:text-sm shadow-pharmacy transition-all flex items-center justify-center gap-2 touch-target active:scale-[0.98]"
               >
                 <CreditCard className="w-4 h-4" />
-                <span>Pagar con Wompi (PSE, Nequi, Tarjetas)</span>
+                <span>Pagar con QR Bancolombia / Bre-B</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -342,7 +342,7 @@ export const CartDrawer: React.FC = () => {
             {/* Security note */}
             <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-500 pt-1">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Transacciones seguras procesadas por Wompi Bancolombia</span>
+              <span>Pagos directos con QR Bancolombia, Bre-B, Nequi y Transferencia</span>
             </div>
           </div>
         )}

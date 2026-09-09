@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { wompiConfig } from "@/config/wompi";
+import { paymentConfig } from "@/config/payment";
 import { useAdminStore } from "./AdminStoreContext";
 import { useAuth } from "./AuthContext";
 import { PromotionRule } from "@/types/admin";
@@ -209,7 +209,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             ? {
                 ...item,
                 price: activePrice,
-                priceDisplay: wompiConfig.formatCOP(activePrice),
+                priceDisplay: paymentConfig.formatCOP(activePrice),
                 quantity: item.quantity + quantity,
                 maxAvailableStock: availableStock,
               }
@@ -222,7 +222,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: product.id,
           name: catalogItem?.name || product.name,
           price: activePrice,
-          priceDisplay: wompiConfig.formatCOP(activePrice),
+          priceDisplay: paymentConfig.formatCOP(activePrice),
           quantity,
           imageUrl: catalogItem?.imageUrl || product.imageUrl,
           category: product.category,
@@ -293,7 +293,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
-  const freeThreshold = storeSettings.freeShippingThresholdCOP || wompiConfig.shipping.freeShippingThreshold;
+  const freeThreshold = storeSettings.freeShippingThresholdCOP || paymentConfig.shipping.freeShippingThreshold;
   const isFreeShippingByPromo = appliedCoupon?.type === "FREE_SHIPPING";
   const standardCost = storeSettings.standardShippingCostCOP || getActiveShippingRate("Duitama");
   const shippingCost =

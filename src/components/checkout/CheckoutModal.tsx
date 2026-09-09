@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
-import { wompiConfig } from "@/config/wompi";
+import { paymentConfig } from "@/config/payment";
 import { farmaboyConfig } from "@/config/farmaboy";
+import { getWhatsAppUrl } from "@/lib/utils";
 import {
   X,
   CreditCard,
@@ -24,6 +25,13 @@ import {
   Clock,
   Navigation,
   Tag,
+  Copy,
+  Check,
+  QrCode,
+  ArrowRight,
+  ArrowLeft,
+  ExternalLink,
+  MessageCircle,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useAdminStore } from "@/context/AdminStoreContext";
@@ -69,7 +77,14 @@ export const CheckoutModal: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [simulationModal, setSimulationModal] = useState<any | null>(null);
+  const [checkoutStep, setCheckoutStep] = useState<"FORM" | "QR_PAYMENT">("FORM");
+  const [activeOrderResult, setActiveOrderResult] = useState<{
+    orderId: string;
+    reference: string;
+    totalFormatted: string;
+  } | null>(null);
+  const [copiedField, setCopiedField] = useState<"llave" | "total" | "ref" | null>(null);
+  const [approvalCode, setApprovalCode] = useState<string>("");
 
   // Active pickup points
   const activePickupPoints = pickupPoints.filter((p) => p.status === "ACTIVO");
@@ -147,7 +162,21 @@ export const CheckoutModal: React.FC = () => {
 
   const effectiveTotal = Math.max(0, subtotal - totalEffectiveDiscount) + effectiveShippingCost;
 
-  const finalizeOrder = (reference: string, transactionId?: string): boolean => {
+  const copyToClipboard = (text: string, field: "llave" | "total" | "ref") => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    showToast(`Copiado: ${text}`, "success");
+    setTimeout(() => setCopiedField(null), 2500);
+  };
+
+  const handleCreateOrder = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg(null);
+
+    const reference = `FMB-${Date.now().toString().slice(-6)}`;
+    const formattedTotal = paymentConfig.formatCOP(effectiveTotal);
+
     const res = processNewOrder({
       customer: {
         name: formData.nombre.trim().split(" ")[0] || formData.nombre.trim(),
@@ -163,14 +192,14 @@ export const CheckoutModal: React.FC = () => {
       shippingAddress: {
         addressLine:
           deliveryMethod === "PUNTO_RECOGIDA"
-            ? (selectedPickup ? `Recoger en: ${selectedPickup.name} (${selectedPickup.address})` : "Sede Principal Duitama Cra. 16 # 15-20")
+            ? (selectedPickup ? `Recoger en: ${selectedPickup.name} (${selectedPickup.address})` : "Sede Principal Duitama Transversal 29 # 10-63")
             : formData.direccion.trim(),
         city: deliveryMethod === "PUNTO_RECOGIDA" ? (selectedPickup?.municipality || "Duitama") : formData.municipio,
         department: "Boyacá",
         postalCode: "150461",
         deliveryNotes:
           deliveryMethod === "PUNTO_RECOGIDA"
-            ? `RECOGER EN TIENDA: ${selectedPickup?.name || "Sede Duitama"}. Horario: ${selectedPickup?.schedule || "7:00 AM - 10:00 PM"}. Notas cliente: ${formData.notas || "Sin notas"}`
+            ? `RECOGER EN TIENDA: ${selectedPickup?.name || "Sede Duitama"}. Horario: ${selectedPickup?.schedule || "7:00 AM - 8:30 PM"}. Notas cliente: ${formData.notas || "Sin notas"}`
             : formData.notas,
       },
       items: items.map((i) => ({
@@ -190,124 +219,45 @@ export const CheckoutModal: React.FC = () => {
       } : undefined,
       shippingCOP: effectiveShippingCost,
       totalCOP: effectiveTotal,
-      paymentMethod: "WOMPI",
+      paymentMethod: "QR Bancolombia / Bre-B (Llave 0092016726)",
+      initialStatus: "PENDIENTE",
+      paymentApprovalCode: approvalCode.trim() || undefined,
       couponCode: appliedCoupon?.code,
       notes: `Destinatario: ${formData.destinatario}. Modalidad: ${deliveryMethod === "PUNTO_RECOGIDA" ? "Recogida en Tienda" : "Domicilio Express"}.${activeLifetimeDiscount ? ` Beneficio: ${activeLifetimeDiscount.percentage}% OFF Vitalicio (${activeLifetimeDiscount.reason}).` : ""} ${formData.notas || ""}`.trim(),
     });
 
+    setLoading(false);
+
     if (!res.success) {
-      setErrorMsg(res.error || "No se pudo procesar la orden");
+      setErrorMsg(res.error || "No se pudo registrar la orden");
       showToast(res.error || "Error al procesar el pedido", "error");
-      return false;
+      return;
     }
 
+    setActiveOrderResult({
+      orderId: res.orderId || reference,
+      reference,
+      totalFormatted: formattedTotal,
+    });
+    setCheckoutStep("QR_PAYMENT");
+    showToast("¡Pedido registrado! Completa tu pago con QR o Llave", "success");
+  };
+
+  const handleFinishAndRedirect = () => {
+    if (!activeOrderResult) return;
     clearCart();
     setIsCheckoutOpen(false);
-    window.location.href = `/pago-resultado?id=${res.orderId}&status=APPROVED&ref=${reference}&total=${wompiConfig.formatCOP(effectiveTotal)}`;
-    return true;
+    window.location.href = `/pago-resultado?id=${activeOrderResult.orderId}&status=PENDIENTE&ref=${activeOrderResult.reference}&total=${encodeURIComponent(activeOrderResult.totalFormatted)}&nombre=${encodeURIComponent(formData.nombre.trim())}`;
   };
 
-  const handleWompiPayment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMsg(null);
-
-    try {
-      const reference = `FMB-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const amountInCents = Math.round(effectiveTotal * 100);
-
-      // 1. Obtener firma SHA-256 desde nuestro endpoint seguro
-      const res = await fetch("/api/wompi/create-signature", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reference,
-          amountInCents,
-          currency: wompiConfig.currency,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        throw new Error(data.error || "No se pudo generar la firma de pago");
-      }
-
-      // 2. Si es placeholder, mostrar simulación pedagógica y permitir probar el resultado
-      if (data.isPlaceholder) {
-        setSimulationModal({
-          reference,
-          amountInCents,
-          totalCOP: wompiConfig.formatCOP(effectiveTotal),
-          signature: data.signature,
-          publicKey: data.publicKey,
-          customerData: formData,
-        });
-        setLoading(false);
-        return;
-      }
-
-      // 3. Cargar dinámicamente el Widget oficial de Wompi
-      const loadScript = () => {
-        return new Promise<void>((resolve, reject) => {
-          if ((window as any).WidgetCheckout) {
-            resolve();
-            return;
-          }
-          const script = document.createElement("script");
-          script.src = wompiConfig.widgetScriptUrl;
-          script.async = true;
-          script.onload = () => resolve();
-          script.onerror = () => reject(new Error("Error cargando script de Wompi"));
-          document.body.appendChild(script);
-        });
-      };
-
-      await loadScript();
-
-      // Iniciar el Widget de Wompi
-      const checkout = new (window as any).WidgetCheckout({
-        currency: wompiConfig.currency,
-        amountInCents,
-        reference,
-        publicKey: data.publicKey,
-        signature: {
-          integrity: data.signature,
-        },
-        redirectUrl: `${wompiConfig.redirectUrl}?ref=${reference}&total=${effectiveTotal}`,
-        customerData: {
-          email: formData.correo,
-          fullName: formData.nombre,
-          phoneNumber: {
-            prefix: "+57",
-            number: formData.telefono.replace(/\D/g, ""),
-          },
-          legalId: formData.documento,
-          legalIdType: formData.tipoDocumento,
-        },
-        shippingAddress: {
-          addressLine1: deliveryMethod === "PUNTO_RECOGIDA"
-            ? (selectedPickup?.address || "Sede Principal Duitama")
-            : formData.direccion,
-          city: deliveryMethod === "PUNTO_RECOGIDA" ? (selectedPickup?.municipality || "Duitama") : formData.municipio,
-          country: "CO",
-          region: "Boyacá",
-        },
-      });
-
-      checkout.open((result: any) => {
-        console.log("Wompi transaction result:", result);
-        if (result.transaction?.status === "APPROVED") {
-          finalizeOrder(reference, result.transaction.id);
-        }
-      });
-    } catch (err: any) {
-      console.error("Error al procesar pago:", err);
-      setErrorMsg(err.message || "Ocurrió un error iniciando la pasarela de pagos.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const whatsappVerificationUrl = activeOrderResult ? getWhatsAppUrl(
+    paymentConfig.whatsappVerification.phone,
+    paymentConfig.whatsappVerification.buildMessage(
+      activeOrderResult.reference,
+      activeOrderResult.totalFormatted,
+      formData.nombre
+    )
+  ) : "";
 
   return (
     <>
@@ -324,14 +274,22 @@ export const CheckoutModal: React.FC = () => {
           <div className="bg-gradient-to-r from-emerald-600 to-[#00A86B] px-6 py-4 text-white flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-                <Lock className="w-4 h-4 text-white" />
+                {checkoutStep === "FORM" ? (
+                  <Lock className="w-4 h-4 text-white" />
+                ) : (
+                  <QrCode className="w-4 h-4 text-white" />
+                )}
               </div>
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-100 block">
-                  Pasarela Segura WOMPI (Bancolombia)
+                  {checkoutStep === "FORM"
+                    ? "Pago Oficial Bancolombia & Bre-B"
+                    : "Verificación Manual de Pago"}
                 </span>
                 <h3 className="text-base sm:text-lg font-black">
-                  Finalizar Pedido de Farmacia
+                  {checkoutStep === "FORM"
+                    ? "Finalizar Pedido de Farmacia"
+                    : "Paga con Código QR o Llave"}
                 </h3>
               </div>
             </div>
@@ -347,7 +305,7 @@ export const CheckoutModal: React.FC = () => {
           </div>
 
           {/* Modal Body */}
-          <div className="p-6 max-h-[80vh] overflow-y-auto">
+          <div className="p-6 max-h-[82vh] overflow-y-auto">
             {errorMsg && (
               <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
@@ -355,14 +313,15 @@ export const CheckoutModal: React.FC = () => {
               </div>
             )}
 
-            <form onSubmit={handleWompiPayment} className="space-y-4">
+            {checkoutStep === "FORM" ? (
+              <form onSubmit={handleCreateOrder} className="space-y-4">
               {/* Order Summary Pill */}
               <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1 text-xs">
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="text-slate-500 block text-[11px]">Total a pagar:</span>
                     <span className="text-lg font-black text-[#00A86B]">
-                      {wompiConfig.formatCOP(effectiveTotal)}
+                      {paymentConfig.formatCOP(effectiveTotal)}
                     </span>
                   </div>
                   <div className="text-right">
@@ -372,7 +331,7 @@ export const CheckoutModal: React.FC = () => {
                       {effectiveShippingCost === 0 ? (
                         <span className="text-emerald-700 font-extrabold">Gratis</span>
                       ) : (
-                        wompiConfig.formatCOP(effectiveShippingCost)
+                        paymentConfig.formatCOP(effectiveShippingCost)
                       )}
                       )
                     </span>
@@ -381,7 +340,7 @@ export const CheckoutModal: React.FC = () => {
                 {discountAmount > 0 && (
                   <div className="pt-1 border-t border-slate-200 flex justify-between text-emerald-700 font-semibold text-[11px]">
                     <span>Descuento cupón ({appliedCoupon?.code}):</span>
-                    <span>-{wompiConfig.formatCOP(discountAmount)}</span>
+                    <span>-{paymentConfig.formatCOP(discountAmount)}</span>
                   </div>
                 )}
               </div>
@@ -395,14 +354,14 @@ export const CheckoutModal: React.FC = () => {
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className="font-extrabold text-emerald-900">
-                        ¡Descuento Vitalicio Reconocido (${activeLifetimeDiscount.percentage}% OFF)!
+                        ¡Descuento Vitalicio Reconocido ({activeLifetimeDiscount.percentage}% OFF)!
                       </span>
                       <span className="px-1.5 py-0.2 rounded text-[9px] font-black bg-[#00A86B] text-white">
                         De por vida
                       </span>
                     </div>
                     <p className="text-[11px] text-emerald-800 leading-tight mt-0.5">
-                      Hola <strong>{formData.nombre.split(" ")[0] || "Cliente"}</strong>, tu cuenta tiene asignado este descuento permanente ({activeLifetimeDiscount.reason}). Ahorras <strong>{wompiConfig.formatCOP(lifetimeDiscountAmount)}</strong> en esta compra.
+                      Hola <strong>{formData.nombre.split(" ")[0] || "Cliente"}</strong>, tu cuenta tiene asignado este descuento permanente ({activeLifetimeDiscount.reason}). Ahorras <strong>{paymentConfig.formatCOP(lifetimeDiscountAmount)}</strong> en esta compra.
                     </p>
                   </div>
                 </div>
@@ -514,7 +473,7 @@ export const CheckoutModal: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                      Correo Electrónico (para recibo Wompi) *
+                      Correo Electrónico (para confirmación y factura) *
                     </label>
                     <input
                       type="email"
@@ -564,7 +523,7 @@ export const CheckoutModal: React.FC = () => {
                       </div>
                       <p className="text-[11px] text-slate-500 mt-0.5">Duitama, Paipa, Sogamoso, Tunja</p>
                       <span className="text-[11px] font-bold text-emerald-700 block mt-0.5">
-                        {isFreeShipping ? "¡Envío GRATIS!" : `Desde ${wompiConfig.formatCOP(activeRate?.rateCOP || 5000)}`}
+                        {isFreeShipping ? "¡Envío GRATIS!" : `Desde ${paymentConfig.formatCOP(activeRate?.rateCOP || 5000)}`}
                       </span>
                     </div>
                   </button>
@@ -763,7 +722,7 @@ export const CheckoutModal: React.FC = () => {
                         </span>
                       </div>
                       <span className="font-extrabold text-[#00A86B]">
-                        {effectiveShippingCost === 0 ? "¡Envío GRATIS!" : wompiConfig.formatCOP(effectiveShippingCost)}
+                        {effectiveShippingCost === 0 ? "¡Envío GRATIS!" : paymentConfig.formatCOP(effectiveShippingCost)}
                       </span>
                     </div>
 
@@ -783,15 +742,24 @@ export const CheckoutModal: React.FC = () => {
                 )}
               </div>
 
-              {/* Supported payment methods icons preview */}
-              <div className="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-emerald-950">
-                <span className="font-bold flex items-center gap-1.5">
-                  <CreditCard className="w-3.5 h-3.5 text-[#00A86B]" />
-                  Métodos aceptados por Wompi:
-                </span>
-                <span className="font-medium text-emerald-800">
-                  PSE &middot; Nequi &middot; Tarjeta Crédito/Débito &middot; Bancolombia
-                </span>
+              {/* Supported payment methods info banner */}
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-emerald-950">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <QrCode className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="font-extrabold block text-slate-900">
+                      Pago Directo con Código QR Bancolombia & Bre-B
+                    </span>
+                    <span className="text-[11px] text-slate-600">
+                      Compatible con Bancolombia, Nequi, Daviplata y cualquier app bancaria.
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-white px-2.5 py-1 rounded-lg border border-emerald-300 font-mono font-bold text-[11px] text-slate-800 shrink-0">
+                  Llave: 0092016726
+                </div>
               </div>
 
               {/* Submit CTA */}
@@ -799,85 +767,185 @@ export const CheckoutModal: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 px-5 rounded-2xl bg-[#00A86B] hover:bg-[#008755] text-white font-extrabold text-sm shadow-pharmacy transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 touch-target"
+                  className="w-full py-3.5 px-5 rounded-2xl bg-[#00A86B] hover:bg-[#008755] text-white font-extrabold text-sm shadow-pharmacy transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-50 touch-target cursor-pointer"
                 >
-                  <Lock className="w-4 h-4" />
+                  <QrCode className="w-4 h-4" />
                   {loading ? (
-                    <span>Iniciando pasarela de pago...</span>
+                    <span>Registrando pedido...</span>
                   ) : (
-                    <span>Pagar {wompiConfig.formatCOP(effectiveTotal)} con WOMPI</span>
+                    <span>Continuar al Pago con QR ({paymentConfig.formatCOP(effectiveTotal)})</span>
                   )}
+                  <ArrowRight className="w-4 h-4" />
                 </button>
 
                 <div className="text-center text-[10px] text-slate-400">
-                  Tus datos están protegidos bajo cifrado SSL y la infraestructura de Bancolombia.
+                  Tu pedido quedará registrado y será verificado manualmente por nuestro personal de farmacia.
                 </div>
               </div>
             </form>
-          </div>
-        </div>
-      </div>
-
-      {/* Simulation / Placeholder Inspector Modal */}
-      {simulationModal && (
-        <div
-          className="fixed inset-0 z-60 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4"
-          role="dialog"
-        >
-          <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4">
-            <div className="flex items-center gap-3 text-emerald-700">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-6 h-6 text-[#00A86B]" />
+          ) : (
+            /* STEP 2: QR PAYMENT SCREEN (BANCOLOMBIA & BRE-B) */
+            <div className="space-y-5 animate-fade-in">
+              {/* Top Banner Status */}
+              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3 text-xs text-amber-950">
+                <div className="w-7 h-7 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 mt-0.5">
+                  <Clock className="w-4 h-4" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between flex-wrap gap-1">
+                    <span className="font-black uppercase tracking-wider text-[10px] bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full">
+                      Estado: Pendiente de Verificación Manual
+                    </span>
+                    <span className="font-mono font-bold text-slate-800 text-[11px]">
+                      Pedido #{activeOrderResult?.reference}
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-900/90 mt-1 leading-relaxed">
+                    Tu orden está pre-radicada. Por favor realiza la transferencia escaneando el código QR o usando la llave, y envíanos el comprobante por WhatsApp para despachar de inmediato.
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-extrabold text-base text-slate-900">
-                  Estructura & Lógica Wompi Lista
-                </h4>
-                <span className="text-xs text-slate-500">
-                  Modo Sandbox / Placeholder Activo
+
+              {/* Stand de Pago QR Bancolombia / Bre-B Card */}
+              <div className="bg-slate-950 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-800 text-center space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div className="text-left">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block">
+                      Comercio Oficial
+                    </span>
+                    <h4 className="font-black text-sm text-white">
+                      FARMABOY (Farmaboy Integrales...)
+                    </h4>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 bg-slate-900 px-2.5 py-1 rounded-xl border border-slate-800">
+                    <span>Bre-B</span>
+                    <span className="text-slate-600">|</span>
+                    <span>Bancolombia</span>
+                  </div>
+                </div>
+
+                {/* QR Code Image */}
+                <div className="bg-white rounded-2xl p-3 inline-block shadow-lg mx-auto max-w-[260px] sm:max-w-[280px]">
+                  <img
+                    src="/images/qr-bancolombia-farmaboy.png"
+                    alt="Código QR Oficial Bancolombia FarmaBoy"
+                    className="w-full h-auto rounded-xl object-contain mx-auto"
+                  />
+                </div>
+
+                {/* Copyable Data Pills */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-left pt-1">
+                  {/* Llave Bancolombia */}
+                  <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                        Llave Interoperable Bre-B
+                      </span>
+                      <span className="font-mono font-black text-base text-emerald-400">
+                        {paymentConfig.bancolombia.llave}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => copyToClipboard(paymentConfig.bancolombia.llave, "llave")}
+                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedField === "llave" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedField === "llave" ? "Copiado" : "Copiar"}</span>
+                    </button>
+                  </div>
+
+                  {/* Monto exacto */}
+                  <div className="p-3 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                        Monto Exacto a Transferir
+                      </span>
+                      <span className="font-black text-base text-white">
+                        {activeOrderResult?.totalFormatted}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => copyToClipboard(effectiveTotal.toString(), "total")}
+                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition flex items-center gap-1 cursor-pointer"
+                    >
+                      {copiedField === "total" ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedField === "total" ? "Copiado" : "Copiar"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Paso a paso */}
+                <div className="p-3 rounded-2xl bg-slate-900/60 border border-slate-800/80 text-[11px] text-slate-300 text-left space-y-1.5">
+                  <div className="font-bold text-white flex items-center gap-1.5 text-xs">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>¿Cómo transferir desde tu celular?</span>
+                  </div>
+                  <ol className="list-decimal list-inside space-y-1 text-slate-400">
+                    <li>Abre tu app bancaria (<strong>Bancolombia, Nequi, Daviplata</strong> o cualquiera con Bre-B).</li>
+                    <li>Escanea este código QR o transfiere a la llave <strong className="text-white">0092016726</strong>.</li>
+                    <li>Digita el valor exacto de <strong className="text-white">{activeOrderResult?.totalFormatted}</strong>.</li>
+                    <li>Envía el comprobante por WhatsApp a continuación para verificación manual.</li>
+                  </ol>
+                </div>
+              </div>
+
+              {/* Optional Approval Code Input */}
+              <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+                <label className="block text-xs font-bold text-slate-800">
+                  Número de Comprobante o Aprobación Bancaria (Opcional):
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ej. 1748855 o referencia de tu banco"
+                  value={approvalCode}
+                  onChange={(e) => setApprovalCode(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:border-[#00A86B] outline-none font-mono bg-white"
+                />
+                <span className="text-[10px] text-slate-500 block">
+                  Ayuda a agilizar la verificación manual en el sistema de farmacia.
                 </span>
               </div>
+
+              {/* WhatsApp Verification CTA (Primary) */}
+              <div className="space-y-2.5 pt-1">
+                <a
+                  href={whatsappVerificationUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-4 px-5 rounded-2xl bg-[#25D366] hover:bg-[#1EBE5D] text-white font-black text-sm sm:text-base shadow-lg transition-all flex items-center justify-center gap-2.5 touch-target active:scale-[0.98]"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  <span>Enviar Comprobante por WhatsApp (+57 313 427 9559)</span>
+                  <ExternalLink className="w-4 h-4 opacity-90" />
+                </a>
+
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <button
+                    type="button"
+                    onClick={handleFinishAndRedirect}
+                    className="flex-1 py-3 px-4 rounded-xl bg-[#00A86B] hover:bg-[#008755] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Ya envié mi comprobante / Ver Recibo</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setCheckoutStep("FORM")}
+                    className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center gap-1.5 transition cursor-pointer"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Modificar Datos</span>
+                  </button>
+                </div>
+              </div>
             </div>
-
-            <p className="text-xs text-slate-600 leading-relaxed">
-              La integración técnica de Wompi está <strong>100% implementada</strong>. La firma criptográfica SHA-256 fue calculada exitosamente en el backend:
-            </p>
-
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono space-y-1 overflow-x-auto">
-              <div><strong className="text-slate-500">Referencia:</strong> {simulationModal.reference}</div>
-              <div><strong className="text-slate-500">Total a Pagar:</strong> {simulationModal.totalCOP} ({simulationModal.amountInCents} centavos)</div>
-              <div><strong className="text-slate-500">Modalidad:</strong> {deliveryMethod === "PUNTO_RECOGIDA" ? `Recoger en Tienda (${selectedPickup?.name})` : `Domicilio (${formData.municipio})`}</div>
-              <div><strong className="text-slate-500">Moneda:</strong> COP</div>
-              <div className="truncate"><strong className="text-slate-500">Firma SHA-256:</strong> {simulationModal.signature}</div>
-              <div><strong className="text-slate-500">Llave Pública:</strong> {simulationModal.publicKey}</div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-relaxed">
-              <strong>Nota para el administrador de FARMABOY:</strong> Cuando agregues tu llave real de Wompi en <code>.env.local</code> (por ejemplo <code>pub_prod_...</code> o <code>pub_test_...</code> real), la pasarela abrirá la interfaz de pago bancario de Bancolombia directamente.
-            </div>
-
-            <div className="pt-2 flex flex-col sm:flex-row gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  finalizeOrder(simulationModal.reference, "SIMULATED-" + simulationModal.reference);
-                }}
-                className="flex-1 py-3 px-4 rounded-xl bg-[#00A86B] hover:bg-[#008755] text-white font-bold text-xs flex items-center justify-center gap-1.5"
-              >
-                <span>Simular Pago Aprobado & Ver Recibo</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSimulationModal(null)}
-                className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs"
-              >
-                Volver
-              </button>
-            </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
+    </div>
     </>
   );
 };

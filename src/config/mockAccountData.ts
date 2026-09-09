@@ -114,9 +114,9 @@ export const initialMockOrders: Order[] = [
     total: 62600,
     deliveryAddress: initialMockAddresses[0],
     paymentMethod: {
-      type: "WOMPI",
-      brand: "Tarjeta Débito Bancolombia",
-      lastFour: "4821",
+      type: "QR_BANCOLOMBIA",
+      brand: "Código QR Bancolombia",
+      lastFour: "1672",
     },
     courierName: "Domiciliario FarmaBoy Express (Tunja)",
     estimatedDelivery: "Hoy entre 5:30 pm y 6:30 pm",
@@ -132,7 +132,7 @@ export const initialMockOrders: Order[] = [
       {
         step: "confirmado",
         title: "Pago aprobado",
-        description: "Transacción validada por Wompi Bancolombia",
+        description: "Pago verificado por QR Bancolombia / Bre-B",
         date: "Hoy 2:32 pm",
         completed: true,
         isCurrent: false,
@@ -204,8 +204,8 @@ export const initialMockOrders: Order[] = [
     total: 190800,
     deliveryAddress: initialMockAddresses[0],
     paymentMethod: {
-      type: "WOMPI",
-      brand: "PSE Bancolombia",
+      type: "QR_BANCOLOMBIA",
+      brand: "QR Bancolombia / Bre-B",
     },
     trackingSteps: [
       {
@@ -272,9 +272,9 @@ export const initialMockOrders: Order[] = [
     total: 106000,
     deliveryAddress: initialMockAddresses[0],
     paymentMethod: {
-      type: "WOMPI",
-      brand: "Visa",
-      lastFour: "9012",
+      type: "QR_BANCOLOMBIA",
+      brand: "QR Bancolombia / Bre-B",
+      lastFour: "1672",
     },
     trackingSteps: [],
   },

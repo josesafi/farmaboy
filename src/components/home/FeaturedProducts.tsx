@@ -150,7 +150,7 @@ export const FeaturedProducts: React.FC = () => {
                 Productos destacados
               </h2>
               <p className="text-sm text-slate-600 mt-1">
-                Agrega a tu pedido para pagar en línea con Wompi (PSE, Nequi, Tarjetas) o pide por WhatsApp.
+                Agrega a tu pedido para pagar con QR Bancolombia, Bre-B, Nequi o pide directamente por WhatsApp.
               </p>
             </div>
 
@@ -293,7 +293,7 @@ export const FeaturedProducts: React.FC = () => {
                       ) : (
                         <>
                           <Plus className="w-4 h-4" />
-                          <span>Agregar & Pagar con Wompi</span>
+                          <span>Agregar al Carrito</span>
                         </>
                       )}
                     </button>

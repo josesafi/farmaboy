@@ -180,6 +180,8 @@ export interface AdminOrder {
   };
   isStockRestocked?: boolean;
   cancellationReason?: string;
+  paymentProofUrl?: string;
+  paymentApprovalCode?: string;
   trackingHistory: {
     status: AdminOrderStatus;
     timestamp: string;
@@ -225,6 +227,9 @@ export interface NewOrderInput {
   shippingCOP: number;
   totalCOP?: number;
   prescriptionUrl?: string;
+  paymentProofUrl?: string;
+  paymentApprovalCode?: string;
+  initialStatus?: AdminOrderStatus;
   notes?: string;
   items: {
     id?: string;

@@ -185,7 +185,7 @@ export default function RootLayout({
       },
     ],
     priceRange: "$$",
-    paymentAccepted: "Efectivo, Tarjeta Débito, Tarjeta Crédito, Nequi, Bancolombia, PSE, Wompi",
+    paymentAccepted: "Código QR Bancolombia, Bre-B, Nequi, Daviplata, Transferencia Bancaria, Efectivo",
     currenciesAccepted: "COP",
     sameAs: [
       "https://www.google.com/maps/place/Farmaboy+integrales+de+servicios+en+salud+sas/@5.8172853,-73.0295171,17z/data=!3m1!4b1!4m6!3m5!1s0x8e6a3f01d0b41f3d:0x3f2f0298e4b78051!8m2!3d5.8172853!4d-73.0295171",
