@@ -14,16 +14,61 @@ import {
   ChevronUp,
   Phone,
   ShieldCheck,
+  Mail,
+  Send,
+  CheckCircle2,
 } from "lucide-react";
 import { getWhatsAppUrl } from "@/lib/utils";
 import { farmaboyConfig } from "@/config/farmaboy";
+import { triggerEmailEvent } from "@/lib/email/client";
 
 export default function SoportePage() {
-  const { orders } = useAuth();
+  const { orders, user } = useAuth();
   const [searchTopic, setSearchTopic] = useState("");
   const [selectedOrder, setSelectedOrder] = useState("");
   const [selectedIssue, setSelectedIssue] = useState("Estado de entrega de mi pedido");
+  const [ticketMessage, setTicketMessage] = useState("");
+  const [ticketSubmitted, setTicketSubmitted] = useState<string | null>(null);
+  const [isSubmittingTicket, setIsSubmittingTicket] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+
+  const handleCreateTicket = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingTicket(true);
+    const ticketId = "TICK-" + Math.floor(1000 + Math.random() * 9000);
+    const customerEmail = user?.email || "carlos.rodriguez@farmaboy.com.co";
+    const customerName = user ? `${user.name} ${user.lastName}`.trim() : "Carlos Rodríguez";
+
+    triggerEmailEvent({
+      event: "SUPPORT_TICKET_CREATED",
+      recipient: customerEmail,
+      recipientName: customerName,
+      event_id: `TICKET_${ticketId}`,
+      data: {
+        nombre: customerName,
+        ticket: ticketId,
+        asunto: selectedIssue + (selectedOrder ? ` (Pedido #${selectedOrder})` : ""),
+        mensaje: ticketMessage || "Consulta de cliente registrada desde el portal de soporte.",
+      },
+    });
+
+    triggerEmailEvent({
+      event: "ADMIN_SUPPORT_TICKET",
+      recipient: "info@farmaboy.com",
+      event_id: `ADMIN_TICKET_${ticketId}`,
+      data: {
+        ticket: ticketId,
+        cliente: customerName,
+        correo: customerEmail,
+        asunto: selectedIssue + (selectedOrder ? ` (Pedido #${selectedOrder})` : ""),
+        mensaje: ticketMessage || "Consulta de soporte radicada en línea.",
+      },
+    });
+
+    setTicketSubmitted(ticketId);
+    setTicketMessage("");
+    setIsSubmittingTicket(false);
+  };
 
   const faqs = [
     {
@@ -139,7 +184,37 @@ export default function SoportePage() {
           </div>
         </div>
 
-        <div className="pt-2 flex justify-end">
+        <div>
+          <label className="block text-slate-200 font-bold mb-1">
+            Detalle de tu mensaje o requerimiento
+          </label>
+          <textarea
+            rows={2}
+            value={ticketMessage}
+            onChange={(e) => setTicketMessage(e.target.value)}
+            placeholder="Describe brevemente cómo podemos asistirte..."
+            className="w-full px-3.5 py-2.5 rounded-xl border-none outline-none bg-white font-medium text-slate-900 text-xs"
+          />
+        </div>
+
+        {ticketSubmitted && (
+          <div className="p-3.5 rounded-xl bg-emerald-900/80 border border-emerald-500 text-emerald-100 text-xs font-bold flex items-center gap-2 animate-fadeIn">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+            <span>¡Tu solicitud ha sido radicada con el número <strong>#{ticketSubmitted}</strong>! Te hemos enviado la confirmación por correo electrónico.</span>
+          </div>
+        )}
+
+        <div className="pt-2 flex flex-wrap items-center justify-end gap-2.5">
+          <button
+            type="button"
+            onClick={handleCreateTicket}
+            disabled={isSubmittingTicket}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-slate-900 hover:bg-slate-100 text-xs font-bold transition-all disabled:opacity-50"
+          >
+            <Mail className="w-4 h-4 text-[#00A86B]" />
+            <span>{isSubmittingTicket ? "Radicando..." : "Radicar Ticket Formal por Correo"}</span>
+          </button>
+
           <a
             href={whatsappUrl}
             target="_blank"
@@ -147,7 +222,7 @@ export default function SoportePage() {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00A86B] hover:bg-[#008755] text-white text-xs font-bold transition-all"
           >
             <MessageCircle className="w-4 h-4" />
-            <span>Iniciar chat de soporte con estos datos</span>
+            <span>Iniciar chat de soporte por WhatsApp</span>
           </a>
         </div>
       </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { Logo } from "@/components/common/Logo";
+import { triggerEmailEvent } from "@/lib/email/client";
 import {
   User,
   Mail,
@@ -123,6 +124,9 @@ export default function RegisterPage() {
 
   const handleVerifyOtp = async () => {
     setIsLoading(true);
+    const userEmail = formData.email || `${formData.phone}@farmaboy.com.co`;
+    const fullName = `${formData.name} ${formData.lastName}`.trim();
+
     await register({
       name: formData.name,
       lastName: formData.lastName,
@@ -130,20 +134,61 @@ export default function RegisterPage() {
       documentNumber: formData.documentNumber,
       phone: formData.phone,
       whatsapp: formData.phone,
-      email: formData.email || `${formData.phone}@farmaboy.com.co`,
+      email: userEmail,
       birthDate: formData.birthDate,
     });
+
+    // Dispatch welcome email and admin notification
+    triggerEmailEvent({
+      event: "USER_REGISTERED",
+      recipient: userEmail,
+      recipientName: fullName,
+      event_id: `WELCOME_${userEmail.toLowerCase()}`,
+      data: {
+        nombre: fullName,
+        correo: userEmail,
+        fecha: new Date().toLocaleDateString("es-CO"),
+      },
+    });
+
+    triggerEmailEvent({
+      event: "ADMIN_NEW_USER",
+      recipient: "info@farmaboy.com",
+      event_id: `ADMIN_NEW_USER_${userEmail.toLowerCase()}`,
+      data: {
+        nombre: fullName,
+        correo: userEmail,
+        telefono: formData.phone,
+        documento: formData.documentNumber,
+      },
+    });
+
     setIsLoading(false);
     router.push("/mi-cuenta");
   };
 
   const handleSocialRegister = async (provider: string) => {
     setIsLoading(true);
+    const userEmail = `usuario.${provider.toLowerCase()}@farmaboy.com.co`;
+
     await register({
       name: "Usuario",
       lastName: provider,
-      email: `usuario.${provider.toLowerCase()}@farmaboy.com.co`,
+      email: userEmail,
     });
+
+    triggerEmailEvent({
+      event: "USER_REGISTERED",
+      recipient: userEmail,
+      recipientName: "Usuario Farmaboy",
+      event_id: `WELCOME_${userEmail.toLowerCase()}`,
+      data: {
+        nombre: "Usuario Farmaboy",
+        correo: userEmail,
+        fecha: new Date().toLocaleDateString("es-CO"),
+      },
+    });
+
     setIsLoading(false);
     router.push("/mi-cuenta");
   };

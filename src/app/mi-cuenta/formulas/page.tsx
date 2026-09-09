@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { getWhatsAppUrl } from "@/lib/utils";
 import { farmaboyConfig } from "@/config/farmaboy";
+import { triggerEmailEvent } from "@/lib/email/client";
 
 export default function FormulasPage() {
   const { prescriptions, uploadPrescription, deletePrescription, familyMembers, user } = useAuth();
@@ -43,6 +44,7 @@ export default function FormulasPage() {
 
     setIsUploading(true);
     setTimeout(() => {
+      const rxId = "RX-" + Math.floor(100000 + Math.random() * 900000);
       uploadPrescription({
         patientName,
         doctorName: doctorName || "Médico Tratante",
@@ -53,6 +55,33 @@ export default function FormulasPage() {
         status: "VALIDADA",
         medicationsSummary: medicationsSummary || "Medicamentos bajo prescripción médica",
       });
+
+      const userEmail = user?.email || "info@farmaboy.com";
+
+      // Dispatch Prescription Received to user
+      triggerEmailEvent({
+        event: "PRESCRIPTION_RECEIVED",
+        recipient: userEmail,
+        recipientName: patientName,
+        event_id: `RX_REC_${rxId}`,
+        data: {
+          nombre: patientName,
+          solicitud_id: rxId,
+        },
+      });
+
+      // Dispatch Prescription Alert to Admin
+      triggerEmailEvent({
+        event: "ADMIN_PRESCRIPTION_RECEIVED",
+        recipient: "info@farmaboy.com",
+        event_id: `ADMIN_RX_${rxId}`,
+        data: {
+          solicitud_id: rxId,
+          paciente: patientName,
+          medico: doctorName || "Médico Tratante",
+        },
+      });
+
       setIsUploading(false);
       setIsModalOpen(false);
       setSelectedFileName("");

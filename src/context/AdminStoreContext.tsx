@@ -3,6 +3,7 @@
 import { CatalogCategory, CatalogCardConfig, CatalogProduct } from "@/types/catalog";
 import { initialCategories, initialCatalogCardConfig, enrichProductToCatalog } from "@/config/initialCatalogData";
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import { triggerEmailEvent } from "@/lib/email/client";
 import {
   AdminUser,
   AdminRoleName,
@@ -895,6 +896,143 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
       );
       logActivity("Cambio de Estado de Pedido", `Pedido #${orderId}`, `Nuevo estado: ${status}`);
       showToast(`Pedido #${orderId} actualizado a ${status}`, "success");
+
+      // Automatic Transactional Email Dispatcher based on Order Lifecycle
+      const targetCustomerEmail = order.customerEmail || "info@farmaboy.com";
+      const isPickupOrder = order.deliveryMethod === "PUNTO_RECOGIDA" || !!order.pickupPointName;
+
+      if (status === "CONFIRMADO" || status === "PAGADO") {
+        triggerEmailEvent({
+          event: "PAYMENT_APPROVED",
+          recipient: targetCustomerEmail,
+          recipientName: order.customerName,
+          event_id: `PAYMENT_APPROVED_${orderId}`,
+          data: {
+            numero_pedido: orderId,
+            nombre: order.customerName,
+            valor: order.totalCOP,
+            metodo_pago: order.paymentMethod,
+          },
+        });
+        triggerEmailEvent({
+          event: "ORDER_CONFIRMED",
+          recipient: targetCustomerEmail,
+          recipientName: order.customerName,
+          event_id: `ORDER_CONFIRMED_${orderId}`,
+          data: {
+            numero_pedido: orderId,
+            nombre: order.customerName,
+            total: order.totalCOP,
+          },
+        });
+      } else if (status === "EN_PREPARACION" || status === "PREPARANDO") {
+        triggerEmailEvent({
+          event: "ORDER_PREPARING",
+          recipient: targetCustomerEmail,
+          recipientName: order.customerName,
+          event_id: `ORDER_PREP_${orderId}`,
+          data: {
+            numero_pedido: orderId,
+            nombre: order.customerName,
+          },
+        });
+      } else if (status === "LISTO_DESPACHO" || status === "LISTO_RECOGER") {
+        if (isPickupOrder || status === "LISTO_RECOGER") {
+          triggerEmailEvent({
+            event: "PICKUP_READY",
+            recipient: targetCustomerEmail,
+            recipientName: order.customerName,
+            event_id: `PICKUP_READY_${orderId}`,
+            data: {
+              numero_pedido: orderId,
+              nombre: order.customerName,
+              punto_recogida: order.pickupPointName || "Sede Principal Farmaboy",
+              horario: "Lunes a Sábado 7:30 AM a 8:30 PM",
+              codigo_recogida: orderId.replace("ORD-", "REC-"),
+            },
+          });
+        } else {
+          triggerEmailEvent({
+            event: "ORDER_READY",
+            recipient: targetCustomerEmail,
+            recipientName: order.customerName,
+            event_id: `ORDER_READY_${orderId}`,
+            data: {
+              numero_pedido: orderId,
+              nombre: order.customerName,
+            },
+          });
+        }
+      } else if (status === "EN_CAMINO" || status === "ENVIADO") {
+        triggerEmailEvent({
+          event: "ORDER_OUT_FOR_DELIVERY",
+          recipient: targetCustomerEmail,
+          recipientName: order.customerName,
+          event_id: `ORDER_ROUTE_${orderId}`,
+          data: {
+            numero_pedido: orderId,
+            nombre: order.customerName,
+            direccion: `${order.deliveryAddress || "Dirección de despacho"}, ${order.deliveryCity || "Boyacá"}`,
+          },
+        });
+      } else if (status === "ENTREGADO" || status === "RECOGIDO") {
+        if (isPickupOrder) {
+          triggerEmailEvent({
+            event: "PICKUP_COMPLETED",
+            recipient: targetCustomerEmail,
+            recipientName: order.customerName,
+            event_id: `PICKUP_DONE_${orderId}`,
+            data: {
+              numero_pedido: orderId,
+              nombre: order.customerName,
+            },
+          });
+        } else {
+          triggerEmailEvent({
+            event: "ORDER_DELIVERED",
+            recipient: targetCustomerEmail,
+            recipientName: order.customerName,
+            event_id: `ORDER_DELIVERED_${orderId}`,
+            data: {
+              numero_pedido: orderId,
+              nombre: order.customerName,
+            },
+          });
+        }
+      } else if (status === "CANCELADO") {
+        triggerEmailEvent({
+          event: "ORDER_CANCELLED",
+          recipient: targetCustomerEmail,
+          recipientName: order.customerName,
+          event_id: `ORDER_CANCELLED_${orderId}`,
+          data: {
+            numero_pedido: orderId,
+            nombre: order.customerName,
+            motivo: note || "Cancelación de pedido",
+          },
+        });
+        triggerEmailEvent({
+          event: "ADMIN_ORDER_CANCELLED",
+          recipient: "info@farmaboy.com",
+          event_id: `ADMIN_CANCEL_${orderId}`,
+          data: {
+            numero_pedido: orderId,
+            motivo: note || "Cancelado en administración",
+          },
+        });
+      } else if (status === "DEVUELTO") {
+        triggerEmailEvent({
+          event: "REFUND_PROCESSED",
+          recipient: targetCustomerEmail,
+          recipientName: order.customerName,
+          event_id: `REFUND_${orderId}`,
+          data: {
+            numero_pedido: orderId,
+            nombre: order.customerName,
+            valor: order.totalCOP,
+          },
+        });
+      }
     },
     [orders, medicines, retailProducts, currentAdmin, logActivity, showToast]
   );
@@ -1191,6 +1329,140 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         `Cliente: ${custName} ${custLastName} - Total: $${orderTotal.toLocaleString("es-CO")} COP`
       );
       showToast(`¡Pedido #${generatedId} procesado con éxito!`, "success");
+
+      // Transactional Email Dispatches
+      const customerEmailAddress = custEmail || "info@farmaboy.com";
+      const isManualQr = input.paymentMethod?.includes("QR");
+
+      // 1. ORDER_CREATED to Customer
+      triggerEmailEvent({
+        event: "ORDER_CREATED",
+        recipient: customerEmailAddress,
+        recipientName: `${custName} ${custLastName}`.trim(),
+        event_id: `ORDER_CREATED_${generatedId}`,
+        data: {
+          numero_pedido: generatedId,
+          nombre: `${custName} ${custLastName}`.trim(),
+          items: newOrder.items,
+          subtotalCOP: orderSubtotal,
+          discountCOP: orderDiscount,
+          shippingCOP: orderShipping,
+          totalCOP: orderTotal,
+          metodo_pago: input.paymentMethod,
+          domicilio_o_recogida: newOrder.deliveryMethod,
+          pickupPointName: newOrder.pickupPointName,
+          deliveryCity: shipCity,
+          deliveryAddress: shipAddress,
+          deliveryNotes: shipNotes,
+          estado: orderInitialStatus,
+        },
+      });
+
+      // 2. PAYMENT_PENDING vs PAYMENT_APPROVED
+      if (orderInitialStatus === "PENDIENTE" || isManualQr) {
+        triggerEmailEvent({
+          event: "PAYMENT_PENDING",
+          recipient: customerEmailAddress,
+          recipientName: `${custName} ${custLastName}`.trim(),
+          event_id: `PAYMENT_PENDING_${generatedId}`,
+          data: {
+            numero_pedido: generatedId,
+            nombre: `${custName} ${custLastName}`.trim(),
+            total: orderTotal,
+            metodo_pago: input.paymentMethod,
+          },
+        });
+      } else {
+        triggerEmailEvent({
+          event: "PAYMENT_APPROVED",
+          recipient: customerEmailAddress,
+          recipientName: `${custName} ${custLastName}`.trim(),
+          event_id: `PAYMENT_APPROVED_${generatedId}`,
+          data: {
+            numero_pedido: generatedId,
+            nombre: `${custName} ${custLastName}`.trim(),
+            valor: orderTotal,
+            metodo_pago: input.paymentMethod,
+            transaccion_id: input.paymentApprovalCode || `TX-${generatedId}`,
+          },
+        });
+        triggerEmailEvent({
+          event: "ORDER_CONFIRMED",
+          recipient: customerEmailAddress,
+          recipientName: `${custName} ${custLastName}`.trim(),
+          event_id: `ORDER_CONFIRMED_${generatedId}`,
+          data: {
+            numero_pedido: generatedId,
+            nombre: `${custName} ${custLastName}`.trim(),
+            total: orderTotal,
+          },
+        });
+      }
+
+      // 3. ADMIN_NEW_ORDER to admin mailbox
+      triggerEmailEvent({
+        event: "ADMIN_NEW_ORDER",
+        recipient: "info@farmaboy.com",
+        event_id: `ADMIN_NEW_ORDER_${generatedId}`,
+        data: {
+          numero_pedido: generatedId,
+          cliente: `${custName} ${custLastName}`.trim(),
+          correo: customerEmailAddress,
+          telefono: custPhone,
+          total: orderTotal,
+          metodo_pago: input.paymentMethod,
+          entrega: newOrder.deliveryMethod,
+          direccion: shipAddress || newOrder.pickupPointName,
+        },
+      });
+
+      // 4. High value order alert (> $500.000 COP)
+      if (orderTotal >= 500000) {
+        triggerEmailEvent({
+          event: "ADMIN_HIGH_VALUE_ORDER",
+          recipient: "info@farmaboy.com",
+          event_id: `ADMIN_HIGH_VAL_${generatedId}`,
+          data: {
+            numero_pedido: generatedId,
+            cliente: `${custName} ${custLastName}`.trim(),
+            total: orderTotal,
+          },
+        });
+      }
+
+      // 5. Stock depletion alerts
+      input.items.forEach((item) => {
+        const itemId = item.productId || item.id;
+        const med = medicines.find((m) => m.id === itemId);
+        const prod = retailProducts.find((p) => p.id === itemId);
+        const target = med || prod;
+        if (target) {
+          const remaining = Math.max(0, target.currentStock - item.quantity);
+          if (remaining === 0) {
+            triggerEmailEvent({
+              event: "ADMIN_OUT_OF_STOCK",
+              recipient: "info@farmaboy.com",
+              event_id: `OUT_OF_STOCK_${target.id}_${Date.now()}`,
+              data: {
+                producto: target.name,
+                sku: target.sku,
+              },
+            });
+          } else if (remaining <= target.minStock) {
+            triggerEmailEvent({
+              event: "ADMIN_LOW_STOCK",
+              recipient: "info@farmaboy.com",
+              event_id: `LOW_STOCK_${target.id}_${remaining}`,
+              data: {
+                producto: target.name,
+                sku: target.sku,
+                stock_actual: remaining,
+                stock_minimo: target.minStock,
+              },
+            });
+          }
+        }
+      });
 
       return { success: true, orderId: generatedId };
     },

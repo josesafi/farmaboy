@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { farmaboyConfig } from "@/config/farmaboy";
 import { getWhatsAppUrl, getTelUrl } from "@/lib/utils";
+import { triggerEmailEvent } from "@/lib/email/client";
 import {
   Phone,
   MessageCircle,
@@ -58,11 +59,47 @@ export default function ContactoPage() {
   const handleParticularSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setParticularSubmitted(true);
+
+    triggerEmailEvent({
+      event: "ADMIN_SUPPORT_TICKET",
+      recipient: "info@farmaboy.com",
+      data: {
+        ticket: "PQR-" + Math.floor(1000 + Math.random() * 9000),
+        cliente: particularData.nombre || "Contacto Particular",
+        correo: "info@farmaboy.com",
+        asunto: `Contacto Web: ${particularData.servicio}`,
+        mensaje: `Teléfono: ${particularData.telefono}. Mensaje: ${particularData.mensaje}`,
+      },
+    });
   };
 
   const handleEmpresaSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setEmpresaSubmitted(true);
+
+    if (empresaData.correo) {
+      triggerEmailEvent({
+        event: "CONTACT_RECEIVED",
+        recipient: empresaData.correo,
+        recipientName: empresaData.nombre,
+        data: {
+          nombre: empresaData.nombre,
+          asunto: `Solicitud Corporativa: ${empresaData.servicio}`,
+        },
+      });
+    }
+
+    triggerEmailEvent({
+      event: "ADMIN_SUPPORT_TICKET",
+      recipient: "info@farmaboy.com",
+      data: {
+        ticket: "B2B-" + Math.floor(1000 + Math.random() * 9000),
+        cliente: `${empresaData.nombre} (${empresaData.empresa})`,
+        correo: empresaData.correo,
+        asunto: `Solicitud Empresa/IPS: ${empresaData.servicio}`,
+        mensaje: `Empresa: ${empresaData.empresa} (Cargo: ${empresaData.cargo}). Teléfono: ${empresaData.telefono}. Mensaje: ${empresaData.mensaje}`,
+      },
+    });
   };
 
   return (

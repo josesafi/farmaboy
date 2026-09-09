@@ -43,6 +43,7 @@ import {
   FileCheck,
   ShieldCheck,
   Bell,
+  Mail,
 } from "lucide-react";
 import { useAdminStore } from "@/context/AdminStoreContext";
 
@@ -147,6 +148,15 @@ export const AdminSidebar: React.FC = () => {
         { title: "Productos más vendidos", href: "/admin?view=top-productos", icon: TrendingUp },
         { title: "Rendimiento de inventario", href: "/admin/inventario?tab=analitica", icon: Boxes },
         { title: "Reportes financieros", href: "/admin?view=financiero", icon: DollarSign },
+      ],
+    },
+    {
+      label: "COMUNICACIONES",
+      items: [
+        { title: "Centro de correos", href: "/admin/emails", icon: Mail },
+        { title: "Plantillas de email", href: "/admin/emails/templates", icon: FileText },
+        { title: "Diagnóstico SMTP", href: "/admin/emails/test", icon: Settings },
+        { title: "Tickets de soporte", href: "/admin/soporte", icon: HelpCircle },
       ],
     },
     {

@@ -11,15 +11,25 @@ export default function RecuperarCuentaPage() {
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!identifier.trim()) return;
 
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      if (method === "correo") {
+        await fetch("/api/auth/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "request", email: identifier.trim() }),
+        });
+      }
+    } catch (e) {
+      console.warn("Reset request sent");
+    } finally {
       setIsLoading(false);
       setSubmitted(true);
-    }, 700);
+    }
   };
 
   return (
