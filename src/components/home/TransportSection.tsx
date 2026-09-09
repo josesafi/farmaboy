@@ -22,8 +22,8 @@ export const TransportSection: React.FC = () => {
             <div className="lg:col-span-5 relative">
               <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-100 border border-slate-200 shadow-xs">
                 <Image
-                  src="https://images.unsplash.com/photo-1587745416684-47953f16f02f?q=80&w=800&auto=format&fit=crop"
-                  alt="Servicio de transporte asistencial de pacientes en Boyacá"
+                  src="/images/inserboy_card.jpg"
+                  alt="Servicio de transporte asistencial de pacientes INSERBOY en Boyacá"
                   fill
                   sizes="(max-width: 768px) 100vw, 450px"
                   className="object-cover object-center"
