@@ -245,7 +245,8 @@ export default function AdminSeoPage() {
                   areaServed: "Boyacá, Colombia",
                   address: {
                     "@type": "PostalAddress",
-                    addressLocality: "Tunja",
+                    streetAddress: "Transversal 29 # 10-63",
+                    addressLocality: "Duitama",
                     addressRegion: "Boyacá",
                   },
                   paymentAccepted: "Wompi, PSE, Nequi, Bancolombia",

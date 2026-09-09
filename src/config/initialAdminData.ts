@@ -1133,9 +1133,9 @@ export const initialSiteDesign: SiteDesignConfig = {
 };
 
 export const initialSeo: SeoConfig = {
-  siteTitleDefault: "Farmaboy | Tu farmacia de confianza en Boyacá",
-  siteDescriptionDefault: "Farmacia y droguería moderna en Boyacá, Colombia. Medicamentos, cuidado personal, bienestar, insumos hospitalarios y transporte asistencial. Pagos seguros Wompi.",
-  keywords: ["farmacia en Boyacá", "medicamentos en Tunja", "droguería Duitama", "insumos hospitalarios Sogamoso", "comprar medicamentos wompi"],
+  siteTitleDefault: "Droguería y Farmacia en Duitama, Boyacá | Farmaboy",
+  siteDescriptionDefault: "Farmaboy: Tu droguería y farmacia de confianza en Duitama, Boyacá. Medicamentos éticos y genéricos, fórmulas médicas, cuidado personal, insumos hospitalarios y domicilios rápidos en Duitama.",
+  keywords: ["droguería en duitama", "droguerias en duitama", "farmacia en duitama", "farmacias duitama", "medicamentos a domicilio duitama", "insumos hospitalarios Duitama", "farmaboy duitama", "farmacia boyaca"],
   canonicalBase: "https://farmaboy.com.co",
   ogImageUrl: "https://images.unsplash.com/photo-1586015555751-63c2999e32a4?q=80&w=1200",
   indexEnabled: true,
