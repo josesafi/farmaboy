@@ -113,8 +113,6 @@ export const CheckoutModal: React.FC = () => {
     }
   }, [user, isCheckoutOpen, defaultAddr]);
 
-  if (!isCheckoutOpen) return null;
-
   // Dynamic detection of customer lifetime discount
   const detectedCrmDiscount = React.useMemo(() => {
     return getCustomerLifetimeDiscount({
@@ -258,6 +256,8 @@ export const CheckoutModal: React.FC = () => {
       formData.nombre
     )
   ) : "";
+
+  if (!isCheckoutOpen) return null;
 
   return (
     <>
