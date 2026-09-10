@@ -28,8 +28,7 @@ export default function RegisterPage() {
   const { register } = useAuth();
 
   const [step, setStep] = useState<1 | 2>(1); // 1 = Form, 2 = OTP Verification
-  const [authMethod, setAuthMethod] = useState<"correo" | "celular">("correo");
-  const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [otpCode, setOtpCode] = useState(["", "", "", "", "", ""]);
@@ -72,11 +71,9 @@ export default function RegisterPage() {
     if (!formData.phone.trim() || formData.phone.length < 7) {
       errs.phone = "Ingresa un número de celular válido.";
     }
-    if (authMethod === "correo") {
-      if (!formData.email.trim() || !formData.email.includes("@")) {
-        errs.email = "Ingresa un correo electrónico válido.";
+    if (!formData.email.trim() || !formData.email.includes("@")) {
+        errs.email = "Ingresa un correo electr�nico v�lido.";
       }
-    }
     if (!formData.password) {
       errs.password = "Define una contraseña de al menos 8 caracteres.";
     } else if (formData.password.length < 8) {
@@ -98,8 +95,8 @@ export default function RegisterPage() {
 
     setIsLoading(true);
     
-    // Si eligió correo, enviamos un OTP real al correo
-    if (authMethod === "correo" && formData.email) {
+    // Enviamos OTP real al correo
+    if (formData.email) {
       const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
       console.log("OTP Generado:", generatedOtp); // Para poder probarlo
 
@@ -154,7 +151,7 @@ export default function RegisterPage() {
       lastName: formData.lastName,
       phone: formData.phone,
       whatsapp: formData.phone,
-      email: authMethod === "correo" ? formData.email : undefined,
+      email: formData.email,
       registrationDate: new Date().toISOString(),
       status: "ACTIVO" as const,
       isVerified: true,
@@ -263,28 +260,7 @@ export default function RegisterPage() {
                 <span className="h-px flex-1 bg-slate-200" />
               </div>
 
-              <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-xl mb-6 text-xs font-bold">
-                <button
-                  type="button"
-                  onClick={() => setAuthMethod("correo")}
-                  className={`py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
-                    authMethod === "correo" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
-                  }`}
-                >
-                  <Mail className="w-3.5 h-3.5" />
-                  <span>Con Correo</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAuthMethod("celular")}
-                  className={`py-2 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
-                    authMethod === "celular" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"
-                  }`}
-                >
-                  <Smartphone className="w-3.5 h-3.5" />
-                  <span>Con Celular</span>
-                </button>
-              </div>
+              
 
               {/* Form Inputs */}
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -338,7 +314,7 @@ export default function RegisterPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Correo Electrónico {authMethod === "correo" ? "*" : "(Opcional)"}
+                      Correo Electr�nico *
                     </label>
                     <div className="relative">
                       <input
