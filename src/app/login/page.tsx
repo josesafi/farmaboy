@@ -64,6 +64,9 @@ export default function LoginPage() {
             dispositivo: "Navegador Web",
           },
         });
+      } else {
+        // Cellular demo
+        alert(`MODO DEMO: Como no hay una API de WhatsApp o SMS conectada, puedes ingresar cualquier código de 6 dígitos (ej. 123456) para continuar.`);
       }
 
       setTimeout(() => {

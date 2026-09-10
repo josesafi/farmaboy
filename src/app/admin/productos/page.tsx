@@ -387,13 +387,34 @@ export default function AdminProductosRetailPage() {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-bold mb-1">URL de Imagen</label>
-                <input
-                  type="url"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white"
-                />
+                <label className="block text-slate-300 font-bold mb-1">Fotografía del Producto</label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    placeholder="URL de la imagen o subir archivo ->"
+                    className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white"
+                  />
+                  <label className="flex items-center justify-center px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl cursor-pointer transition-colors whitespace-nowrap text-teal-400 font-bold">
+                    <span>Subir Foto</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setFormData({ ...formData, imageUrl: reader.result as string });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
               </div>
 
               <div>

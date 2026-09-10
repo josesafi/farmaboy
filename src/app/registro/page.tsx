@@ -92,7 +92,7 @@ export default function RegisterPage() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
@@ -101,19 +101,25 @@ export default function RegisterPage() {
     // Si eligió correo, enviamos un OTP real al correo
     if (authMethod === "correo" && formData.email) {
       const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-      // Guardaríamos el OTP en un estado real en prod, aquí simulamos el envío
       console.log("OTP Generado:", generatedOtp); // Para poder probarlo
 
-      triggerEmailEvent({
-        event: "AUTH_VERIFY_EMAIL",
-        recipient: formData.email,
-        recipientName: formData.name,
-        data: {
-          token: generatedOtp,
-          ip: "192.168.1.1",
-          dispositivo: "Navegador Web",
-        },
-      });
+      try {
+        await triggerEmailEvent({
+          event: "AUTH_VERIFY_EMAIL",
+          recipient: formData.email,
+          recipientName: formData.name,
+          data: {
+            token: generatedOtp,
+            ip: "192.168.1.1",
+            dispositivo: "Navegador Web",
+          },
+        });
+      } catch (error) {
+        console.error("Error enviando OTP:", error);
+      }
+    } else {
+      // Celular simulation
+      alert(`MODO DEMO: Como no hay una API de WhatsApp o SMS conectada, puedes ingresar cualquier código de 6 dígitos (ej. 123456) para continuar.`);
     }
 
     setTimeout(() => {
