@@ -114,9 +114,6 @@ export default function RegisterPage() {
       } catch (error) {
         console.error("Error enviando OTP:", error);
       }
-    } else {
-      // Celular simulation
-      alert(`MODO DEMO: Como no hay una API de WhatsApp o SMS conectada, puedes ingresar cualquier código de 6 dígitos (ej. 123456) para continuar.`);
     }
 
     setTimeout(() => {
@@ -459,7 +456,7 @@ export default function RegisterPage() {
                 </h3>
                 <p className="text-xs text-slate-600 mt-1 max-w-sm mx-auto">
                   Enviamos un código de seguridad de 6 dígitos a{" "}
-                  <strong className="text-slate-900">{formData.phone || formData.email}</strong>.
+                  <strong className="text-slate-900">{formData.email}</strong>.
                 </p>
               </div>
 
@@ -499,7 +496,7 @@ export default function RegisterPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => alert("Código reenviado por WhatsApp / SMS")}
+                  onClick={() => alert("Código reenviado a tu correo electrónico")}
                   className="text-[#00A86B] font-bold hover:underline"
                 >
                   Reenviar código
