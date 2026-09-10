@@ -1283,5 +1283,7 @@ export const initialPickupPoints: PickupPoint[] = [
     schedule: "Listo en 20 min | Lunes a Sábado: 7:00 a.m. – 8:30 p.m.",
     days: "Lunes a Domingo",
     status: "ACTIVO",
+    prepTimeMinutes: 20,
+    pickupInstructions: "Preséntate con el número de pedido en la caja principal.",
   },
 ];

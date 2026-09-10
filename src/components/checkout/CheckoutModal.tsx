@@ -521,7 +521,7 @@ export const CheckoutModal: React.FC = () => {
                           En tu puerta
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-500 mt-0.5">Duitama, Paipa, Sogamoso, Tunja</p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">Duitama</p>
                       <span className="text-[11px] font-bold text-emerald-700 block mt-0.5">
                         {isFreeShipping ? "¡Envío GRATIS!" : `Desde ${paymentConfig.formatCOP(activeRate?.rateCOP || 5000)}`}
                       </span>
