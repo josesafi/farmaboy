@@ -118,7 +118,7 @@ export default function AccountDashboardPage() {
             <span>Espacio Personal Farmaboy Boyacá</span>
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight">
-            Hola, {user?.name || "Carlos"} 👋
+            Hola, {user?.name || "Usuario"} 👋
           </h1>
           <p className="mt-1 text-sm sm:text-base text-emerald-100 font-medium">
             ¿Qué medicamento o producto de salud necesitas hoy?

@@ -97,8 +97,8 @@ export const Header: React.FC = () => {
   ];
 
   // Display name for user pill
-  const displayName = user?.name ? user.name.split(" ")[0] : "Carlos";
-  const displayInitial = displayName ? displayName[0].toUpperCase() : "C";
+  const displayName = user?.name ? user.name.split(" ")[0] : "Ingresar";
+  const displayInitial = user?.name ? user.name[0].toUpperCase() : <User className="w-4 h-4" />;
 
   return (
     <>

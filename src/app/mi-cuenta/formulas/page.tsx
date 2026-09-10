@@ -23,7 +23,7 @@ import { triggerEmailEvent } from "@/lib/email/client";
 export default function FormulasPage() {
   const { prescriptions, uploadPrescription, deletePrescription, familyMembers, user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [patientName, setPatientName] = useState(user?.name ? `${user.name} ${user.lastName}` : "Carlos Rodríguez");
+  const [patientName, setPatientName] = useState(user?.name ? `${user.name} ${user.lastName}` : "");
   const [doctorName, setDoctorName] = useState("");
   const [medicationsSummary, setMedicationsSummary] = useState("");
   const [selectedFileName, setSelectedFileName] = useState("");
