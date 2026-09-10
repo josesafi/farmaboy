@@ -187,7 +187,7 @@ interface AdminStoreContextType {
   resetAllToFactoryDefaults: () => void;
 }
 
-const STORAGE_KEY = "farmaboy_enterprise_cms_v2";
+const STORAGE_KEY = "farmaboy_enterprise_cms_v3";
 
 const AdminStoreContext = createContext<AdminStoreContextType | undefined>(undefined);
 

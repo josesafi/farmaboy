@@ -164,16 +164,7 @@ export const farmaboyConfig = {
 
   // Municipios de cobertura en Boyacá
   coverageAreas: [
-    "Tunja",
-    "Duitama",
-    "Sogamoso",
-    "Chiquinquirá",
-    "Paipa",
-    "Moniquirá",
-    "Cómbita",
-    "Samacá",
-    "Nobsa",
-    "Ventaquemada"
+    "Duitama"
   ],
 
   // Mensajes predeterminados para WhatsApp

@@ -24,19 +24,7 @@ export default function DireccionesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const boyacaCities = [
-    "Tunja",
-    "Duitama",
-    "Sogamoso",
-    "Chiquinquirá",
-    "Paipa",
-    "Moniquirá",
-    "Villa de Leyva",
-    "Nobsa",
-    "Tibásosa",
-    "Samacá",
-    "Cómbita",
-    "Arcabuco",
-    "Ventaquemada",
+    "Duitama"
   ];
 
   const initialForm: Omit<Address, "id"> = {
