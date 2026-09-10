@@ -187,14 +187,14 @@ interface AdminStoreContextType {
   resetAllToFactoryDefaults: () => void;
 }
 
-const STORAGE_KEY = "farmaboy_enterprise_cms_v1";
+const STORAGE_KEY = "farmaboy_enterprise_cms_v2";
 
 const AdminStoreContext = createContext<AdminStoreContextType | undefined>(undefined);
 
 export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   // Initial state loading
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>(initialAdminUsers);
-  const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(initialAdminUsers[0]); // Default to Super Admin for immediate testing
+  const [currentAdmin, setCurrentAdmin] = useState<AdminUser | null>(null);
   const [categories, setCategories] = useState<CatalogCategory[]>(initialCategories);
   const [catalogCardConfig, setCatalogCardConfig] = useState<CatalogCardConfig>(initialCatalogCardConfig);
   const [medicines, setMedicines] = useState<MedicineItem[]>(initialMedicines);
