@@ -68,17 +68,7 @@ export function renderEmailLayout(options: BaseLayoutOptions): string {
                 <tr>
                   <td valign="middle">
                     <a href="${siteUrl}" target="_blank" style="text-decoration: none; display: inline-block;">
-                      <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                        <tr>
-                          <td style="background-color: #00A86B; border-radius: 10px; width: 36px; height: 36px; text-align: center; vertical-align: middle; color: #FFFFFF; font-weight: 900; font-size: 20px; line-height: 36px;">
-                            +
-                          </td>
-                          <td style="padding-left: 10px; vertical-align: middle;">
-                            <span style="font-size: 22px; font-weight: 900; letter-spacing: -0.5px; color: #0F172A; text-transform: uppercase;">FARMA<span style="color: #00A86B;">BOY</span></span>
-                            <span style="display: block; font-size: 10px; font-weight: 700; color: #64748B; letter-spacing: 0.5px; text-transform: uppercase;">Droguería & Salud</span>
-                          </td>
-                        </tr>
-                      </table>
+                      <img src="${siteUrl}/images/logo-farmaboy.png" alt="FARMABOY" height="40" style="height: 40px; max-width: 100%; border: 0; outline: none; text-decoration: none; display: block;" />
                     </a>
                   </td>
                   <td align="right" valign="middle" class="mobile-hide">

@@ -1,0 +1,16 @@
+NEXT_PUBLIC_WOMPI_PUBLIC_KEY=pub_test_PLACEHOLDER_FARMABOY
+WOMPI_PRIVATE_KEY=prv_test_PLACEHOLDER_FARMABOY
+WOMPI_INTEGRITY_SECRET=test_integrity_PLACEHOLDER_FARMABOY
+NEXT_PUBLIC_WOMPI_ENV=test
+NEXT_PUBLIC_BASE_URL=http://98.80.77.61
+
+EMAIL_FROM=info@farmaboy.com
+EMAIL_FROM_NAME="Farmaboy"
+SMTP_HOST=smtp.buzondecorreo.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=info@farmaboy.com
+SMTP_PASSWORD=Xu7ssdmnw2234.
+ADMIN_EMAIL=info@farmaboy.com
+NEXT_PUBLIC_SITE_URL=https://farmaboy.com
+EMAIL_JWT_SECRET=farmaboy_secure_jwt_token_secret_2026_boyaca
