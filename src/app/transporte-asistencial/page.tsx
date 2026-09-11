@@ -103,7 +103,7 @@ export default function TransporteAsistencialPage() {
             <div className="lg:col-span-5">
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10 aspect-[4/3] bg-slate-800">
                 <Image
-                  src="/images/inserboy.jpg"
+                  src="/images/ambulancias_ruta.jpg"
                   alt="Equipo INSERBOY - Servicios de Salud"
                   fill
                   sizes="(max-width: 768px) 100vw, 500px"
@@ -205,8 +205,49 @@ export default function TransporteAsistencialPage() {
         </div>
       </section>
 
+      {/* Equipamiento y Oxígeno */}
+      <section className="py-16 bg-slate-50 border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-secondary block mb-2">
+                Soporte Vital y Equipamiento
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-primary mb-4">
+                Suministro de Oxígeno Medicinal y Equipos Especializados
+              </h2>
+              <p className="text-slate-600 mb-6 leading-relaxed">
+                Contamos con balas y cilindros de oxígeno medicinal, reguladores, humidificadores y todo el equipamiento necesario para pacientes que requieren soporte ventilatorio. Garantizamos la disponibilidad inmediata y el transporte seguro de estos elementos vitales.
+              </p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-sm text-slate-700">Cilindros de oxígeno medicinal de diferentes capacidades (para hogar, empresas y eventos).</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-sm text-slate-700">Equipos complementarios: cánulas, mascarillas y humidificadores.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span className="text-sm text-slate-700">Suministro para clínicas, instituciones y pacientes particulares.</span>
+                </li>
+              </ul>
+            </div>
+            <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3] bg-slate-100">
+              <Image
+                src="/images/oxigeno.jpg"
+                alt="Suministro de Oxígeno Medicinal"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Formulario de Solicitud de Traslado */}
-      <section id="solicitar-traslado" className="py-20 bg-slate-50 border-t border-slate-200">
+      <section id="solicitar-traslado" className="py-20 bg-white border-t border-slate-200">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-clinical border border-slate-200">
             <div className="text-center mb-8">
