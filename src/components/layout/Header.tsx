@@ -184,17 +184,14 @@ export const Header: React.FC = () => {
                 </span>
               </button>
 
-              {/* Badge 4: WhatsApp Button (Vibrant Green Pill) */}
-              <a
-                href={whatsappGeneral}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#00A86B] hover:bg-[#008f5a] text-white text-xs font-extrabold shadow-xs hover:shadow-sm active:scale-95 transition-all"
-                title="Chatear con droguería Farmaboy por WhatsApp"
+              {/* Badge 4: INSERBOY Button */}
+              <Link
+                href="/transporte-asistencial"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-extrabold shadow-xs hover:shadow-sm active:scale-95 transition-all"
+                title="Transporte Asistencial - INSERBOY"
               >
-                <MessageCircle className="w-4 h-4" />
-                <span>WhatsApp</span>
-              </a>
+                <img src="/images/logo-inserboy.png" alt="INSERBOY" className="h-5 md:h-6 object-contain" />
+              </Link>
 
             </div>
 
@@ -431,15 +428,13 @@ export const Header: React.FC = () => {
                 <ShoppingBag className="w-4 h-4 text-[#FF6B00]" />
                 <span>Ver Mi Carrito ({totalItems > 0 ? totalItems : 3})</span>
               </button>
-              <a
-                href={whatsappGeneral}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/transporte-asistencial"
                 className="w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 hover:text-[#04428B] font-bold text-xs flex items-center justify-center gap-2 transition-colors"
+                onClick={() => setIsOpen(false)}
               >
-                <MessageCircle className="w-4 h-4 text-[#00A86B]" />
-                <span>WhatsApp Farmaboy</span>
-              </a>
+                <img src="/images/logo-inserboy.png" alt="INSERBOY" className="h-6 object-contain" />
+              </Link>
               <div className="text-center text-[11px] text-slate-500 pt-1">
                 Línea Boyacá: <span className="font-bold text-slate-700">{storeSettings?.phoneDisplay || farmaboyConfig.contact.phoneDisplay}</span>
               </div>
