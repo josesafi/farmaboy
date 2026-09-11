@@ -265,6 +265,18 @@ export const Header: React.FC = () => {
                   <span>Ofertas 🔥</span>
                 </Link>
 
+                {/* PDF Catalog Button */}
+                <a
+                  href="/portafolio_farmaboy.pdf"
+                  target="_blank"
+                  download
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all shrink-0 whitespace-nowrap bg-emerald-50/90 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 font-bold border border-emerald-200 shadow-2xs"
+                >
+                  <LayoutGrid className="w-3.5 h-3.5 text-current" />
+                  <span>Catálogo PDF</span>
+                </a>
+
                 {/* Retail Pharmacy Categories with Blue hover */}
                 {categoryNavLinks.map((link) => {
                   const isActive = pathname === link.href;
@@ -388,6 +400,17 @@ export const Header: React.FC = () => {
                   <ChevronRight className="w-4 h-4 text-slate-400" />
                 </Link>
               ))}
+
+              <a
+                href="/portafolio_farmaboy.pdf"
+                target="_blank"
+                download
+                rel="noopener noreferrer"
+                className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 hover:text-emerald-800 transition-colors mt-2"
+              >
+                <span>Descargar Catálogo PDF</span>
+                <LayoutGrid className="w-4 h-4 text-emerald-600" />
+              </a>
 
               <div className="pt-4 mt-4 border-t border-slate-100 space-y-2">
                 <Link
