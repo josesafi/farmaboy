@@ -15,6 +15,7 @@ import {
 import { useAdminStore } from "@/context/AdminStoreContext";
 import { BannerItem } from "@/types/admin";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 
 const emptyBanner: Omit<BannerItem, "id"> = {
   title: "",
@@ -262,15 +263,11 @@ export default function AdminBannersPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-slate-300 font-bold mb-1">URL de la Imagen *</label>
-                <input
-                  type="url"
-                  required
+              <div className="sm:col-span-2">
+                <ImageUploader 
+                  label="URL de la Imagen *"
                   value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white"
+                  onChange={(url) => setFormData({ ...formData, imageUrl: url })}
                 />
               </div>
 

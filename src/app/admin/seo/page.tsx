@@ -10,6 +10,8 @@ import {
   Tag,
   ExternalLink,
 } from "lucide-react";
+import { SeoConfig } from "@/types/admin";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 import { useAdminStore } from "@/context/AdminStoreContext";
 
 export default function AdminSeoPage() {
@@ -156,14 +158,11 @@ export default function AdminSeoPage() {
               />
             </div>
 
-            <div>
-              <label className="block text-slate-300 font-bold mb-1">URL Imagen Open Graph (OG)</label>
-              <input
-                type="url"
-                disabled={!canWrite}
+            <div className="sm:col-span-2">
+              <ImageUploader 
+                label="URL Imagen Open Graph (OG)"
                 value={formData.ogImageUrl}
-                onChange={(e) => setFormData({ ...formData, ogImageUrl: e.target.value })}
-                className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono"
+                onChange={(url) => setFormData({ ...formData, ogImageUrl: url })}
               />
             </div>
           </div>

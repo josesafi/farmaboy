@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAdminStore } from "@/context/AdminStoreContext";
 import { PromotionCampaign, PromotionType, PromotionStatus, PromotionProduct } from "@/types/admin";
 import { CatalogProduct } from "@/types/catalog";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 import { ArrowLeft, Save, Calendar, Tag, Image as ImageIcon, Search, Plus, Trash2, Check, Package, X } from "lucide-react";
 
 export default function CrearPromocionPage() {
@@ -146,9 +147,12 @@ export default function CrearPromocionPage() {
                 <label className="text-xs text-slate-400 font-bold mb-1 block">Prioridad (1 es más alta)</label>
                 <input type="number" min="1" max="100" value={priority} onChange={e => setPriority(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
               </div>
-              <div>
-                <label className="text-xs text-slate-400 font-bold mb-1 block">Banner URL (Opcional)</label>
-                <input type="url" value={bannerUrl} onChange={e => setBannerUrl(e.target.value)} placeholder="https://..." className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500" />
+              <div className="sm:col-span-2">
+                <ImageUploader 
+                  label="Banner URL (Opcional)"
+                  value={bannerUrl}
+                  onChange={(url) => setBannerUrl(url)}
+                />
               </div>
             </div>
           </div>

@@ -16,6 +16,7 @@ import {
 import { useAdminStore } from "@/context/AdminStoreContext";
 import { BlogPost } from "@/types/admin";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 
 const emptyPost: Omit<BlogPost, "id" | "publishDate"> = {
   title: "",
@@ -255,14 +256,11 @@ export default function AdminBlogPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-slate-300 font-bold mb-1">URL de Imagen Principal *</label>
-                <input
-                  type="url"
-                  required
+              <div className="sm:col-span-2">
+                <ImageUploader 
+                  label="URL de Imagen Principal *"
                   value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white"
+                  onChange={(url) => setFormData({ ...formData, imageUrl: url })}
                 />
               </div>
 
