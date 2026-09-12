@@ -37,6 +37,7 @@ export interface AdminUser {
   id: string;
   name: string;
   email: string;
+  password?: string;
   role: AdminRoleName;
   customPermissions?: AdminPermission[];
   avatarUrl?: string;

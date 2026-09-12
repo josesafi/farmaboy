@@ -285,20 +285,7 @@ export default function ProductDetailPage() {
                 {product.presentation}
               </p>
 
-              {/* Rating */}
-              <div className="flex items-center gap-2 mt-3">
-                <div className="flex text-amber-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <span className="text-xs font-bold text-slate-800">
-                  {product.rating || 4.8}
-                </span>
-                <span className="text-xs text-slate-400">
-                  ({product.reviewCount || 24} opiniones verificadas)
-                </span>
-              </div>
+
 
               {/* Pricing Box */}
               <div className="mt-5 p-4 rounded-2xl bg-slate-50/90 border border-slate-100">

@@ -58,7 +58,7 @@ interface AdminStoreContextType {
   // Session & Auth
   currentAdmin: AdminUser | null;
   adminUsers: AdminUser[];
-  loginAs: (email: string, role?: AdminRoleName) => boolean;
+  loginAs: (email: string, password?: string, role?: AdminRoleName) => boolean;
   switchDemoRole: (role: AdminRoleName) => void;
   logout: () => void;
   hasPermission: (permission: AdminPermission) => boolean;
@@ -455,8 +455,15 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
 
   // Authentication & RBAC
   const loginAs = useCallback(
-    (email: string, role?: AdminRoleName) => {
+    (email: string, password?: string, role?: AdminRoleName) => {
       const found = adminUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+      
+      const expectedPassword = found?.password || "X7ilfjnmua";
+      if (password !== expectedPassword) {
+        showToast("Credenciales incorrectas", "error");
+        return false;
+      }
+
       if (found) {
         const updated = { ...found, lastLogin: "Ahora" };
         setCurrentAdmin(updated);
@@ -469,6 +476,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
           id: "adm-" + Date.now(),
           name: `Usuario ${role}`,
           email,
+          password: "X7ilfjnmua",
           role,
           lastLogin: "Ahora",
           isActive: true,

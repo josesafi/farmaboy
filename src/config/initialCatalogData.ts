@@ -146,7 +146,7 @@ export const initialCatalogCardConfig: CatalogCardConfig = {
   showStockIndicator: true,
   showFavorites: true,
   showQuickView: true,
-  showRating: true,
+  showRating: false,
   desktopColumns: 4,
   borderRadius: "rounded-2xl",
   buttonStyle: "solid",

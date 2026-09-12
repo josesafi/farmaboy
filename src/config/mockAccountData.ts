@@ -39,47 +39,7 @@ export const initialMockUser: UserProfile = {
   createdAt: "2025-01-15",
 };
 
-export const initialMockAddresses: Address[] = [
-  {
-    id: "addr-1",
-    label: "Casa",
-    recipientName: "Carlos Rodríguez",
-    phone: "312 456 7890",
-    department: "Boyacá",
-    city: "Tunja",
-    neighborhood: "La Meseta",
-    address: "Carrera 2 Este # 58-30",
-    complement: "Torre 3 Apto 502",
-    deliveryNotes: "Dejar en portería si no contesto el citófono",
-    isDefault: true,
-  },
-  {
-    id: "addr-2",
-    label: "Trabajo",
-    recipientName: "Carlos Rodríguez - Oficina",
-    phone: "312 456 7890",
-    department: "Boyacá",
-    city: "Tunja",
-    neighborhood: "Centro Histórico",
-    address: "Calle 19 # 9-45",
-    complement: "Oficina 204",
-    deliveryNotes: "Horario hábil 8:00 am a 6:00 pm",
-    isDefault: false,
-  },
-  {
-    id: "addr-3",
-    label: "Sede Empresa",
-    recipientName: "Sede Operativa Duitama",
-    phone: "310 987 6543",
-    department: "Boyacá",
-    city: "Duitama",
-    neighborhood: "Zona Industrial",
-    address: "Avenida Las Américas # 12-80",
-    complement: "Bodega 4",
-    deliveryNotes: "Recepción de suministros e insumos",
-    isDefault: false,
-  },
-];
+export const initialMockAddresses: Address[] = [];
 
 export const initialMockOrders: Order[] = [
   {
@@ -361,24 +321,7 @@ export const initialMockLists: ShoppingList[] = [
   },
 ];
 
-export const initialMockFamily: FamilyMember[] = [
-  {
-    id: "fam-1",
-    name: "María Cárdenas de Rodríguez",
-    relationship: "Madre",
-    birthDate: "1960-03-22",
-    identification: "CC 23.456.789",
-    notes: "Toma medicamentos en horario matutino",
-  },
-  {
-    id: "fam-2",
-    name: "Mateo Rodríguez",
-    relationship: "Hijo/a",
-    birthDate: "2018-11-10",
-    identification: "TI 1.050.890.123",
-    notes: "Prefiere suspensiones sabor fresa",
-  },
-];
+export const initialMockFamily: FamilyMember[] = [];
 
 export const initialMockPrescriptions: MedicalPrescription[] = [
   {

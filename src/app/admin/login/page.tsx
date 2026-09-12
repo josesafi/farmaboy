@@ -16,7 +16,7 @@ export default function AdminLoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const success = loginAs(email, selectedRole);
+    const success = loginAs(email, password, selectedRole);
     if (success) {
       router.push("/admin");
     }

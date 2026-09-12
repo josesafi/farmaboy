@@ -180,7 +180,7 @@ export const Header: React.FC = () => {
                 <ShoppingBag className="w-4 h-4 text-[#00A86B] group-hover:text-[#04428B] transition-colors shrink-0" />
                 <span className="font-bold text-slate-800">Mi pedido</span>
                 <span className="w-5 h-5 rounded-full bg-[#00A86B] text-white text-[10px] font-black flex items-center justify-center -mr-1 shadow-xs">
-                  {totalItems > 0 ? totalItems : 3}
+                  {totalItems}
                 </span>
               </button>
 
@@ -205,7 +205,7 @@ export const Header: React.FC = () => {
               >
                 <ShoppingBag className="w-5 h-5 text-[#04428B]" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#FF6B00] text-white text-[9px] font-black flex items-center justify-center">
-                  {totalItems > 0 ? totalItems : 3}
+                  {totalItems}
                 </span>
               </button>
 
@@ -449,7 +449,7 @@ export const Header: React.FC = () => {
                 className="w-full py-3 px-4 rounded-xl bg-[#04428B] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-transform"
               >
                 <ShoppingBag className="w-4 h-4 text-[#FF6B00]" />
-                <span>Ver Mi Carrito ({totalItems > 0 ? totalItems : 3})</span>
+                <span>Ver Mi Carrito ({totalItems})</span>
               </button>
               <Link
                 href="/transporte-asistencial"
