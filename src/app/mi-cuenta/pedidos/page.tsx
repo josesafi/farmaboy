@@ -125,7 +125,7 @@ export default function PedidosPage() {
             const isAdded = addedOrders.includes(order.id);
             const supportUrl = getWhatsAppUrl(
               farmaboyConfig.contact.whatsapp,
-              `Hola Farmaboy, tengo una consulta sobre mi pedido #${order.id} entregado en ${order.deliveryAddress.city}.`
+              `Hola Farmaboy, tengo una consulta sobre mi pedido #${order.id} entregado en ${order?.deliveryAddress?.city || "mi dirección"}.`
             );
 
             return (
@@ -191,7 +191,7 @@ export default function PedidosPage() {
                   <div className="text-slate-600">
                     <span className="font-semibold">Entrega en: </span>
                     <span>
-                      {order.deliveryAddress.city}, {order.deliveryAddress.address}
+                      {order?.deliveryAddress?.city}, {order?.deliveryAddress?.address}
                     </span>
                   </div>
                   <div className="text-right">

@@ -272,7 +272,7 @@ export default function AccountDashboardPage() {
                 ${latestOrder.total.toLocaleString("es-CO")} COP
               </p>
               <p className="text-[11px] text-slate-600 truncate mt-0.5">
-                Destino: {latestOrder.deliveryAddress.city}, {latestOrder.deliveryAddress.address}
+                Destino: {latestOrder?.deliveryAddress?.city}, {latestOrder?.deliveryAddress?.address}
               </p>
             </div>
           </div>

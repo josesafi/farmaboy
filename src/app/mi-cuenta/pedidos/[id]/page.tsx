@@ -73,7 +73,7 @@ export default function OrderDetailPage({ params }: Props) {
 
   const whatsappSupport = getWhatsAppUrl(
     farmaboyConfig.contact.whatsapp,
-    `Hola Farmaboy, necesito asistencia con el pedido #${order.id} registrado a nombre de ${order.deliveryAddress.recipientName}.`
+    `Hola Farmaboy, necesito asistencia con el pedido #${order.id} registrado a nombre de ${order?.deliveryAddress?.recipientName || "mí"}.`
   );
 
   return (
@@ -271,17 +271,17 @@ export default function OrderDetailPage({ params }: Props) {
                 <MapPin className="w-4 h-4 text-[#00A86B]" />
                 <span>Dirección de Entrega</span>
               </div>
-              <p className="font-bold text-slate-800">{order.deliveryAddress.address}</p>
-              {order.deliveryAddress.complement && (
+              <p className="font-bold text-slate-800">{order?.deliveryAddress?.address}</p>
+              {order?.deliveryAddress?.complement && (
                 <p className="text-slate-600">{order.deliveryAddress.complement}</p>
               )}
               <p className="text-slate-600">
-                {order.deliveryAddress.neighborhood ? `${order.deliveryAddress.neighborhood}, ` : ""}
-                {order.deliveryAddress.city}, {order.deliveryAddress.department}
+                {order?.deliveryAddress?.neighborhood ? `${order.deliveryAddress.neighborhood}, ` : ""}
+                {order?.deliveryAddress?.city}, {order?.deliveryAddress?.department}
               </p>
               <div className="mt-2 pt-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
-                <span>Recibe: <strong>{order.deliveryAddress.recipientName}</strong></span>
-                <span>Tel: {order.deliveryAddress.phone}</span>
+                <span>Recibe: <strong>{order?.deliveryAddress?.recipientName}</strong></span>
+                <span>Tel: {order?.deliveryAddress?.phone}</span>
               </div>
             </div>
 
