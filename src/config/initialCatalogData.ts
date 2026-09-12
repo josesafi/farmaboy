@@ -252,21 +252,7 @@ export function enrichProductToCatalog(
   const categoryName = item.category || "Medicamentos";
   const categorySlug = mapCategoryToSlug(categoryName);
 
-  // Sample variants for products with multiple sizes (e.g. Acetaminofén, Vitamina C, Pañales)
-  let variants = undefined;
-  if (name.toLowerCase().includes("acetaminofén") || name.toLowerCase().includes("paracetamol")) {
-    variants = [
-      { id: "var-20", name: "Caja x 20 Tabletas", presentation: "20 Tabletas", priceCOP: 4200, currentStock: 30, sku: `${item.sku}-20` },
-      { id: "var-50", name: "Caja x 50 Tabletas", presentation: "50 Tabletas", priceCOP: 7900, previousPriceCOP: 9500, currentStock: 25, sku: `${item.sku}-50` },
-      { id: "var-100", name: "Caja x 100 Tabletas", presentation: "100 Tabletas", priceCOP: price, previousPriceCOP: prevPrice, currentStock: currentStock, sku: item.sku },
-    ];
-  } else if (name.toLowerCase().includes("suero") || name.toLowerCase().includes("electrolit")) {
-    variants = [
-      { id: "var-manzana", name: "Sabor Manzana 500 ml", presentation: "500 ml", priceCOP: price, currentStock: currentStock, sku: `${item.sku}-MAN` },
-      { id: "var-fresa", name: "Sabor Fresa 500 ml", presentation: "500 ml", priceCOP: price, currentStock: 40, sku: `${item.sku}-FRE` },
-      { id: "var-coco", name: "Sabor Coco 500 ml", presentation: "500 ml", priceCOP: price, currentStock: 18, sku: `${item.sku}-COC` },
-    ];
-  }
+  const variants = item.variants;
 
   return {
     id: item.id,

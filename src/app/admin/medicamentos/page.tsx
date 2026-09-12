@@ -20,6 +20,7 @@ import { useAdminStore } from "@/context/AdminStoreContext";
 import { MedicineItem, PharmaceuticalInfo } from "@/types/admin";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { ImageUploader } from "@/components/admin/ImageUploader";
+import { VariantsEditor } from "@/components/admin/VariantsEditor";
 
 const emptyMedicine: Omit<MedicineItem, "id"> = {
   name: "",
@@ -44,6 +45,7 @@ const emptyMedicine: Omit<MedicineItem, "id"> = {
   requiresPrescription: false,
   status: "ACTIVO",
   supplier: "Laboratorios Colombia",
+  variants: [],
   pharmaInfo: {
     principioActivo: "",
     concentracion: "",
@@ -644,6 +646,14 @@ export default function AdminMedicamentosPage() {
                     className="w-full p-2 rounded-xl bg-slate-950 border border-slate-700 text-white resize-none"
                   />
                 </div>
+              </div>
+
+              <div className="pt-2">
+                <VariantsEditor 
+                  variants={formData.variants || []} 
+                  onChange={(v) => setFormData({ ...formData, variants: v })}
+                  baseSku={formData.sku}
+                />
               </div>
 
               {/* Footer Actions */}

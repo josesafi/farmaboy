@@ -1,3 +1,12 @@
+export interface ProductVariant {
+  id: string;
+  name: string;
+  presentation: string;
+  priceCOP: number;
+  previousPriceCOP?: number;
+  currentStock: number;
+  sku: string;
+}
 export type AdminRoleName =
   | "SUPER_ADMIN"
   | "ADMIN"
@@ -87,6 +96,7 @@ export interface MedicineItem {
   status: "ACTIVO" | "INACTIVO" | "AGOTADO";
   isActive?: boolean;
   supplier: string;
+  variants?: ProductVariant[];
 }
 
 export interface RetailProductItem {
@@ -110,6 +120,7 @@ export interface RetailProductItem {
   status: "ACTIVO" | "INACTIVO" | "AGOTADO";
   isActive?: boolean;
   tags: string[];
+  variants?: ProductVariant[];
 }
 
 export interface InventoryMovement {
@@ -493,4 +504,6 @@ export interface PromotionCampaign {
   createdAt: string;
   updatedAt: string;
 }
+
+
 

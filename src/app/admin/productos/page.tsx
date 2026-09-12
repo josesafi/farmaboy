@@ -15,6 +15,7 @@ import { useAdminStore } from "@/context/AdminStoreContext";
 import { RetailProductItem } from "@/types/admin";
 import { ConfirmDialog } from "@/components/admin/ConfirmDialog";
 import { ImageUploader } from "@/components/admin/ImageUploader";
+import { VariantsEditor } from "@/components/admin/VariantsEditor";
 
 const emptyProduct: Omit<RetailProductItem, "id"> = {
   name: "",
@@ -30,6 +31,7 @@ const emptyProduct: Omit<RetailProductItem, "id"> = {
   currentStock: 30,
   minStock: 5,
   status: "ACTIVO",
+  variants: [],
   tags: ["Destacado"],
 };
 
@@ -403,6 +405,14 @@ export default function AdminProductosRetailPage() {
                   onChange={(e) => setFormData({ ...formData, shortInfo: e.target.value })}
                   placeholder="Detalles sobre presentación y uso..."
                   className="w-full p-2 rounded-xl bg-slate-950 border border-slate-700 text-white resize-none"
+                />
+              </div>
+
+              <div className="pt-2">
+                <VariantsEditor 
+                  variants={formData.variants || []} 
+                  onChange={(v) => setFormData({ ...formData, variants: v })}
+                  baseSku={formData.sku}
                 />
               </div>
 

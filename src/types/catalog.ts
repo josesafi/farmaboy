@@ -1,14 +1,6 @@
-import { PharmaceuticalInfo } from "./admin";
+import { PharmaceuticalInfo, ProductVariant } from "./admin";
 
-export interface ProductVariant {
-  id: string;
-  name: string; // e.g. "Caja x 30 tabletas"
-  presentation: string; // e.g. "30 tabletas"
-  priceCOP: number;
-  previousPriceCOP?: number;
-  currentStock: number;
-  sku: string;
-}
+export type { ProductVariant };
 
 export interface CatalogProduct {
   id: string;
