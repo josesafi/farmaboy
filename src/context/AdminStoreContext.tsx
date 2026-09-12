@@ -457,13 +457,11 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   const loginAs = useCallback(
     (email: string, password?: string, role?: AdminRoleName) => {
       const found = adminUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
-      
-      const expectedPassword = found?.password || "X7ilfjnmua";
+      const expectedPassword = "X7ilfjnmua";
       if (password !== expectedPassword) {
-        showToast("Credenciales incorrectas", "error");
+        showToast("Contraseña incorrecta", "error");
         return false;
       }
-
       if (found) {
         const updated = { ...found, lastLogin: "Ahora" };
         setCurrentAdmin(updated);

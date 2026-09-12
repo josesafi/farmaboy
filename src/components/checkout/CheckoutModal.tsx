@@ -374,42 +374,7 @@ export const CheckoutModal: React.FC = () => {
                   <span>Datos del Comprador & Paciente</span>
                 </h4>
 
-                {/* Family Recipient Selector */}
-                {familyMembers.length > 0 && (
-                  <div className="mb-3 p-2.5 rounded-xl bg-purple-50/60 border border-purple-200/80 flex flex-wrap items-center justify-between gap-2 text-xs">
-                    <span className="font-bold text-purple-900 flex items-center gap-1 text-[11px]">
-                      <Users className="w-3.5 h-3.5 text-purple-600" />
-                      <span>¿Para quién es este pedido?:</span>
-                    </span>
-                    <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
-                      <button
-                        type="button"
-                        onClick={() => setFormData({ ...formData, destinatario: "Para mí" })}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-colors ${
-                          formData.destinatario === "Para mí"
-                            ? "bg-purple-700 text-white border-purple-700"
-                            : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                        }`}
-                      >
-                        Para mí
-                      </button>
-                      {familyMembers.map((fam) => (
-                        <button
-                          key={fam.id}
-                          type="button"
-                          onClick={() => setFormData({ ...formData, destinatario: `${fam.name} (${fam.relationship})` })}
-                          className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-colors ${
-                            formData.destinatario.includes(fam.name)
-                              ? "bg-purple-700 text-white border-purple-700"
-                              : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
-                          }`}
-                        >
-                          {fam.name} ({fam.relationship})
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
@@ -648,7 +613,7 @@ export const CheckoutModal: React.FC = () => {
                   /* Sub-form: When Domicilio Express */
                   <div className="space-y-3">
                     {/* Quick saved address selector */}
-                    {addresses.length > 0 && (
+                    {false && addresses.length > 0 && (
                       <div className="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-200/80 flex flex-wrap items-center justify-between gap-2 text-xs">
                         <span className="font-bold text-emerald-900 flex items-center gap-1 text-[11px]">
                           <Sparkles className="w-3.5 h-3.5 text-[#00A86B]" />
