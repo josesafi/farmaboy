@@ -1287,3 +1287,8 @@ export const initialPickupPoints: PickupPoint[] = [
     pickupInstructions: "Preséntate con el número de pedido en la caja principal.",
   },
 ];
+
+import { PromotionCampaign } from "@/types/admin";
+export const initialCampaigns: PromotionCampaign[] = [];
+
+

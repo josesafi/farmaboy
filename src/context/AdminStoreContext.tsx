@@ -27,6 +27,7 @@ import {
   NewOrderInput,
   DeliveryRate,
   PickupPoint,
+  PromotionCampaign,
 } from "@/types/admin";
 import {
   initialAdminUsers,
@@ -36,6 +37,7 @@ import {
   initialAdminOrders,
   initialCustomers,
   initialPromotions,
+  initialCampaigns,
   initialBanners,
   initialSiteDesign,
   initialSeo,
@@ -174,8 +176,14 @@ interface AdminStoreContextType {
 
   // Trash Bin (Soft delete)
   trash: TrashItem[];
-  restoreTrashItem: (trashId: string) => void;
   purgeTrashItem: (trashId: string) => void;
+  restoreTrashItem: (id: string) => void;
+
+  // Campaigns (Ofertas del Dia)
+  campaigns: PromotionCampaign[];
+  addCampaign: (campaign: Omit<PromotionCampaign, "id" | "createdAt" | "updatedAt" | "views" | "clicks" | "cartAdds" | "unitsSold" | "revenueGeneratedCOP">) => void;
+  updateCampaign: (id: string, updates: Partial<PromotionCampaign>) => void;
+  deleteCampaign: (id: string) => void;
   emptyTrash: () => void;
 
   // Toasts
@@ -203,6 +211,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   const [orders, setOrders] = useState<AdminOrder[]>(initialAdminOrders);
   const [customers, setCustomers] = useState<CustomerCRM[]>(initialCustomers);
   const [promotions, setPromotions] = useState<PromotionRule[]>(initialPromotions);
+  const [campaigns, setCampaigns] = useState<PromotionCampaign[]>(initialCampaigns);
   const [banners, setBanners] = useState<BannerItem[]>(initialBanners);
   const [siteDesign, setSiteDesign] = useState<SiteDesignConfig>(initialSiteDesign);
   const [themeColors, setThemeColors] = useState<ThemeColors>(initialSiteDesign.colors);
@@ -273,6 +282,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
           setCustomers(initialCustomers);
         }
         if (parsed.promotions) setPromotions(parsed.promotions);
+        if (parsed.campaigns) setCampaigns(parsed.campaigns);
         if (parsed.banners) {
           const upgradedBanners = parsed.banners.map((b: BannerItem) => {
             if (b.id === "ban-01" && (b.imageUrl?.includes("unsplash.com") || !b.imageUrl)) {
@@ -351,6 +361,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         orders,
         customers,
         promotions,
+        campaigns,
         banners,
         siteDesign,
         themeColors,
@@ -379,6 +390,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     orders,
     customers,
     promotions,
+    campaigns,
     banners,
     siteDesign,
     themeColors,
@@ -1629,6 +1641,49 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     [logActivity, showToast]
   );
 
+  // Campaigns Actions
+  const addCampaign = useCallback(
+    (campaign: Omit<PromotionCampaign, "id" | "createdAt" | "updatedAt" | "views" | "clicks" | "cartAdds" | "unitsSold" | "revenueGeneratedCOP">) => {
+      const newCampaign: PromotionCampaign = {
+        ...campaign,
+        id: "cmp-" + Date.now(),
+        views: 0,
+        clicks: 0,
+        cartAdds: 0,
+        unitsSold: 0,
+        revenueGeneratedCOP: 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      setCampaigns((prev) => [newCampaign, ...prev]);
+      logActivity("Nueva Campaña Promocional", newCampaign.internalName, `Tipo: ${newCampaign.type}`);
+      showToast(`Campaña "${newCampaign.internalName}" creada`, "success");
+    },
+    [logActivity, showToast]
+  );
+
+  const updateCampaign = useCallback(
+    (id: string, updates: Partial<PromotionCampaign>) => {
+      setCampaigns((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c))
+      );
+      const target = campaigns.find((c) => c.id === id);
+      logActivity("Campaña Modificada", target?.internalName || id, "Parámetros actualizados");
+      showToast("Campaña actualizada", "success");
+    },
+    [campaigns, logActivity, showToast]
+  );
+
+  const deleteCampaign = useCallback(
+    (id: string) => {
+      const target = campaigns.find((c) => c.id === id);
+      setCampaigns((prev) => prev.filter((c) => c.id !== id));
+      logActivity("Campaña Eliminada", target?.internalName || id, "Registro borrado");
+      showToast("Campaña eliminada", "info");
+    },
+    [campaigns, logActivity, showToast]
+  );
+
   // Banners Actions
   const addBanner = useCallback(
     (banner: Omit<BannerItem, "id">) => {
@@ -1964,12 +2019,19 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [trash, logActivity, showToast]);
 
   // Factory Reset
-  // Unified Catalog List (Reactive & Real-time)
+  // Cron Timer Simulation for Campaigns
+  const [cronTime, setCronTime] = useState(Date.now());
+  useEffect(() => {
+    const interval = setInterval(() => setCronTime(Date.now()), 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
+
+  // Unified Catalog List (Reactive & Real-time with Campaigns)
   const allCatalogProducts = React.useMemo<CatalogProduct[]>(() => {
-    const meds = medicines.map((m) => enrichProductToCatalog(m, "medicine"));
-    const rets = retailProducts.map((p) => enrichProductToCatalog(p, "retail"));
+    const meds = medicines.map((m) => enrichProductToCatalog(m, "medicine", campaigns));
+    const rets = retailProducts.map((p) => enrichProductToCatalog(p, "retail", campaigns));
     return [...meds, ...rets];
-  }, [medicines, retailProducts]);
+  }, [medicines, retailProducts, campaigns, cronTime]);
 
   const addCategory = useCallback((cat: Omit<CatalogCategory, "id">) => {
     const newCat: CatalogCategory = {
@@ -2088,6 +2150,10 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         updatePromotion,
         deletePromotion,
         togglePromotionActive,
+        campaigns,
+        addCampaign,
+        updateCampaign,
+        deleteCampaign,
         banners,
         addBanner,
         updateBanner,

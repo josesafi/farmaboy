@@ -1,5 +1,5 @@
 import { CatalogCategory, CatalogCardConfig, CatalogProduct } from "@/types/catalog";
-import { MedicineItem, RetailProductItem } from "@/types/admin";
+import { MedicineItem, RetailProductItem, PromotionCampaign } from "@/types/admin";
 
 export const initialCategories: CatalogCategory[] = [
   {
@@ -181,7 +181,8 @@ export function mapCategoryToSlug(categoryName: string): string {
 
 export function enrichProductToCatalog(
   item: MedicineItem | RetailProductItem,
-  type: "medicine" | "retail"
+  type: "medicine" | "retail",
+  campaigns: PromotionCampaign[] = []
 ): CatalogProduct {
   const isMed = type === "medicine";
   const med = isMed ? (item as MedicineItem) : null;
@@ -191,8 +192,28 @@ export function enrichProductToCatalog(
   const slug = slugify(name);
   const brand = med ? (med.pharmaInfo?.laboratorio?.split(" ")[0] || med.supplier?.split(" ")[0] || "Genfar / MK") : (ret?.brand || "FarmaBoy");
 
-  const price = med ? (med.priceCOP || med.salePriceCOP) : (ret?.promoPriceCOP || ret?.priceCOP || 15000);
-  const prevPrice = med ? med.previousPriceCOP : (ret?.promoPriceCOP ? ret.priceCOP : undefined);
+  const basePrice = med ? (med.salePriceCOP) : (ret?.priceCOP || 15000);
+  let price = med ? (med.priceCOP || med.salePriceCOP) : (ret?.promoPriceCOP || ret?.priceCOP || 15000);
+  let prevPrice = med ? med.previousPriceCOP : (ret?.promoPriceCOP ? ret.priceCOP : undefined);
+
+  // CRON / Campaigns Engine Simulation:
+  // Apply active campaigns logic
+  const now = new Date();
+  const activeCampaigns = campaigns.filter(c => 
+    c.status === "ACTIVA" && 
+    new Date(c.startDate) <= now && 
+    new Date(c.endDate) > now
+  ).sort((a, b) => a.priority - b.priority); // Highest priority first (1 is highest)
+
+  // Check if product is in any active campaign
+  for (const campaign of activeCampaigns) {
+    const promoProduct = campaign.products.find(p => p.productId === item.id);
+    if (promoProduct) {
+      prevPrice = basePrice; // The original price becomes the previous price
+      price = promoProduct.promoPriceCOP;
+      break; // Apply only the highest priority campaign
+    }
+  }
 
   let discountPercentage = 0;
   let savingsCOP = 0;

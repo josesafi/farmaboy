@@ -68,12 +68,30 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     validatePromotionCode,
     showToast,
     getCustomerLifetimeDiscount,
+    allCatalogProducts,
   } = useAdminStore();
 
   const [items, setItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
+
+  // Sync cart prices with catalog (CRON / Promotions live update)
+  useEffect(() => {
+    if (!isHydrated) return;
+    setItems((prevItems) => {
+      let changed = false;
+      const newItems = prevItems.map(item => {
+        const catalogItem = allCatalogProducts.find(p => p.id === item.id);
+        if (catalogItem && catalogItem.priceCOP !== item.price) {
+          changed = true;
+          return { ...item, price: catalogItem.priceCOP };
+        }
+        return item;
+      });
+      return changed ? newItems : prevItems;
+    });
+  }, [allCatalogProducts, isHydrated]);
 
   const [appliedCoupon, setAppliedCoupon] = useState<PromotionRule | null>(null);
   const [couponDiscountAmount, setCouponDiscountAmount] = useState(0);

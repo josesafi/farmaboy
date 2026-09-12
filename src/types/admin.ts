@@ -455,3 +455,42 @@ export type AdminDashboardPeriod =
   | "MES_ANTERIOR"
   | "CUSTOM";
 
+
+export type PromotionType = "DESCUENTO_PORCENTUAL" | "PRECIO_ESPECIAL" | "OFERTA_DEL_DIA" | "ENVIO_GRATIS" | "2X1";
+
+export type PromotionStatus = "ACTIVA" | "PROGRAMADA" | "FINALIZADA" | "PAUSADA" | "BORRADOR";
+
+export interface PromotionProduct {
+  productId: string;
+  sku: string;
+  originalPriceCOP: number;
+  promoPriceCOP: number;
+  discountPercentage: number;
+}
+
+export interface PromotionCampaign {
+  id: string;
+  internalName: string;
+  publicTitle: string;
+  subtitle?: string;
+  description?: string;
+  type: PromotionType;
+  startDate: string; // ISO 8601
+  endDate: string; // ISO 8601
+  status: PromotionStatus;
+  priority: number; // 1 (Highest) to N
+  bannerDesktopUrl?: string;
+  bannerMobileUrl?: string;
+  products: PromotionProduct[];
+  
+  // Analytics
+  views: number;
+  clicks: number;
+  cartAdds: number;
+  unitsSold: number;
+  revenueGeneratedCOP: number;
+  
+  createdAt: string;
+  updatedAt: string;
+}
+

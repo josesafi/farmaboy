@@ -12,6 +12,7 @@ import { B2BSection } from "@/components/home/B2BSection";
 import { TrustSection } from "@/components/home/TrustSection";
 import { FaqSection } from "@/components/home/FaqSection";
 import { QuickContactCta } from "@/components/home/QuickContactCta";
+import { CampaignsBanner } from "@/components/home/CampaignsBanner";
 import { useAdminStore } from "@/context/AdminStoreContext";
 
 export default function HomePage() {
@@ -22,6 +23,9 @@ export default function HomePage() {
     <>
       {/* 1. HERO FARMACIA: "Tu farmacia de confianza en Boyacá" */}
       {(!sections || sections.hero) && <PharmacyHero />}
+
+      {/* 1.5 CAMPAÑAS ACTIVAS */}
+      <CampaignsBanner />
 
       {/* 2. CATEGORÍAS: "¿Qué estás buscando?" */}
       {(!sections || sections.categories) && <PharmacyCategories />}
