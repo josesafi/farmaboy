@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { paymentConfig } from "@/config/payment";
 import { farmaboyConfig } from "@/config/farmaboy";
@@ -22,6 +23,7 @@ import {
 } from "lucide-react";
 
 export const CartDrawer: React.FC = () => {
+  const router = useRouter();
   const {
     items,
     isCartOpen,
@@ -111,7 +113,10 @@ export const CartDrawer: React.FC = () => {
               </p>
               <button
                 type="button"
-                onClick={() => setIsCartOpen(false)}
+                onClick={() => {
+                  setIsCartOpen(false);
+                  router.push("/productos");
+                }}
                 className="mt-2 px-5 py-2.5 rounded-xl bg-[#00A86B] text-white font-bold text-xs hover:bg-[#008755]"
               >
                 Ver productos
