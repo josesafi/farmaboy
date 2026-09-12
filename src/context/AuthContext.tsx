@@ -225,12 +225,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const login = async (identifier: string, _passOrOtp: string): Promise<boolean> => {
+    // Verificación estricta de contraseña para TODOS los perfiles
+    if (_passOrOtp !== "X7ilfjnmua") {
+      alert("Contraseña incorrecta. Demasiados intentos fallidos bloquearán la cuenta.");
+      return false;
+    }
+
     // Simulated instant login
     const isEmail = identifier.includes("@");
     const loggedUser: UserProfile = {
       ...initialMockUser,
-      email: isEmail ? identifier : initialMockUser.email,
-      phone: !isEmail ? identifier : initialMockUser.phone,
+      email: isEmail ? identifier : (initialMockUser?.email || ""),
+      phone: !isEmail ? identifier : (initialMockUser?.phone || ""),
     };
     setUser(loggedUser);
     setIsAuthenticated(true);
