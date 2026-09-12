@@ -456,12 +456,48 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   // Authentication & RBAC
   const loginAs = useCallback(
     (email: string, password?: string, role?: AdminRoleName) => {
-      const found = adminUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
+      // Check if blocked
+      if (typeof window !== "undefined") {
+        const blockUntil = localStorage.getItem("farmaboy_admin_block_until");
+        if (blockUntil) {
+          const blockTime = parseInt(blockUntil, 10);
+          const now = Date.now();
+          if (now < blockTime) {
+            const remainingMinutes = Math.ceil((blockTime - now) / 60000);
+            showToast(`Demasiados intentos. Intenta en ${remainingMinutes} minutos.`, "error");
+            return false;
+          } else {
+            localStorage.removeItem("farmaboy_admin_block_until");
+            localStorage.removeItem("farmaboy_admin_attempts");
+          }
+        }
+      }
+
       const expectedPassword = "X7ilfjnmua";
       if (password !== expectedPassword) {
-        showToast("Contraseña incorrecta", "error");
+        if (typeof window !== "undefined") {
+          const attempts = parseInt(localStorage.getItem("farmaboy_admin_attempts") || "0", 10) + 1;
+          if (attempts >= 5) {
+            const blockTime = Date.now() + 15 * 60 * 1000; // 15 mins
+            localStorage.setItem("farmaboy_admin_block_until", blockTime.toString());
+            showToast("Demasiados intentos fallidos. Cuenta bloqueada por 15 minutos.", "error");
+          } else {
+            localStorage.setItem("farmaboy_admin_attempts", attempts.toString());
+            showToast(`Contraseña incorrecta. Intento ${attempts} de 5`, "error");
+          }
+        } else {
+          showToast("Contraseña incorrecta", "error");
+        }
         return false;
       }
+
+      // Success
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("farmaboy_admin_attempts");
+        localStorage.removeItem("farmaboy_admin_block_until");
+      }
+
+      const found = adminUsers.find((u) => u.email.toLowerCase() === email.toLowerCase());
       if (found) {
         const updated = { ...found, lastLogin: "Ahora" };
         setCurrentAdmin(updated);
