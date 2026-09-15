@@ -98,7 +98,7 @@ export default function AdminClientesPage() {
 
       // Enviar correo de bienvenida con credenciales
       try {
-        await fetch("/api/emails/send", {
+        const res = await fetch("/api/emails/send", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -113,8 +113,16 @@ export default function AdminClientesPage() {
             }
           })
         });
+        const resData = await res.json();
+        
+        if (!resData.success || resData.error) {
+          alert(`Cliente registrado.\n\n⚠️ Falló el encolamiento del correo.\n\nPor favor, entrega esta contraseña manualmente al cliente:\n\n🔑 ${tempPassword}`);
+        } else {
+          alert(`Cliente registrado correctamente.\n\nEl correo de bienvenida ha sido encolado. Si el servidor SMTP no está configurado, el correo no llegará, por lo que te sugerimos copiar esta contraseña temporal:\n\n🔑 ${tempPassword}`);
+        }
       } catch (err) {
         console.error("Error al enviar email de bienvenida", err);
+        alert(`Cliente registrado.\n\nContraseña temporal (guardala): ${tempPassword}`);
       }
     }
     setIsModalOpen(false);
