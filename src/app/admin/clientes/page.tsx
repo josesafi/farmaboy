@@ -82,12 +82,40 @@ export default function AdminClientesPage() {
     setIsModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (editingCust) {
       updateCustomer(editingCust.id, formData);
     } else {
       addCustomer(formData);
+      
+      // Generar contraseña temporal segura
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+      let tempPassword = "";
+      for (let i = 0; i < 8; i++) {
+        tempPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+
+      // Enviar correo de bienvenida con credenciales
+      try {
+        await fetch("/api/emails/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: "USER_REGISTERED",
+            recipient: formData.email,
+            recipientName: formData.name,
+            data: {
+              nombre: formData.name,
+              correo: formData.email,
+              fecha: new Date().toLocaleDateString("es-CO"),
+              contrasena: tempPassword
+            }
+          })
+        });
+      } catch (err) {
+        console.error("Error al enviar email de bienvenida", err);
+      }
     }
     setIsModalOpen(false);
   };

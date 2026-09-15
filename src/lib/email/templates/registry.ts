@@ -56,7 +56,7 @@ export const emailTemplates: Record<EmailEventType, EmailTemplateDefinition> = {
     name: "Bienvenida a Farmaboy",
     category: "ACCOUNT",
     defaultSubject: "¡Bienvenido a Farmaboy! Tu droguería de confianza en Boyacá",
-    allowedVariables: ["nombre", "correo", "fecha", "enlace_cuenta", "enlace_verificacion"],
+    allowedVariables: ["nombre", "correo", "fecha", "enlace_cuenta", "enlace_verificacion", "contrasena"],
     description: "Enviado inmediatamente tras completar el registro de un nuevo cliente o paciente.",
     render: (data) => {
       const nombre = data.nombre || "Estimado(a) Cliente";
@@ -78,11 +78,12 @@ export const emailTemplates: Record<EmailEventType, EmailTemplateDefinition> = {
             Tu cuenta de Farmaboy fue creada correctamente. Desde ahora puedes acceder a nuestro catálogo completo de medicamentos certificados, productos de cuidado personal, realizar pedidos con domicilio en Boyacá o programar recogida en nuestras sedes.
           </p>
           ${renderCard({
-            title: "📋 Datos de tu cuenta",
+            title: "🔒 Datos de tu cuenta",
             content: `
               <p style="margin: 0 0 6px 0;"><strong>Nombre completo:</strong> ${nombre}</p>
               <p style="margin: 0 0 6px 0;"><strong>Correo de acceso:</strong> ${correo}</p>
-              <p style="margin: 0;"><strong>Fecha de registro:</strong> ${fecha}</p>
+              <p style="margin: 0 0 6px 0;"><strong>Fecha de registro:</strong> ${fecha}</p>
+              ${data.contrasena ? `<p style="margin: 0;"><strong>Contraseña Temporal:</strong> <code style="background:#E2E8F0;padding:2px 6px;border-radius:4px;">${data.contrasena}</code></p>` : `<p style="margin: 0;"><strong>Tipo de acceso:</strong> Vía OTP o Red Social</p>`}
             `,
           })}
           <div style="text-align: center; margin: 24px 0;">
@@ -2108,3 +2109,4 @@ export const emailTemplates: Record<EmailEventType, EmailTemplateDefinition> = {
     },
   },
 };
+
