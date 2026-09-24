@@ -86,6 +86,11 @@ export default function AdminClientesPage() {
     e.preventDefault();
     if (editingCust) {
       updateCustomer(editingCust.id, formData);
+      fetch("/api/customers", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editingCust.id, ...formData }),
+      }).catch(console.error);
     } else {
       // Generar contraseña temporal segura
       const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
@@ -96,6 +101,13 @@ export default function AdminClientesPage() {
 
       // Save customer WITH the tempPassword so the login system can validate it
       addCustomer({ ...formData, tempPassword });
+
+      // Persist customer directly in server database for multi-device login
+      fetch("/api/customers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, tempPassword }),
+      }).catch(console.error);
 
       // Enviar correo de bienvenida con credenciales
       try {
@@ -676,6 +688,7 @@ export default function AdminClientesPage() {
         onConfirm={() => {
           if (deleteTargetId) {
             deleteCustomer(deleteTargetId);
+            fetch(`/api/customers?id=${deleteTargetId}`, { method: "DELETE" }).catch(console.error);
             setDeleteTargetId(null);
           }
         }}

@@ -225,77 +225,50 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const login = async (identifier: string, _passOrOtp: string): Promise<boolean> => {
-    // First, check if this identifier matches a CRM customer with a temp password
+    const cleanId = identifier.trim();
+    const cleanPass = _passOrOtp.trim();
+
     try {
-      const adminData = localStorage.getItem("farmaboy_enterprise_cms_v3");
-      if (adminData) {
-        const parsed = JSON.parse(adminData);
-        const customers: any[] = parsed.customers || [];
-        const isEmail = identifier.includes("@");
-        const matchedCustomer = customers.find((c: any) => {
-          if (isEmail) return c.email?.toLowerCase() === identifier.toLowerCase();
-          return c.phone?.replace(/\s/g, "") === identifier.replace(/\s/g, "");
-        });
-        // If customer found with a temp password, validate it
-        if (matchedCustomer && matchedCustomer.tempPassword) {
-          if (_passOrOtp === matchedCustomer.tempPassword) {
-            // Valid temp password: log in with the customer's data
-            const loggedUser: UserProfile = {
-              ...initialMockUser,
-              id: matchedCustomer.id || `USR-${Date.now()}`,
-              name: matchedCustomer.name || "Cliente",
-              lastName: matchedCustomer.lastName || "",
-              email: matchedCustomer.email || "",
-              phone: matchedCustomer.phone || "",
-              documentType: matchedCustomer.documentType || "CC",
-              documentNumber: matchedCustomer.documentNumber || "",
-            };
-            setUser(loggedUser);
-            setIsAuthenticated(true);
-            return true;
-          } else {
-            alert("Contraseña incorrecta. Revisa el correo que recibiste con tu contraseña temporal.");
-            return false;
-          }
-        }
-        // Customer exists but no tempPassword set — fall through to universal password
-        if (matchedCustomer && !matchedCustomer.tempPassword) {
-          if (_passOrOtp !== "X7ilfjnmua") {
-            alert("Contraseña incorrecta.");
-            return false;
-          }
-          const loggedUser: UserProfile = {
-            ...initialMockUser,
-            name: matchedCustomer.name || "Cliente",
-            lastName: matchedCustomer.lastName || "",
-            email: matchedCustomer.email || identifier,
-            phone: matchedCustomer.phone || "",
-          };
-          setUser(loggedUser);
-          setIsAuthenticated(true);
-          return true;
-        }
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier: cleanId, password: cleanPass }),
+      });
+      const data = await res.json();
+
+      if (data.success && data.user) {
+        const loggedUser: UserProfile = {
+          ...initialMockUser,
+          ...data.user,
+        };
+        setUser(loggedUser);
+        setIsAuthenticated(true);
+        return true;
       }
-    } catch (e) {
-      // If localStorage read fails, fall through to universal password check
+
+      if (!data.success) {
+        alert(data.error || "Contraseña incorrecta.");
+        return false;
+      }
+    } catch (err) {
+      console.warn("Error en autenticación remota, verificando credenciales locales:", err);
     }
 
-    // Universal password fallback
-    if (_passOrOtp !== "X7ilfjnmua") {
-      alert("Contraseña incorrecta. Demasiados intentos fallidos bloquearán la cuenta.");
-      return false;
+    // Fallback universal password
+    if (cleanPass === "X7ilfjnmua") {
+      const isEmail = cleanId.includes("@");
+      const loggedUser: UserProfile = {
+        ...initialMockUser,
+        email: isEmail ? cleanId : (initialMockUser?.email || ""),
+        phone: !isEmail ? cleanId : (initialMockUser?.phone || ""),
+      };
+      setUser(loggedUser);
+      setIsAuthenticated(true);
+      return true;
     }
 
-    // Simulated instant login
-    const isEmail = identifier.includes("@");
-    const loggedUser: UserProfile = {
-      ...initialMockUser,
-      email: isEmail ? identifier : (initialMockUser?.email || ""),
-      phone: !isEmail ? identifier : (initialMockUser?.phone || ""),
-    };
-    setUser(loggedUser);
-    setIsAuthenticated(true);
-    return true;
+    alert("Contraseña incorrecta. Demasiados intentos fallidos bloquearán la cuenta.");
+    return false;
   };
 
   const register = async (data: Partial<UserProfile>): Promise<boolean> => {

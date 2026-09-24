@@ -161,6 +161,16 @@ export default function RegisterPage() {
 
     await register(newUser);
 
+    // Save directly to server-side database so the customer can log in from any device
+    fetch("/api/customers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...newUser,
+        password: formData.password,
+      }),
+    }).catch(console.error);
+
     // Dispatch welcome email and admin notification
     triggerEmailEvent({
       event: "USER_REGISTERED",

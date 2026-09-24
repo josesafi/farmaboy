@@ -45,9 +45,13 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
-    await login(identifier, password);
+    const success = await login(identifier, password);
     setIsLoading(false);
-    router.push("/mi-cuenta");
+    if (success) {
+      router.push("/mi-cuenta");
+    } else {
+      setError("Contraseña incorrecta. Revisa el correo que recibiste con tu contraseña temporal o tus datos de acceso.");
+    }
   };
 
   return (
