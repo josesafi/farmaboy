@@ -23,11 +23,17 @@ export default function EmpresaB2BPage() {
   const { user, quotes, branches } = useAuth();
   const [activeTab, setActiveTab] = useState<"COTIZACIONES" | "ROLES">("COTIZACIONES");
 
-  const companyRoles = [
-    { name: "Carlos Rodríguez", email: "crodriguez@distribucionesboyaca.com", role: "Administrador", branch: "Todas las sedes", status: "Activo" },
-    { name: "Ing. Javier Mendoza", email: "jmendoza@distribucionesboyaca.com", role: "Comprador", branch: "Bodega Duitama", status: "Activo" },
-    { name: "Dra. Marcela Silva", email: "msilva@distribucionesboyaca.com", role: "Consulta / Auditor", branch: "Sede Sogamoso", status: "Activo" },
-  ];
+  const companyRoles = user
+    ? [
+        {
+          name: `${user.name} ${user.lastName}`.trim() || "Usuario Administrador",
+          email: user.email || "empresa@farmaboy.com.co",
+          role: "Administrador",
+          branch: "Principal",
+          status: "Activo",
+        },
+      ]
+    : [];
 
   const whatsappCorporate = getWhatsAppUrl(
     farmaboyConfig.contact.whatsapp,
@@ -47,7 +53,7 @@ export default function EmpresaB2BPage() {
             {user?.companyName || "Cuenta Empresarial FarmaBoy"}
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-            NIT: <strong>{user?.companyNit || "901.458.120-4"}</strong> • Rol: <strong>Administrador Corporativo</strong>
+            NIT: <strong>{user?.companyNit || "Pendiente de registro"}</strong> • Rol: <strong>Administrador Corporativo</strong>
           </p>
         </div>
 

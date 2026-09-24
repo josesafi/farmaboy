@@ -148,7 +148,26 @@ export default function FormulasPage() {
       </div>
 
       {/* Prescriptions List */}
-      <div className="space-y-4">
+      {prescriptions.length === 0 ? (
+        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/90 shadow-sm">
+          <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <h3 className="text-base font-black text-slate-900">
+            No tienes fórmulas médicas guardadas
+          </h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+            Sube fotos o archivos PDF de tus prescripciones médicas para tenerlas a mano y solicitar dispensación en Boyacá.
+          </p>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#00A86B] text-white text-xs font-bold"
+          >
+            <UploadCloud className="w-4 h-4" />
+            <span>Subir primera fórmula</span>
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4">
         {prescriptions.map((rx) => {
           const whatsappRxUrl = getWhatsAppUrl(
             farmaboyConfig.contact.whatsapp,
@@ -234,6 +253,7 @@ export default function FormulasPage() {
           );
         })}
       </div>
+      )}
 
       {/* Modal Subir Fórmula */}
       {isModalOpen && (

@@ -72,7 +72,26 @@ export default function FamiliaPage() {
       </div>
 
       {/* Family Members Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {familyMembers.length === 0 ? (
+        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/90 shadow-sm">
+          <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <h3 className="text-base font-black text-slate-900">
+            No tienes familiares registrados
+          </h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+            Registra a tus padres, hijos o familiares para asociar pedidos, fórmulas médicas y personalizar rótulos de entrega en Boyacá.
+          </p>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#00A86B] text-white text-xs font-bold"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Agregar primer familiar</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {familyMembers.map((member) => (
           <div
             key={member.id}
@@ -126,6 +145,7 @@ export default function FamiliaPage() {
           </div>
         ))}
       </div>
+      )}
 
       {/* Modal Agregar Familiar */}
       {isModalOpen && (

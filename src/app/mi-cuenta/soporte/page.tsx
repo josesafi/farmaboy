@@ -36,8 +36,8 @@ export default function SoportePage() {
     e.preventDefault();
     setIsSubmittingTicket(true);
     const ticketId = "TICK-" + Math.floor(1000 + Math.random() * 9000);
-    const customerEmail = user?.email || "carlos.rodriguez@farmaboy.com.co";
-    const customerName = user ? `${user.name} ${user.lastName}`.trim() : "Usuario Nuevo";
+    const customerEmail = user?.email || "cliente@farmaboy.com.co";
+    const customerName = user ? `${user.name} ${user.lastName}`.trim() : "Usuario FarmaBoy";
 
     triggerEmailEvent({
       event: "SUPPORT_TICKET_CREATED",

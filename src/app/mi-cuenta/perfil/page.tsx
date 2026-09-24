@@ -71,7 +71,7 @@ export default function ProfilePage() {
         <div className="flex items-center gap-5 pb-6 mb-6 border-b border-slate-100">
           <div className="relative">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#00A86B] to-[#008755] text-white font-black text-2xl flex items-center justify-center shadow-md">
-              {formData.name ? formData.name[0] : "C"}
+              {formData.name ? formData.name[0].toUpperCase() : "U"}
             </div>
             <button
               type="button"
@@ -87,7 +87,7 @@ export default function ProfilePage() {
             </h2>
             <p className="text-xs text-slate-500">{formData.email}</p>
             <p className="text-[11px] text-slate-400 mt-0.5">
-              Cliente activo desde {user?.createdAt || "Enero 2025"}
+              Cliente activo desde {user?.createdAt || "Reciente"}
             </p>
           </div>
         </div>

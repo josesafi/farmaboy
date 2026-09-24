@@ -287,24 +287,36 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         } else {
           setRetailProducts(initialRetailProducts);
         }
-        if (parsed.inventoryMovements) setInventoryMovements(parsed.inventoryMovements);
-        if (parsed.orders) setOrders(parsed.orders);
-        if (parsed.customers) {
-          const mergedCustomers = parsed.customers.map((c: CustomerCRM) => {
-            const init = initialCustomers.find((ic) => ic.id === c.id || (ic.documentNumber && ic.documentNumber === c.documentNumber));
-            if (init && (c.lifetimeDiscountPercentage === undefined || c.lifetimeDiscountPercentage === null)) {
-              return {
-                ...c,
-                lifetimeDiscountPercentage: init.lifetimeDiscountPercentage,
-                lifetimeDiscountReason: init.lifetimeDiscountReason,
-                isLifetimeDiscountActive: init.isLifetimeDiscountActive,
-              };
-            }
-            return c;
-          });
-          setCustomers(mergedCustomers);
+        if (parsed.inventoryMovements) {
+          const cleanMovements = parsed.inventoryMovements.filter((m: any) =>
+            m.reference !== "FB-10842" &&
+            m.reference !== "FB-11024" &&
+            m.id !== "mov-102"
+          );
+          setInventoryMovements(cleanMovements);
+        }
+        if (parsed.orders) {
+          const cleanOrders = parsed.orders.filter((o: any) =>
+            o.id !== "FB-10842" &&
+            o.id !== "FB-11024" &&
+            o.id !== "FB-11026" &&
+            !o.customerName?.toLowerCase().includes("carlos rodríguez") &&
+            !o.customerEmail?.toLowerCase().includes("carlos.rodriguez")
+          );
+          setOrders(cleanOrders);
         } else {
-          setCustomers(initialCustomers);
+          setOrders([]);
+        }
+        if (parsed.customers) {
+          const cleanCustomers = parsed.customers.filter((c: any) =>
+            c.id !== "cust-01" &&
+            c.id !== "cust-02" &&
+            !c.email?.toLowerCase().includes("carlos.rodriguez") &&
+            !c.email?.toLowerCase().includes("mariana.fonseca")
+          );
+          setCustomers(cleanCustomers);
+        } else {
+          setCustomers([]);
         }
         if (parsed.promotions) setPromotions(parsed.promotions);
         if (parsed.campaigns) setCampaigns(parsed.campaigns);
@@ -370,6 +382,27 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
       console.warn("Could not read admin state from localStorage", e);
     }
     setIsLoaded(true);
+
+    // Synchronize real customers from server-side database
+    fetch("/api/customers")
+      .then((res) => res.json())
+      .then((serverCustomers) => {
+        if (Array.isArray(serverCustomers) && serverCustomers.length > 0) {
+          setCustomers((prev) => {
+            const serverIds = new Set(serverCustomers.map((c: any) => c.id || c.email?.toLowerCase()));
+            const prevFiltered = prev.filter((c: any) =>
+              c.id !== "cust-01" &&
+              c.id !== "cust-02" &&
+              !c.email?.toLowerCase().includes("carlos.rodriguez") &&
+              !c.email?.toLowerCase().includes("mariana.fonseca") &&
+              !serverIds.has(c.id) &&
+              !serverIds.has(c.email?.toLowerCase())
+            );
+            return [...serverCustomers, ...prevFiltered];
+          });
+        }
+      })
+      .catch((e) => console.warn("Could not sync customers from server", e));
   }, []);
 
   // Save to localStorage on changes

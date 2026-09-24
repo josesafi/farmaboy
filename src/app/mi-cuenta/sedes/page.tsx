@@ -72,52 +72,72 @@ export default function SedesPage() {
       </div>
 
       {/* Branches Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {branches.map((b) => (
-          <div
-            key={b.id}
-            className={`bg-white rounded-3xl p-6 border transition-all flex flex-col justify-between ${
-              b.isMainBranch
-                ? "border-[#00A86B] ring-2 ring-[#00A86B]/15 shadow-sm"
-                : "border-slate-200/90 hover:border-slate-300"
-            }`}
+      {branches.length === 0 ? (
+        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/90 shadow-sm">
+          <Store className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <h3 className="text-base font-black text-slate-900">
+            No tienes sedes registradas aún
+          </h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+            Registra las diferentes sedes, sucursales o consultorios de tu organización en Boyacá para gestionar pedidos institucionales.
+          </p>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#00A86B] text-white text-xs font-bold"
           >
-            <div>
-              <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
-                <span className="text-sm font-black text-slate-900">
-                  {b.name}
-                </span>
-                {b.isMainBranch && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-black text-emerald-800">
-                    <Star className="w-3 h-3 fill-emerald-600 text-emerald-600" />
-                    Sede Matriz
+            <Plus className="w-4 h-4" />
+            <span>Agregar primera sede</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {branches.map((b) => (
+            <div
+              key={b.id}
+              className={`bg-white rounded-3xl p-6 border transition-all flex flex-col justify-between ${
+                b.isMainBranch
+                  ? "border-[#00A86B] ring-2 ring-[#00A86B]/15 shadow-sm"
+                  : "border-slate-200/90 hover:border-slate-300"
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+                  <span className="text-sm font-black text-slate-900">
+                    {b.name}
                   </span>
-                )}
+                  {b.isMainBranch && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-black text-emerald-800">
+                      <Star className="w-3 h-3 fill-emerald-600 text-emerald-600" />
+                      Sede Matriz
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-2 text-xs text-slate-600">
+                  <p className="flex items-center gap-1.5 font-bold text-slate-900">
+                    <MapPin className="w-4 h-4 text-[#00A86B] shrink-0" />
+                    <span>{b.address} ({b.city}, Boyacá)</span>
+                  </p>
+                  <p className="flex items-center gap-1.5">
+                    <User className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span>Responsable: <strong>{b.managerName}</strong></span>
+                  </p>
+                  <p className="flex items-center gap-1.5">
+                    <Phone className="w-4 h-4 text-slate-400 shrink-0" />
+                    <span>Contacto: {b.phone} • {b.managerEmail}</span>
+                  </p>
+                </div>
               </div>
 
-              <div className="space-y-2 text-xs text-slate-600">
-                <p className="flex items-center gap-1.5 font-bold text-slate-900">
-                  <MapPin className="w-4 h-4 text-[#00A86B] shrink-0" />
-                  <span>{b.address} ({b.city}, Boyacá)</span>
-                </p>
-                <p className="flex items-center gap-1.5">
-                  <User className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span>Responsable: <strong>{b.managerName}</strong></span>
-                </p>
-                <p className="flex items-center gap-1.5">
-                  <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span>Contacto: {b.phone} • {b.managerEmail}</span>
-                </p>
+              <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                <span>Habilitada para órdenes masivas</span>
+                <span className="text-emerald-700 font-bold">✓ Operativa</span>
               </div>
             </div>
-
-            <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
-              <span>Habilitada para órdenes masivas</span>
-              <span className="text-emerald-700 font-bold">✓ Operativa</span>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Modal Nueva Sede */}
       {isModalOpen && (

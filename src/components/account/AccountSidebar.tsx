@@ -97,7 +97,7 @@ export const AccountSidebar: React.FC<Props> = ({ onItemClick }) => {
       <div className="flex items-center gap-3.5 pb-5 border-b border-slate-100">
         <div className="relative">
           <div className="w-13 h-13 rounded-2xl bg-gradient-to-br from-[#00A86B] to-[#008755] flex items-center justify-center text-white font-black text-lg shadow-md shadow-[#00A86B]/20">
-            {user?.name ? user.name[0] : "C"}
+            {user?.name ? user.name[0].toUpperCase() : "U"}
           </div>
           <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white" title="Usuario Verificado" />
         </div>

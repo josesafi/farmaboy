@@ -82,7 +82,26 @@ export default function ListasPage() {
       </div>
 
       {/* Lists */}
-      <div className="space-y-5">
+      {lists.length === 0 ? (
+        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/90 shadow-sm">
+          <ListOrdered className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <h3 className="text-base font-black text-slate-900">
+            No tienes listas de compra creadas
+          </h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+            Organiza tus productos habituales en listas temáticas (ej: "Botiquín Hogar", "Adulto Mayor") para pedirlos fácilmente en Boyacá.
+          </p>
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#00A86B] text-white text-xs font-bold"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Crear primera lista</span>
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-5">
         {lists.map((list) => {
           const isAdded = addedListId === list.id;
           return (
@@ -186,6 +205,7 @@ export default function ListasPage() {
           );
         })}
       </div>
+      )}
 
       {/* Modal Crear Lista */}
       {isModalOpen && (

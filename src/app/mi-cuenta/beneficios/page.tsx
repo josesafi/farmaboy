@@ -15,6 +15,11 @@ import {
 export default function BeneficiosPage() {
   const { loyalty } = useAuth();
 
+  const progressPercent =
+    loyalty.pointsToNextTier > 0
+      ? Math.min(100, Math.max(0, Math.round((loyalty.points / (loyalty.points + loyalty.pointsToNextTier)) * 100)))
+      : 100;
+
   const tiers = [
     {
       name: "Inicial",
@@ -30,14 +35,14 @@ export default function BeneficiosPage() {
     {
       name: "Preferencial",
       minPoints: 500,
-      description: "Tu nivel actual. Descuentos dedicados y atención prioritaria.",
+      description: "Descuentos dedicados y atención prioritaria.",
       benefits: [
         "5% de descuento en medicamentos seleccionados los martes",
         "Envíos gratis en compras superiores a $60.000 COP",
         "Atención preferencial por WhatsApp farmacéutico",
       ],
       active: loyalty.tier === "Preferencial",
-      passed: true,
+      passed: loyalty.points >= 500,
     },
     {
       name: "Premium",
@@ -49,7 +54,7 @@ export default function BeneficiosPage() {
         "Regalo especial en el mes de tu cumpleaños",
       ],
       active: loyalty.tier === "Premium",
-      passed: false,
+      passed: loyalty.points >= 2000,
     },
     {
       name: "VIP",
@@ -61,7 +66,7 @@ export default function BeneficiosPage() {
         "Envíos gratis sin monto mínimo en Boyacá",
       ],
       active: loyalty.tier === "VIP",
-      passed: false,
+      passed: loyalty.points >= 5000,
     },
   ];
 
@@ -106,18 +111,21 @@ export default function BeneficiosPage() {
             </p>
           </div>
           <span className="px-4 py-2 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold">
-            Progreso del Nivel: 65%
+            Progreso del Nivel: {progressPercent}%
           </span>
         </div>
 
         {/* Progress Bar */}
         <div className="space-y-2">
           <div className="w-full h-3 rounded-full bg-slate-800 overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-emerald-400 to-[#00A86B] rounded-full w-[65%]" />
+            <div
+              className="h-full bg-gradient-to-r from-emerald-400 to-[#00A86B] rounded-full transition-all duration-500"
+              style={{ width: `${progressPercent}%` }}
+            />
           </div>
           <div className="flex justify-between text-[11px] text-slate-400 font-bold">
-            <span>{loyalty.tier} (500 pts)</span>
-            <span>{loyalty.nextTier} (2.000 pts)</span>
+            <span>{loyalty.tier} ({loyalty.points} pts)</span>
+            <span>{loyalty.nextTier} ({loyalty.points + loyalty.pointsToNextTier} pts)</span>
           </div>
         </div>
       </div>

@@ -127,7 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [orders, setOrders] = useState<Order[]>(initialMockOrders);
   const [recurrentPurchases, setRecurrentPurchases] = useState<RecurrentPurchase[]>(initialMockRecurrentPurchases);
   const [lists, setLists] = useState<ShoppingList[]>(initialMockLists);
-  const [favorites, setFavorites] = useState<string[]>(["prod-1", "prod-3", "prod-6"]);
+  const [favorites, setFavorites] = useState<string[]>([]);
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>(initialMockFamily);
   const [prescriptions, setPrescriptions] = useState<MedicalPrescription[]>(initialMockPrescriptions);
   const [loyalty, setLoyalty] = useState<LoyaltyStatus>(initialMockLoyalty);
@@ -142,26 +142,88 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load state from localStorage on initial render
+  // Load state from localStorage on initial render with strict production sanitization
   useEffect(() => {
     try {
       const saved = localStorage.getItem(AUTH_STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.user) setUser(parsed.user);
-        if (typeof parsed.isAuthenticated === "boolean") setIsAuthenticated(parsed.isAuthenticated);
+        
+        // Purge mock demo user if present
+        const isMockUser = 
+          parsed.user?.id === "USR-770921" || 
+          parsed.user?.email?.toLowerCase().includes("carlos.rodriguez") ||
+          parsed.user?.name?.toLowerCase().includes("carlos rodríguez");
+
+        if (parsed.user && !isMockUser) {
+          setUser(parsed.user);
+          if (typeof parsed.isAuthenticated === "boolean") setIsAuthenticated(parsed.isAuthenticated);
+        } else {
+          setUser(null);
+          setIsAuthenticated(false);
+        }
+
         if (parsed.activeMode) setActiveMode(parsed.activeMode);
-        if (parsed.addresses) setAddresses(parsed.addresses);
-        if (parsed.orders) setOrders(parsed.orders);
-        if (parsed.recurrentPurchases) setRecurrentPurchases(parsed.recurrentPurchases);
-        if (parsed.lists) setLists(parsed.lists);
-        if (parsed.favorites) setFavorites(parsed.favorites);
-        if (parsed.familyMembers) setFamilyMembers(parsed.familyMembers);
-        if (parsed.prescriptions) setPrescriptions(parsed.prescriptions);
-        if (parsed.loyalty) setLoyalty(parsed.loyalty);
-        if (parsed.coupons) setCoupons(parsed.coupons);
-        if (parsed.paymentMethods) setPaymentMethods(parsed.paymentMethods);
-        if (parsed.billingProfile) setBillingProfile(parsed.billingProfile);
+
+        // Sanitize addresses: purge legacy demo address
+        if (parsed.addresses && Array.isArray(parsed.addresses)) {
+          const cleanAddresses = parsed.addresses.filter((a: any) =>
+            !a.address?.toLowerCase().includes("carrera 2 este") &&
+            !a.recipientName?.toLowerCase().includes("carlos")
+          );
+          setAddresses(cleanAddresses);
+        }
+
+        // Sanitize orders: purge mock order FB-10842, FB-11024, FB-11026, or Carlos
+        if (parsed.orders && Array.isArray(parsed.orders)) {
+          const cleanOrders = parsed.orders.filter((o: any) =>
+            o.id !== "FB-10842" &&
+            o.id !== "FB-11024" &&
+            o.id !== "FB-11026" &&
+            !o.deliveryAddress?.recipientName?.toLowerCase().includes("carlos") &&
+            !o.deliveryAddress?.address?.toLowerCase().includes("carrera 2 este")
+          );
+          setOrders(cleanOrders);
+        }
+
+        if (parsed.recurrentPurchases && Array.isArray(parsed.recurrentPurchases)) {
+          setRecurrentPurchases(parsed.recurrentPurchases);
+        }
+        if (parsed.lists && Array.isArray(parsed.lists)) setLists(parsed.lists);
+
+        // Sanitize favorites: purge demo default IDs
+        if (parsed.favorites && Array.isArray(parsed.favorites)) {
+          const cleanFavs = parsed.favorites.filter((f: string) => f !== "prod-1" && f !== "prod-3" && f !== "prod-6");
+          setFavorites(cleanFavs);
+        }
+
+        if (parsed.familyMembers && Array.isArray(parsed.familyMembers)) setFamilyMembers(parsed.familyMembers);
+        if (parsed.prescriptions && Array.isArray(parsed.prescriptions)) setPrescriptions(parsed.prescriptions);
+
+        // Sanitize loyalty: reset mock 1250 pts
+        if (parsed.loyalty) {
+          if (parsed.loyalty.points === 1250 || parsed.loyalty.tier === "VIP") {
+            setLoyalty(initialMockLoyalty);
+          } else {
+            setLoyalty(parsed.loyalty);
+          }
+        }
+
+        if (parsed.coupons && Array.isArray(parsed.coupons)) setCoupons(parsed.coupons);
+        if (parsed.paymentMethods && Array.isArray(parsed.paymentMethods)) setPaymentMethods(parsed.paymentMethods);
+
+        // Sanitize billingProfile
+        if (parsed.billingProfile) {
+          if (
+            parsed.billingProfile.nameOrBusinessName?.toLowerCase().includes("carlos") ||
+            parsed.billingProfile.documentNumber === "1049628391"
+          ) {
+            setBillingProfile(initialMockBillingProfile);
+          } else {
+            setBillingProfile(parsed.billingProfile);
+          }
+        }
+
         if (parsed.notificationPreferences) setNotificationPreferences(parsed.notificationPreferences);
         if (parsed.sessions) setSessions(parsed.sessions);
         if (parsed.branches) setBranches(parsed.branches);
@@ -243,6 +305,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
         setUser(loggedUser);
         setIsAuthenticated(true);
+        // Clean out any legacy mock data from previous sessions
+        setOrders((prev) =>
+          prev.filter(
+            (o) =>
+              o.id !== "FB-10842" &&
+              o.id !== "FB-11024" &&
+              o.id !== "FB-11026" &&
+              !o.deliveryAddress?.recipientName?.toLowerCase().includes("carlos")
+          )
+        );
+        setAddresses((prev) =>
+          prev.filter(
+            (a) =>
+              !a.address?.toLowerCase().includes("carrera 2 este") &&
+              !a.recipientName?.toLowerCase().includes("carlos")
+          )
+        );
+        setBillingProfile((prev) =>
+          prev.nameOrBusinessName?.toLowerCase().includes("carlos")
+            ? initialMockBillingProfile
+            : prev
+        );
         return true;
       }
 
@@ -264,6 +348,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
       setUser(loggedUser);
       setIsAuthenticated(true);
+      setOrders([]);
+      setAddresses([]);
       return true;
     }
 
@@ -287,12 +373,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     setUser(newUser);
     setIsAuthenticated(true);
+    setOrders([]);
+    setAddresses([]);
     return true;
   };
 
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
+    setOrders([]);
+    setAddresses([]);
+    setFavorites([]);
+    setLoyalty(initialMockLoyalty);
+    setBillingProfile(initialMockBillingProfile);
+    try {
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+    } catch {}
   };
 
   const updateProfile = (data: Partial<UserProfile>) => {

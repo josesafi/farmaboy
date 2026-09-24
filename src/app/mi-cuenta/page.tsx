@@ -59,45 +59,24 @@ export default function AccountDashboardPage() {
   // Last active or recent order
   const latestOrder = orders.length > 0 ? orders[0] : null;
 
-  // Recent purchased products for re-order carousel
-  const recentPurchasedProducts = [
-    {
-      id: "prod-1",
-      name: "Acetaminofén 500 mg (Caja x 100 Tab)",
-      price: 12500,
-      priceDisplay: "$12.500 COP",
-      imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=400&q=80",
-      category: "Medicamentos",
-      lastBought: "Comprado el 04 de Sep",
-    },
-    {
-      id: "prod-3",
-      name: "Suero Oral Electrolitos 500 ml (Manzana)",
-      price: 8900,
-      priceDisplay: "$8.900 COP",
-      imageUrl: "https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?auto=format&fit=crop&w=400&q=80",
-      category: "Bienestar",
-      lastBought: "Comprado el 04 de Sep",
-    },
-    {
-      id: "prod-4",
-      name: "Alcohol Antiséptico 70% 1000 ml",
-      price: 14500,
-      priceDisplay: "$14.500 COP",
-      imageUrl: "https://images.unsplash.com/photo-1584744982491-665216d95f8b?auto=format&fit=crop&w=400&q=80",
-      category: "Cuidado de la Salud",
-      lastBought: "Comprado el 20 de Ago",
-    },
-    {
-      id: "prod-2",
-      name: "Ibuprofeno 800 mg (Caja x 30 Tab)",
-      price: 16800,
-      priceDisplay: "$16.800 COP",
-      imageUrl: "https://images.unsplash.com/photo-1550572017-edd951aa8f72?auto=format&fit=crop&w=400&q=80",
-      category: "Medicamentos",
-      lastBought: "Comprado el 20 de Ago",
-    },
-  ];
+  // Recent purchased products for re-order carousel derived from real orders
+  const pastProductsMap = new Map<string, any>();
+  orders.forEach((order) => {
+    order.items?.forEach((item) => {
+      if (!pastProductsMap.has(item.id)) {
+        pastProductsMap.set(item.id, {
+          id: item.id,
+          name: item.name,
+          price: item.unitPrice,
+          priceDisplay: item.unitPriceDisplay,
+          imageUrl: item.imageUrl,
+          category: item.category,
+          lastBought: `Comprado el ${new Date(order.date).toLocaleDateString("es-CO", { day: "numeric", month: "short" })}`,
+        });
+      }
+    });
+  });
+  const recentPurchasedProducts = Array.from(pastProductsMap.values()).slice(0, 4);
 
   const quickPills = [
     { label: "Mis pedidos", href: "/mi-cuenta/pedidos", icon: ShoppingBag, count: orders.length, color: "text-[#00A86B] bg-[#00A86B]/10" },
@@ -280,91 +259,115 @@ export default function AccountDashboardPage() {
       )}
 
       {/* 4. COMPRAR NUEVAMENTE CAROUSEL */}
-      <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm">
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#00A86B]/10 text-[#00A86B] flex items-center justify-center">
-              <RotateCcw className="w-4 h-4" />
+      {recentPurchasedProducts.length > 0 ? (
+        <div className="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-[#00A86B]/10 text-[#00A86B] flex items-center justify-center">
+                <RotateCcw className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-base font-black text-slate-900">
+                  Comprar Nuevamente
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Tus medicamentos y productos habituales listos para pedir en un clic
+                </p>
+              </div>
+            </div>
+            <Link
+              href="/mi-cuenta/comprar-nuevamente"
+              className="text-xs font-bold text-[#00A86B] hover:text-[#008755] flex items-center gap-1 transition-colors"
+            >
+              <span>Ver historial de recompra</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {recentPurchasedProducts.map((product) => {
+              const isAdded = addedItemIds.includes(product.id);
+              return (
+                <div
+                  key={product.id}
+                  className="group p-3.5 rounded-2xl border border-slate-200/80 hover:border-[#00A86B]/40 hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="aspect-square w-full rounded-xl bg-slate-100 overflow-hidden relative mb-3">
+                      <Image
+                        src={product.imageUrl}
+                        alt={product.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 640px) 100vw, 250px"
+                      />
+                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-sm text-[10px] font-bold text-slate-600">
+                        {product.category}
+                      </span>
+                    </div>
+                    <h3 className="text-xs font-bold text-slate-800 line-clamp-2 min-h-[32px]">
+                      {product.name}
+                    </h3>
+                    <p className="text-[10px] text-slate-400 mt-0.5">
+                      {product.lastBought}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <span className="text-sm font-black text-slate-900">
+                      {product.priceDisplay}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleAddToCart(product)}
+                      className={`p-2 rounded-xl text-xs font-bold flex items-center gap-1 transition-all ${
+                        isAdded
+                          ? "bg-emerald-600 text-white"
+                          : "bg-[#00A86B] hover:bg-[#008755] text-white shadow-sm"
+                      }`}
+                      title="Agregar al carrito"
+                    >
+                      {isAdded ? (
+                        <>
+                          <Check className="w-3.5 h-3.5" />
+                          <span className="text-[11px]">Listo</span>
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="w-3.5 h-3.5" />
+                          <span className="text-[11px]">Pedir</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-[#00A86B] flex items-center justify-center shrink-0">
+              <ShoppingBag className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-base font-black text-slate-900">
-                Comprar Nuevamente
-              </h2>
-              <p className="text-xs text-slate-500">
-                Tus medicamentos y productos habituales listos para pedir en un clic
+              <h3 className="text-sm sm:text-base font-black text-slate-900">
+                Aún no tienes pedidos registrados
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Explora nuestro catálogo de medicamentos, cuidado personal y bienestar con entrega en Boyacá.
               </p>
             </div>
           </div>
           <Link
-            href="/mi-cuenta/comprar-nuevamente"
-            className="text-xs font-bold text-[#00A86B] hover:text-[#008755] flex items-center gap-1 transition-colors"
+            href="/productos"
+            className="px-5 py-2.5 rounded-2xl bg-[#00A86B] hover:bg-[#008755] text-white text-xs font-extrabold transition shadow-sm shrink-0"
           >
-            <span>Ver historial de recompra</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            Explorar Catálogo
           </Link>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {recentPurchasedProducts.map((product) => {
-            const isAdded = addedItemIds.includes(product.id);
-            return (
-              <div
-                key={product.id}
-                className="group p-3.5 rounded-2xl border border-slate-200/80 hover:border-[#00A86B]/40 hover:shadow-md transition-all flex flex-col justify-between"
-              >
-                <div>
-                  <div className="aspect-square w-full rounded-xl bg-slate-100 overflow-hidden relative mb-3">
-                    <Image
-                      src={product.imageUrl}
-                      alt={product.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 640px) 100vw, 250px"
-                    />
-                    <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-sm text-[10px] font-bold text-slate-600">
-                      {product.category}
-                    </span>
-                  </div>
-                  <h3 className="text-xs font-bold text-slate-800 line-clamp-2 min-h-[32px]">
-                    {product.name}
-                  </h3>
-                  <p className="text-[10px] text-slate-400 mt-0.5">
-                    {product.lastBought}
-                  </p>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-                  <span className="text-sm font-black text-slate-900">
-                    {product.priceDisplay}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => handleAddToCart(product)}
-                    className={`p-2 rounded-xl text-xs font-bold flex items-center gap-1 transition-all ${
-                      isAdded
-                        ? "bg-emerald-600 text-white"
-                        : "bg-[#00A86B] hover:bg-[#008755] text-white shadow-sm"
-                    }`}
-                    title="Agregar al carrito"
-                  >
-                    {isAdded ? (
-                      <>
-                        <Check className="w-3.5 h-3.5" />
-                        <span className="text-[11px]">Listo</span>
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-3.5 h-3.5" />
-                        <span className="text-[11px]">Pedir</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      )}
 
       {/* 5. BENEFICIOS, CUPONES Y FIDELIZACIÓN */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

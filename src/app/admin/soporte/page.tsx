@@ -39,8 +39,8 @@ interface SupportTicket {
 const initialTickets: SupportTicket[] = [
   {
     id: "TICK-8491",
-    customerName: "Mariana Fonseca",
-    customerEmail: "mariana.fonseca@gmail.com",
+    customerName: "Valentina Morales",
+    customerEmail: "valentina.morales@gmail.com",
     customerPhone: "311 456 7890",
     subject: "Consulta sobre tiempo de entrega en Duitama",
     message: "Buenas tardes, realicé un pedido de medicamentos para mi madre y quisiera saber si la entrega se realiza en la jornada de la tarde.",
@@ -51,8 +51,8 @@ const initialTickets: SupportTicket[] = [
   },
   {
     id: "TICK-8320",
-    customerName: "Carlos Rodríguez",
-    customerEmail: "carlos.rodriguez@farmaboy.com.co",
+    customerName: "Camilo Sánchez",
+    customerEmail: "csanchez@gmail.com",
     customerPhone: "310 987 6543",
     subject: "Solicitud de factura electrónica con NIT",
     message: "Requiero la factura DIAN del pedido con el NIT de mi empresa para fines tributarios.",
@@ -62,7 +62,7 @@ const initialTickets: SupportTicket[] = [
     replies: [
       {
         sender: "AGENTE",
-        text: "Hola Carlos, estamos generando el documento XML DIAN y lo enviaremos a tu correo registrado.",
+        text: "Hola Camilo, estamos generando el documento XML DIAN y lo enviaremos a tu correo registrado.",
         timestamp: "Ayer 5:00 PM",
         agentName: "Laura Gómez (Farmaboy)",
       },

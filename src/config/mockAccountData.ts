@@ -52,16 +52,15 @@ export const initialMockFamily: FamilyMember[] = [];
 export const initialMockPrescriptions: MedicalPrescription[] = [];
 
 export const initialMockLoyalty: LoyaltyStatus = {
-  tier: "Preferencial",
-  points: 1250,
-  pointsToNextTier: 750,
-  nextTier: "Premium",
-  availablePointsValueCOP: 12500,
+  tier: "Inicial",
+  points: 0,
+  pointsToNextTier: 500,
+  nextTier: "Preferencial",
+  availablePointsValueCOP: 0,
   benefitsList: [
     "5% de descuento en medicamentos seleccionados los martes",
-    "Envíos gratis en pedidos superiores a $60.000 COP",
+    "Envíos gratis en pedidos superiores a $70.000 COP",
     "Atención prioritaria por WhatsApp farmacéutico",
-    "Recordatorio anticipado de formulaciones",
   ],
 };
 
@@ -71,13 +70,13 @@ export const initialMockPaymentMethods: PaymentMethodToken[] = [];
 
 export const initialMockBillingProfile: BillingProfile = {
   type: "PERSONA_NATURAL",
-  nameOrBusinessName: "Carlos Rodríguez Cárdenas",
+  nameOrBusinessName: "",
   documentType: "CC",
-  documentNumber: "1049628391",
-  taxEmail: "carlos.facturacion@email.com",
-  fiscalAddress: "Carrera 2 Este # 58-30 Torre 3 Apto 502",
-  city: "Tunja, Boyacá",
-  phone: "312 456 7890",
+  documentNumber: "",
+  taxEmail: "",
+  fiscalAddress: "",
+  city: "Duitama, Boyacá",
+  phone: "",
 };
 
 export const initialMockNotificationPreferences: NotificationPreferences = {

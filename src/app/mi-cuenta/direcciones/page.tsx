@@ -109,100 +109,120 @@ export default function DireccionesPage() {
       </div>
 
       {/* Address Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {addresses.map((addr) => (
-          <div
-            key={addr.id}
-            className={`bg-white rounded-3xl p-6 border transition-all flex flex-col justify-between ${
-              addr.isDefault
-                ? "border-[#00A86B] ring-2 ring-[#00A86B]/15 shadow-sm"
-                : "border-slate-200/90 hover:border-slate-300"
-            }`}
+      {addresses.length === 0 ? (
+        <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/90 shadow-sm">
+          <MapPin className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <h3 className="text-base font-black text-slate-900">
+            No tienes direcciones guardadas
+          </h3>
+          <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+            Guarda tu casa, oficina o lugar habitual en Boyacá para recibir tus medicamentos con envío rápido.
+          </p>
+          <button
+            type="button"
+            onClick={openNewModal}
+            className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#00A86B] text-white text-xs font-bold"
           >
-            <div>
-              <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
-                    {getLabelIcon(addr.label)}
+            <Plus className="w-4 h-4" />
+            <span>Agregar primera dirección</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {addresses.map((addr) => (
+            <div
+              key={addr.id}
+              className={`bg-white rounded-3xl p-6 border transition-all flex flex-col justify-between ${
+                addr.isDefault
+                  ? "border-[#00A86B] ring-2 ring-[#00A86B]/15 shadow-sm"
+                  : "border-slate-200/90 hover:border-slate-300"
+              }`}
+            >
+              <div>
+                <div className="flex items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center">
+                      {getLabelIcon(addr.label)}
+                    </div>
+                    <span className="text-xs font-black uppercase text-slate-800">
+                      {addr.label}
+                    </span>
                   </div>
-                  <span className="text-xs font-black uppercase text-slate-800">
-                    {addr.label}
-                  </span>
+                  {addr.isDefault ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-black text-emerald-800">
+                      <Star className="w-3 h-3 fill-emerald-600 text-emerald-600" />
+                      Dirección Principal
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setDefaultAddress(addr.id)}
+                      className="text-[11px] font-bold text-slate-400 hover:text-[#00A86B] transition-colors"
+                    >
+                      Hacer principal
+                    </button>
+                  )}
                 </div>
-                {addr.isDefault ? (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-black text-emerald-800">
-                    <Star className="w-3 h-3 fill-emerald-600 text-emerald-600" />
-                    Dirección Principal
-                  </span>
-                ) : (
+
+                <div className="space-y-1.5 text-xs text-slate-600">
+                  <p className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-[#00A86B] shrink-0" />
+                    <span>{addr.address}</span>
+                  </p>
+                  {addr.complement && (
+                    <p className="pl-5 text-slate-500 font-medium">
+                      {addr.complement}
+                    </p>
+                  )}
+                  <p className="pl-5 font-semibold text-slate-700">
+                    {addr.neighborhood ? `${addr.neighborhood} • ` : ""}{addr.city}, {addr.department}
+                  </p>
+                  <div className="pl-5 pt-2 flex flex-col gap-1 text-[11px] text-slate-500">
+                    <span className="flex items-center gap-1.5">
+                      <User className="w-3 h-3 text-slate-400" />
+                      Recibe: <strong className="text-slate-700">{addr.recipientName}</strong>
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Phone className="w-3 h-3 text-slate-400" />
+                      Tel: {addr.phone}
+                    </span>
+                  </div>
+                  {addr.deliveryNotes && (
+                    <div className="mt-2 p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-500 italic">
+                      “{addr.deliveryNotes}”
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => openEditModal(addr)}
+                  className="flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-[#00A86B] transition-colors"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>Editar</span>
+                </button>
+                {addresses.length > 1 && (
                   <button
                     type="button"
-                    onClick={() => setDefaultAddress(addr.id)}
-                    className="text-[11px] font-bold text-slate-400 hover:text-[#00A86B] transition-colors"
+                    onClick={() => {
+                      if (confirm("¿Deseas eliminar esta dirección?")) {
+                        deleteAddress(addr.id);
+                      }
+                    }}
+                    className="flex items-center gap-1 text-xs font-bold text-rose-500 hover:text-rose-700 transition-colors"
                   >
-                    Hacer principal
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Eliminar</span>
                   </button>
                 )}
               </div>
-
-              <div className="space-y-1.5 text-xs text-slate-600">
-                <p className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-[#00A86B] shrink-0" />
-                  <span>{addr.address}</span>
-                </p>
-                {addr.complement && (
-                  <p className="pl-5 text-slate-500 font-medium">
-                    {addr.complement}
-                  </p>
-                )}
-                <p className="pl-5 font-semibold text-slate-700">
-                  {addr.neighborhood ? `${addr.neighborhood} • ` : ""}{addr.city}, {addr.department}
-                </p>
-                <div className="pl-5 pt-2 flex flex-col gap-1 text-[11px] text-slate-500">
-                  <span className="flex items-center gap-1.5">
-                    <User className="w-3 h-3 text-slate-400" />
-                    Recibe: <strong className="text-slate-700">{addr.recipientName}</strong>
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Phone className="w-3 h-3 text-slate-400" />
-                    Tel: {addr.phone}
-                  </span>
-                </div>
-                {addr.deliveryNotes && (
-                  <div className="mt-2 p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-500 italic">
-                    “{addr.deliveryNotes}”
-                  </div>
-                )}
-              </div>
             </div>
-
-            <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => openEditModal(addr)}
-                className="flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-[#00A86B] transition-colors"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-                <span>Editar</span>
-              </button>
-              {addresses.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (confirm("¿Deseas eliminar esta dirección?")) {
-                      deleteAddress(addr.id);
-                    }
-                  }}
-                  className="flex items-center gap-1 text-xs font-bold text-rose-500 hover:text-rose-700 transition-colors"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                  <span>Eliminar</span>
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Modal Add / Edit */}
       {isModalOpen && (
