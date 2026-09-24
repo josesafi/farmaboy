@@ -280,6 +280,7 @@ export interface CustomerCRM {
   lifetimeDiscountPercentage?: number; // 0 a 100, e.g. 10 para 10%
   lifetimeDiscountReason?: string; // Motivo o convenio e.g. "Tratamiento crónico mensual"
   isLifetimeDiscountActive?: boolean; // Activo/inactivo
+  tempPassword?: string; // Contraseña temporal generada por el admin al crear el cliente
 }
 
 export interface PromotionRule {

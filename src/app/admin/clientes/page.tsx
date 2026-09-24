@@ -87,14 +87,15 @@ export default function AdminClientesPage() {
     if (editingCust) {
       updateCustomer(editingCust.id, formData);
     } else {
-      addCustomer(formData);
-      
       // Generar contraseña temporal segura
       const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
       let tempPassword = "";
       for (let i = 0; i < 8; i++) {
         tempPassword += chars.charAt(Math.floor(Math.random() * chars.length));
       }
+
+      // Save customer WITH the tempPassword so the login system can validate it
+      addCustomer({ ...formData, tempPassword });
 
       // Enviar correo de bienvenida con credenciales
       try {
@@ -118,7 +119,7 @@ export default function AdminClientesPage() {
         if (!resData.success || resData.error) {
           alert(`Cliente registrado.\n\n⚠️ Falló el encolamiento del correo.\n\nPor favor, entrega esta contraseña manualmente al cliente:\n\n🔑 ${tempPassword}`);
         } else {
-          alert(`Cliente registrado correctamente.\n\nEl correo de bienvenida ha sido encolado. Si el servidor SMTP no está configurado, el correo no llegará, por lo que te sugerimos copiar esta contraseña temporal:\n\n🔑 ${tempPassword}`);
+          alert(`Cliente registrado correctamente.\n\nEl correo de bienvenida ha sido encolado. Contraseña temporal del cliente:\n\n🔑 ${tempPassword}`);
         }
       } catch (err) {
         console.error("Error al enviar email de bienvenida", err);

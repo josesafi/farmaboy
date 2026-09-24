@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAdminStore } from "@/context/AdminStoreContext";
 import { PromotionCampaign, PromotionType, PromotionStatus, PromotionProduct } from "@/types/admin";
 import { CatalogProduct } from "@/types/catalog";
@@ -10,7 +10,9 @@ import { ArrowLeft, Save, Calendar, Tag, Image as ImageIcon, Search, Plus, Trash
 
 export default function CrearPromocionPage() {
   const router = useRouter();
-  const { allCatalogProducts, addCampaign, showToast } = useAdminStore();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("id");
+  const { allCatalogProducts, campaigns, addCampaign, updateCampaign, showToast } = useAdminStore();
 
   const [step, setStep] = useState(1);
   const [internalName, setInternalName] = useState("");
@@ -26,6 +28,32 @@ export default function CrearPromocionPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProducts, setSelectedProducts] = useState<PromotionProduct[]>([]);
   const [globalDiscount, setGlobalDiscount] = useState("10");
+
+  // Load existing campaign data when in edit mode
+  useEffect(() => {
+    if (editId) {
+      const existing = campaigns.find(c => c.id === editId);
+      if (existing) {
+        setInternalName(existing.internalName);
+        setPublicTitle(existing.publicTitle);
+        setSubtitle(existing.subtitle || "");
+        setType(existing.type);
+        // Convert ISO date to datetime-local format (YYYY-MM-DDTHH:MM)
+        const toLocalInput = (iso: string) => {
+          try {
+            const d = new Date(iso);
+            const pad = (n: number) => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+          } catch { return ""; }
+        };
+        setStartDate(toLocalInput(existing.startDate));
+        setEndDate(toLocalInput(existing.endDate));
+        setPriority(String(existing.priority));
+        setBannerUrl(existing.bannerDesktopUrl || "");
+        setSelectedProducts(existing.products || []);
+      }
+    }
+  }, [editId, campaigns]);
 
   const filteredCatalog = allCatalogProducts.filter(p => 
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -69,7 +97,7 @@ export default function CrearPromocionPage() {
     if (start <= new Date() && end > new Date()) status = "ACTIVA";
     if (end <= new Date()) status = "FINALIZADA";
 
-    addCampaign({
+    const payload = {
       internalName,
       publicTitle,
       subtitle,
@@ -81,7 +109,13 @@ export default function CrearPromocionPage() {
       priority: parseInt(priority) || 1,
       bannerDesktopUrl: bannerUrl,
       products: selectedProducts
-    });
+    };
+
+    if (editId) {
+      updateCampaign(editId, payload);
+    } else {
+      addCampaign(payload);
+    }
 
     router.push("/admin/promociones");
   };
@@ -93,12 +127,12 @@ export default function CrearPromocionPage() {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="flex-1">
-          <h2 className="text-lg font-black text-white">Crear Nueva Campaña</h2>
-          <p className="text-xs text-slate-400">Configura una promoción, oferta del día o evento comercial.</p>
+          <h2 className="text-lg font-black text-white">{editId ? "Editar Campaña" : "Crear Nueva Campaña"}</h2>
+          <p className="text-xs text-slate-400">{editId ? "Modifica los datos de esta promoción existente." : "Configura una promoción, oferta del día o evento comercial."}</p>
         </div>
         <button onClick={handleSave} className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/20">
           <Save className="w-4 h-4" />
-          Guardar y Programar
+          {editId ? "Guardar Cambios" : "Guardar y Programar"}
         </button>
       </div>
 

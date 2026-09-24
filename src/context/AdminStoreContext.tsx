@@ -232,8 +232,24 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.adminUsers) setAdminUsers(parsed.adminUsers);
-        if (parsed.currentAdmin) setCurrentAdmin(parsed.currentAdmin);
+        if (parsed.adminUsers) {
+          // Migrate old default name if still saved
+          const migratedUsers = parsed.adminUsers.map((u: any) =>
+            u.id === "adm-01" && u.name === "Dr. Roberto Salamanca"
+              ? { ...u, name: "Administrador Farmaboy" }
+              : u
+          );
+          setAdminUsers(migratedUsers);
+        }
+        if (parsed.currentAdmin) {
+          const admin = parsed.currentAdmin;
+          // Migrate old default name for current session too
+          setCurrentAdmin(
+            admin.id === "adm-01" && admin.name === "Dr. Roberto Salamanca"
+              ? { ...admin, name: "Administrador Farmaboy" }
+              : admin
+          );
+        }
         if (parsed.categories) {
           const existingIds = new Set(parsed.categories.map((c: any) => c.id));
           const missing = initialCategories.filter((c) => !existingIds.has(c.id));
@@ -2019,10 +2035,30 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   }, [trash, logActivity, showToast]);
 
   // Factory Reset
-  // Cron Timer Simulation for Campaigns
+  // Cron Timer Simulation for Campaigns - auto-activates and expires campaigns by date
   const [cronTime, setCronTime] = useState(Date.now());
   useEffect(() => {
-    const interval = setInterval(() => setCronTime(Date.now()), 60000); // Check every minute
+    const runCron = () => {
+      const now = new Date();
+      setCronTime(Date.now());
+      setCampaigns((prev) =>
+        prev.map((c) => {
+          const start = new Date(c.startDate);
+          const end = new Date(c.endDate);
+          // Auto-activate: was PROGRAMADA and start date has arrived
+          if ((c.status === "PROGRAMADA" || c.status === "BORRADOR") && start <= now && end > now) {
+            return { ...c, status: "ACTIVA" as const };
+          }
+          // Auto-expire: was ACTIVA and end date has passed
+          if (c.status === "ACTIVA" && end <= now) {
+            return { ...c, status: "FINALIZADA" as const };
+          }
+          return c;
+        })
+      );
+    };
+    runCron(); // Run immediately on mount
+    const interval = setInterval(runCron, 60000); // Then every minute
     return () => clearInterval(interval);
   }, []);
 

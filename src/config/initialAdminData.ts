@@ -22,7 +22,7 @@ import { farmaboyConfig } from "./farmaboy";
 export const initialAdminUsers: AdminUser[] = [
   {
     id: "adm-01",
-    name: "Dr. Roberto Salamanca",
+    name: "Administrador Farmaboy",
     email: "admin@farmaboy.com.co",
     role: "SUPER_ADMIN",
     avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80",
@@ -701,7 +701,7 @@ export const initialInventoryMovements: InventoryMovement[] = [
     previousStock: 15,
     newStock: 12,
     reason: "Avería de empaque durante inspección de calidad",
-    user: "Dr. Roberto Salamanca",
+    user: "Administrador Farmaboy",
     date: "2026-09-05 16:20",
   },
 ];
@@ -1190,7 +1190,7 @@ export const initialBlogPosts: BlogPost[] = [
     excerpt: "Los 10 elementos que nunca deben faltar para atender quemaduras, cortes o malestares cotidianos.",
     content: "Contar con un botiquín completo y al día es una de las medidas preventivas más importantes tanto para el hogar como para los centros de trabajo en Boyacá...",
     imageUrl: "https://images.unsplash.com/photo-1584744982491-665216d95f8b?auto=format&fit=crop&w=800&q=80",
-    author: "Dr. Roberto Salamanca",
+    author: "Administrador Farmaboy",
     category: "Primeros Auxilios",
     tags: ["Botiquín", "Seguridad", "Empresas"],
     publishDate: "2026-09-02",
@@ -1231,7 +1231,7 @@ export const initialIntegrations: IntegrationsConfig = {
 export const initialActivityLogs: ActivityLog[] = [
   {
     id: "act-01",
-    user: "Dr. Roberto Salamanca",
+    user: "Administrador Farmaboy",
     role: "SUPER_ADMIN",
     action: "Modificación de Tarifa de Envío",
     entity: "Duitama Urbana",

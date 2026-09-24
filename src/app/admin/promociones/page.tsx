@@ -136,7 +136,7 @@ export default function PromocionesDashboard() {
                 </div>
                 
                 <div className="flex md:flex-col gap-2 shrink-0 w-full md:w-auto mt-4 md:mt-0">
-                  <button onClick={() => router.push(`/admin/promociones/crear?edit=${campaign.id}`)} className="flex-1 md:flex-none px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-colors">
+                  <button onClick={() => router.push(`/admin/promociones/crear?id=${campaign.id}`)} className="flex-1 md:flex-none px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-colors">
                     Editar
                   </button>
                   {campaign.status === "ACTIVA" && (
