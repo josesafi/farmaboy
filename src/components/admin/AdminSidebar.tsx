@@ -41,10 +41,10 @@ import {
   AlertCircle,
   HelpCircle,
   FileCheck,
-  Ambulance,
   ShieldCheck,
   Bell,
   Mail,
+  Ambulance,
 } from "lucide-react";
 import { useAdminStore } from "@/context/AdminStoreContext";
 
@@ -90,7 +90,7 @@ export const AdminSidebar: React.FC = () => {
       ],
     },
     {
-      label: "CATÃLOGO",
+      label: "CATÁLOGO",
       items: [
         { title: "Productos", href: "/admin/productos", icon: ShoppingBag },
         {
@@ -99,7 +99,7 @@ export const AdminSidebar: React.FC = () => {
           icon: Pill,
           badgeCount: lowStockCount > 0 ? lowStockCount : undefined,
         },
-        { title: "CategorÃ­as", href: "/admin/catalogo/categorias", icon: LayoutDashboard },
+        { title: "Categorías", href: "/admin/catalogo/categorias", icon: LayoutDashboard },
         { title: "Marcas", href: "/admin/productos?filter=marcas", icon: Store },
         { title: "Ofertas", href: "/admin/promociones?tab=ofertas", icon: Tag },
       ],
@@ -129,25 +129,25 @@ export const AdminSidebar: React.FC = () => {
         { title: "Banners", href: "/admin/banners", icon: ImageIcon },
         { title: "Blog de salud", href: "/admin/blog", icon: FileText },
         { title: "Página Inserboy", href: "/admin/inserboy", icon: Ambulance },
-        { title: "PÃ¡ginas legales", href: "/admin/diseno?tab=legales", icon: FileCheck },
+        { title: "Páginas legales", href: "/admin/diseno?tab=legales", icon: FileCheck },
         { title: "Preguntas frecuentes", href: "/admin/diseno?tab=faq", icon: HelpCircle },
-        { title: "ReseÃ±as", href: "/admin/clientes?tab=resenas", icon: MessageSquare },
+        { title: "Reseñas", href: "/admin/clientes?tab=resenas", icon: MessageSquare },
       ],
     },
     {
       label: "MARKETING",
       items: [
-        { title: "CampaÃ±as", href: "/admin/promociones?tab=campanas", icon: Megaphone },
+        { title: "Campañas", href: "/admin/promociones?tab=campanas", icon: Megaphone },
         { title: "Popups promocionales", href: "/admin/diseno?tab=popups", icon: LayoutTemplate },
         { title: "Notificaciones", href: "/admin/configuracion?tab=notificaciones", icon: Bell },
-        { title: "FidelizaciÃ³n", href: "/admin/clientes?tab=fidelizacion", icon: HeartHandshake },
+        { title: "Fidelización", href: "/admin/clientes?tab=fidelizacion", icon: HeartHandshake },
       ],
     },
     {
-      label: "ANALÃTICA",
+      label: "ANALÍTICA",
       items: [
         { title: "Resumen de ventas", href: "/admin?view=ventas", icon: BarChart3 },
-        { title: "Productos mÃ¡s vendidos", href: "/admin?view=top-productos", icon: TrendingUp },
+        { title: "Productos más vendidos", href: "/admin?view=top-productos", icon: TrendingUp },
         { title: "Rendimiento de inventario", href: "/admin/inventario?tab=analitica", icon: Boxes },
         { title: "Reportes financieros", href: "/admin?view=financiero", icon: DollarSign },
       ],
@@ -157,19 +157,19 @@ export const AdminSidebar: React.FC = () => {
       items: [
         { title: "Centro de correos", href: "/admin/emails", icon: Mail },
         { title: "Plantillas de email", href: "/admin/emails/templates", icon: FileText },
-        { title: "DiagnÃ³stico SMTP", href: "/admin/emails/test", icon: Settings },
+        { title: "Diagnóstico SMTP", href: "/admin/emails/test", icon: Settings },
         { title: "Tickets de soporte", href: "/admin/soporte", icon: HelpCircle },
       ],
     },
     {
-      label: "CONFIGURACIÃ“N",
+      label: "CONFIGURACIÓN",
       items: [
         { title: "Farmacia", href: "/admin/configuracion", icon: Store },
-        { title: "MÃ©todos de pago", href: "/admin/integraciones", icon: CreditCard },
-        { title: "EnvÃ­os y entregas", href: "/admin/entregas", icon: Truck },
+        { title: "Métodos de pago", href: "/admin/integraciones", icon: CreditCard },
+        { title: "Envíos y entregas", href: "/admin/entregas", icon: Truck },
         { title: "Notificaciones del sistema", href: "/admin/configuracion?tab=sistema", icon: Settings },
         { title: "Usuarios y roles", href: "/admin/usuarios", icon: Users },
-        { title: "AuditorÃ­a y logs", href: "/admin/seguridad", icon: ShieldAlert },
+        { title: "Auditoría y logs", href: "/admin/seguridad", icon: ShieldAlert },
         { title: "Papelera", href: "/admin/papelera", icon: Trash2 },
       ],
     },
@@ -211,7 +211,7 @@ export const AdminSidebar: React.FC = () => {
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="hidden md:flex p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-          title={collapsed ? "Expandir menÃº" : "Colapsar menÃº"}
+          title={collapsed ? "Expandir menú" : "Colapsar menú"}
         >
           {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
@@ -344,7 +344,7 @@ export const AdminSidebar: React.FC = () => {
               <button
                 onClick={logout}
                 className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition-colors"
-                title="Cerrar SesiÃ³n"
+                title="Cerrar Sesión"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -363,7 +363,7 @@ export const AdminSidebar: React.FC = () => {
             <button
               onClick={logout}
               className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-rose-400"
-              title="Cerrar SesiÃ³n"
+              title="Cerrar Sesión"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -373,4 +373,3 @@ export const AdminSidebar: React.FC = () => {
     </aside>
   );
 };
-

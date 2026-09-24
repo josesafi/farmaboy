@@ -176,8 +176,7 @@ interface AdminStoreContextType {
   activityLogs: ActivityLog[];
   logActivity: (action: string, entity: string, details: string) => void;
 
-
-// Trash Bin (Soft delete)
+  // Trash Bin (Soft delete)
   trash: TrashItem[];
   purgeTrashItem: (trashId: string) => void;
   restoreTrashItem: (id: string) => void;
@@ -196,7 +195,7 @@ interface AdminStoreContextType {
 
   // Inserboy
   inserboyConfig: InserboyConfig;
-  updateInserboyConfig: (config: Partial<InserboyConfig>) => void;
+  updateInserboyConfig: (updates: Partial<InserboyConfig>) => void;
 
   // Factory reset
   resetAllToFactoryDefaults: () => void;
@@ -240,23 +239,25 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.adminUsers) {
-          // Migrate old default name if still saved
-          const migratedUsers = parsed.adminUsers.map((u: any) =>
-            u.id === "adm-01" && u.name === "Dr. Roberto Salamanca"
-              ? { ...u, name: "Administrador Farmaboy" }
+        let loadedUsers = initialAdminUsers;
+        if (parsed.adminUsers && Array.isArray(parsed.adminUsers) && parsed.adminUsers.length > 0) {
+          // If legacy name was stored, ensure adm-01 uses Alexandra Correa
+          loadedUsers = parsed.adminUsers.map((u: any) =>
+            u.id === "adm-01" && (u.name === "Dr. Roberto Salamanca" || u.name === "Administrador Farmaboy")
+              ? { ...u, name: "Alexandra Correa" }
               : u
           );
-          setAdminUsers(migratedUsers);
+          setAdminUsers(loadedUsers);
         }
+
+        // ALWAYS synchronize currentAdmin with the matched user from admin users
         if (parsed.currentAdmin) {
-          const admin = parsed.currentAdmin;
-          // Migrate old default name for current session too
-          setCurrentAdmin(
-            admin.id === "adm-01" && admin.name === "Dr. Roberto Salamanca"
-              ? { ...admin, name: "Administrador Farmaboy" }
-              : admin
+          const matched = loadedUsers.find(
+            (u) => u.id === parsed.currentAdmin.id || u.email?.toLowerCase() === parsed.currentAdmin.email?.toLowerCase()
           );
+          setCurrentAdmin(matched || loadedUsers[0]);
+        } else if (loadedUsers.length > 0) {
+          setCurrentAdmin(loadedUsers[0]);
         }
         if (parsed.categories) {
           const existingIds = new Set(parsed.categories.map((c: any) => c.id));
@@ -330,7 +331,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
             !updatedSettings.nit ||
             updatedSettings.nit === "901.782.341-8" ||
             updatedSettings.legalName?.includes("Placeholder") ||
-            updatedSettings.legalName === "FARMABOY SERVICIOS FARMACÃ‰UTICOS Y ASISTENCIALES S.A.S." ||
+            updatedSettings.legalName === "FARMABOY SERVICIOS FARMACÉUTICOS Y ASISTENCIALES S.A.S." ||
             updatedSettings.emailGeneral === "contacto@farmaboy.com.co" ||
             updatedSettings.emailGeneral === "farmaboysas@gmail.com"
           ) {
@@ -522,10 +523,10 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
             showToast("Demasiados intentos fallidos. Cuenta bloqueada por 15 minutos.", "error");
           } else {
             localStorage.setItem("farmaboy_admin_attempts", attempts.toString());
-            showToast(`ContraseÃ±a incorrecta. Intento ${attempts} de 5`, "error");
+            showToast(`Contraseña incorrecta. Intento ${attempts} de 5`, "error");
           }
         } else {
-          showToast("ContraseÃ±a incorrecta", "error");
+          showToast("Contraseña incorrecta", "error");
         }
         return false;
       }
@@ -540,7 +541,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
       if (found) {
         const updated = { ...found, lastLogin: "Ahora" };
         setCurrentAdmin(updated);
-        logActivity("Inicio de SesiÃ³n", "SesiÃ³n Administrativa", `Acceso como ${found.role} (${found.email})`);
+        logActivity("Inicio de Sesión", "Sesión Administrativa", `Acceso como ${found.role} (${found.email})`);
         showToast(`Bienvenido ${found.name} (${found.role})`, "success");
         return true;
       }
@@ -555,8 +556,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
           isActive: true,
         };
         setCurrentAdmin(demoUser);
-        logActivity("Inicio de SesiÃ³n Demo", "SesiÃ³n Administrativa", `Acceso simulado como ${role}`);
-        showToast(`SesiÃ³n iniciada como ${role}`, "info");
+        logActivity("Inicio de Sesión Demo", "Sesión Administrativa", `Acceso simulado como ${role}`);
+        showToast(`Sesión iniciada como ${role}`, "info");
         return true;
       }
       showToast("Usuario administrativo no encontrado", "error");
@@ -590,10 +591,10 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
 
   const logout = useCallback(() => {
     if (currentAdmin) {
-      logActivity("Cierre de SesiÃ³n", "SesiÃ³n Administrativa", `DesconexiÃ³n de ${currentAdmin.name}`);
+      logActivity("Cierre de Sesión", "Sesión Administrativa", `Desconexión de ${currentAdmin.name}`);
     }
     setCurrentAdmin(null);
-    showToast("Has cerrado la sesiÃ³n administrativa", "info");
+    showToast("Has cerrado la sesión administrativa", "info");
   }, [currentAdmin, logActivity, showToast]);
 
   const hasPermission = useCallback(
@@ -709,7 +710,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         lastLogin: "Nunca",
       };
       setAdminUsers((prev) => [...prev, newUser]);
-      logActivity("CreaciÃ³n de Usuario", "Usuarios Admin", `Creado ${newUser.name} con rol ${newUser.role}`);
+      logActivity("Creación de Usuario", "Usuarios Admin", `Creado ${newUser.name} con rol ${newUser.role}`);
       showToast(`Usuario ${newUser.name} creado exitosamente`, "success");
     },
     [logActivity, showToast]
@@ -718,7 +719,14 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   const updateAdminUser = useCallback(
     (id: string, updates: Partial<AdminUser>) => {
       setAdminUsers((prev) => prev.map((u) => (u.id === id ? { ...u, ...updates } : u)));
-      logActivity("EdiciÃ³n de Usuario", "Usuarios Admin", `Modificado usuario ID ${id}`);
+      setCurrentAdmin((prev) => {
+        if (!prev) return null;
+        if (prev.id === id || (updates.email && prev.email.toLowerCase() === updates.email.toLowerCase())) {
+          return { ...prev, ...updates };
+        }
+        return prev;
+      });
+      logActivity("Edición de Usuario", "Usuarios Admin", `Modificado usuario ID ${id}`);
       showToast("Usuario actualizado correctamente", "success");
     },
     [logActivity, showToast]
@@ -728,11 +736,11 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (id: string) => {
       const target = adminUsers.find((u) => u.id === id);
       if (target?.role === "SUPER_ADMIN" && adminUsers.filter((u) => u.role === "SUPER_ADMIN").length <= 1) {
-        showToast("No puedes eliminar el Ãºnico Super Administrador del sistema", "error");
+        showToast("No puedes eliminar el único Super Administrador del sistema", "error");
         return;
       }
       setAdminUsers((prev) => prev.filter((u) => u.id !== id));
-      logActivity("EliminaciÃ³n de Usuario", "Usuarios Admin", `Eliminado ${target?.name || id}`);
+      logActivity("Eliminación de Usuario", "Usuarios Admin", `Eliminado ${target?.name || id}`);
       showToast("Usuario eliminado del sistema", "info");
     },
     [adminUsers, logActivity, showToast]
@@ -752,8 +760,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         id: "med-" + Date.now(),
       };
       setMedicines((prev) => [newMed, ...prev]);
-      logActivity("CreaciÃ³n de Medicamento", newMed.name, `INVIMA: ${newMed.pharmaInfo.registroSanitarioINVIMA}, Lote: ${newMed.lotNumber}`);
-      showToast(`Medicamento "${newMed.name}" registrado con Ã©xito`, "success");
+      logActivity("Creación de Medicamento", newMed.name, `INVIMA: ${newMed.pharmaInfo.registroSanitarioINVIMA}, Lote: ${newMed.lotNumber}`);
+      showToast(`Medicamento "${newMed.name}" registrado con éxito`, "success");
     },
     [logActivity, showToast]
   );
@@ -772,7 +780,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         })
       );
       const target = medicines.find((m) => m.id === id);
-      logActivity("EdiciÃ³n de Medicamento", target?.name || id, "Atributos actualizados en catÃ¡logo");
+      logActivity("Edición de Medicamento", target?.name || id, "Atributos actualizados en catálogo");
       showToast("Medicamento actualizado correctamente", "success");
     },
     [medicines, logActivity, showToast]
@@ -814,8 +822,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         id: "prod-" + Date.now(),
       };
       setRetailProducts((prev) => [newProd, ...prev]);
-      logActivity("CreaciÃ³n de Producto", newProd.name, `SKU: ${newProd.sku}, Marca: ${newProd.brand}`);
-      showToast(`Producto "${newProd.name}" creado con Ã©xito`, "success");
+      logActivity("Creación de Producto", newProd.name, `SKU: ${newProd.sku}, Marca: ${newProd.brand}`);
+      showToast(`Producto "${newProd.name}" creado con éxito`, "success");
     },
     [logActivity, showToast]
   );
@@ -833,7 +841,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         })
       );
       const target = retailProducts.find((p) => p.id === id);
-      logActivity("EdiciÃ³n de Producto", target?.name || id, "Datos de catÃ¡logo retail modificados");
+      logActivity("Edición de Producto", target?.name || id, "Datos de catálogo retail modificados");
       showToast("Producto actualizado", "success");
     },
     [retailProducts, logActivity, showToast]
@@ -925,7 +933,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
               previousStock: prev,
               newStock: next,
               date: "Hoy " + new Date().toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" }),
-              reason: `${status === "CANCELADO" ? "CancelaciÃ³n" : "DevoluciÃ³n aprobada"} de pedido #${orderId}. ${note || ""}`.trim(),
+              reason: `${status === "CANCELADO" ? "Cancelación" : "Devolución aprobada"} de pedido #${orderId}. ${note || ""}`.trim(),
               referenceDoc: `PED-${orderId}`,
               user: currentAdmin?.name || "Operador",
             });
@@ -949,7 +957,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         );
         setInventoryMovements((prev) => [...restockMovements, ...prev]);
         logActivity(
-          "RestituciÃ³n de Stock",
+          "Restitución de Stock",
           `Pedido #${orderId}`,
           `Reintegradas ${order.items.reduce((acc, it) => acc + it.quantity, 0)} unidades al inventario (Kardex: DEVOLUCION)`
         );
@@ -1028,7 +1036,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
               numero_pedido: orderId,
               nombre: order.customerName,
               punto_recogida: order.pickupPointName || "Sede Principal Farmaboy",
-              horario: "Lunes a SÃ¡bado 7:30 AM a 8:30 PM",
+              horario: "Lunes a Sábado 7:30 AM a 8:30 PM",
               codigo_recogida: orderId.replace("ORD-", "REC-"),
             },
           });
@@ -1053,7 +1061,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
           data: {
             numero_pedido: orderId,
             nombre: order.customerName,
-            direccion: `${order.deliveryAddress || "DirecciÃ³n de despacho"}, ${order.deliveryCity || "BoyacÃ¡"}`,
+            direccion: `${order.deliveryAddress || "Dirección de despacho"}, ${order.deliveryCity || "Boyacá"}`,
           },
         });
       } else if (status === "ENTREGADO" || status === "RECOGIDO") {
@@ -1089,7 +1097,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
           data: {
             numero_pedido: orderId,
             nombre: order.customerName,
-            motivo: note || "CancelaciÃ³n de pedido",
+            motivo: note || "Cancelación de pedido",
           },
         });
         triggerEmailEvent({
@@ -1098,7 +1106,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
           event_id: `ADMIN_CANCEL_${orderId}`,
           data: {
             numero_pedido: orderId,
-            motivo: note || "Cancelado en administraciÃ³n",
+            motivo: note || "Cancelado en administración",
           },
         });
       } else if (status === "DEVUELTO") {
@@ -1121,7 +1129,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   const updateOrder = useCallback(
     (orderId: string, updates: Partial<AdminOrder>) => {
       setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, ...updates } : o)));
-      logActivity("ModificaciÃ³n de Pedido", `Pedido #${orderId}`, "Datos de la orden modificados");
+      logActivity("Modificación de Pedido", `Pedido #${orderId}`, "Datos de la orden modificados");
       showToast(`Pedido #${orderId} modificado`, "success");
     },
     [logActivity, showToast]
@@ -1132,31 +1140,31 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (code: string, subtotal: number): { isValid: boolean; discountAmount: number; promotion?: PromotionRule; message: string } => {
       const clean = code.trim().toUpperCase();
       if (!clean) {
-        return { isValid: false, discountAmount: 0, message: "Ingresa un cÃ³digo de cupÃ³n" };
+        return { isValid: false, discountAmount: 0, message: "Ingresa un código de cupón" };
       }
       const promo = promotions.find((p) => p.code.trim().toUpperCase() === clean);
       if (!promo) {
-        return { isValid: false, discountAmount: 0, message: "El cupÃ³n no existe o no es vÃ¡lido" };
+        return { isValid: false, discountAmount: 0, message: "El cupón no existe o no es válido" };
       }
       if (!promo.isActive) {
-        return { isValid: false, discountAmount: 0, message: "El cupÃ³n se encuentra inactivo" };
+        return { isValid: false, discountAmount: 0, message: "El cupón se encuentra inactivo" };
       }
       const today = new Date().toISOString().split("T")[0];
       if (promo.startDate && today < promo.startDate) {
-        return { isValid: false, discountAmount: 0, message: "El cupÃ³n aÃºn no entra en vigencia" };
+        return { isValid: false, discountAmount: 0, message: "El cupón aún no entra en vigencia" };
       }
       if (promo.endDate && today > promo.endDate) {
-        return { isValid: false, discountAmount: 0, message: "El cupÃ³n ha expirado" };
+        return { isValid: false, discountAmount: 0, message: "El cupón ha expirado" };
       }
       const maxUses = promo.maxUsesTotal ?? promo.maxUses;
       if (maxUses && promo.usedCount >= maxUses) {
-        return { isValid: false, discountAmount: 0, message: "Este cupÃ³n ha agotado su nÃºmero mÃ¡ximo de redenciones" };
+        return { isValid: false, discountAmount: 0, message: "Este cupón ha agotado su número máximo de redenciones" };
       }
       if (promo.minPurchaseCOP && subtotal < promo.minPurchaseCOP) {
         return {
           isValid: false,
           discountAmount: 0,
-          message: `El pedido no alcanza la compra mÃ­nima requerida ($${promo.minPurchaseCOP.toLocaleString("es-CO")} COP)`,
+          message: `El pedido no alcanza la compra mínima requerida ($${promo.minPurchaseCOP.toLocaleString("es-CO")} COP)`,
         };
       }
 
@@ -1177,7 +1185,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         isValid: true,
         discountAmount: discount,
         promotion: promo,
-        message: `CupÃ³n ${promo.code} aplicado correctamente`,
+        message: `Cupón ${promo.code} aplicado correctamente`,
       };
     },
     [promotions]
@@ -1195,7 +1203,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         const target = med || prod;
 
         if (!target) {
-          return { success: false, error: `El producto "${itemName}" ya no estÃ¡ disponible en catÃ¡logo.` };
+          return { success: false, error: `El producto "${itemName}" ya no está disponible en catálogo.` };
         }
         const isActive = target.status === "ACTIVO" && target.isActive !== false;
         if (!isActive) {
@@ -1209,7 +1217,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
           if (exp < now) {
             return {
               success: false,
-              error: `El medicamento "${med.name}" (Lote ${med.lotNumber}) estÃ¡ vencido segÃºn normativa INVIMA y no puede comercializarse.`,
+              error: `El medicamento "${med.name}" (Lote ${med.lotNumber}) está vencido según normativa INVIMA y no puede comercializarse.`,
             };
           }
         }
@@ -1397,8 +1405,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
             status: orderInitialStatus,
             timestamp: nowTimestamp,
             note: orderInitialStatus === "PENDIENTE"
-              ? `Pedido registrado con pago QR Bancolombia / Bre-B (Llave 0092016726). En espera de verificaciÃ³n manual del comprobante.${input.paymentApprovalCode ? ` Comprobante / AprobaciÃ³n: ${input.paymentApprovalCode}` : ""}`
-              : `Pago verificado vÃ­a ${input.paymentMethod}. Pedido creado e inventario descontado.`,
+              ? `Pedido registrado con pago QR Bancolombia / Bre-B (Llave 0092016726). En espera de verificación manual del comprobante.${input.paymentApprovalCode ? ` Comprobante / Aprobación: ${input.paymentApprovalCode}` : ""}`
+              : `Pago verificado vía ${input.paymentMethod}. Pedido creado e inventario descontado.`,
           },
         ],
       };
@@ -1409,7 +1417,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         `Pedido #${generatedId}`,
         `Cliente: ${custName} ${custLastName} - Total: $${orderTotal.toLocaleString("es-CO")} COP`
       );
-      showToast(`Â¡Pedido #${generatedId} procesado con Ã©xito!`, "success");
+      showToast(`¡Pedido #${generatedId} procesado con éxito!`, "success");
 
       // Transactional Email Dispatches
       const customerEmailAddress = custEmail || "info@farmaboy.com";
@@ -1572,7 +1580,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (id: string, updates: Partial<CustomerCRM>) => {
       setCustomers((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)));
       const target = customers.find((c) => c.id === id);
-      logActivity("ActualizaciÃ³n CRM", `${target?.name} ${target?.lastName}` || id, "Ficha del cliente actualizada");
+      logActivity("Actualización CRM", `${target?.name} ${target?.lastName}` || id, "Ficha del cliente actualizada");
       showToast("Ficha de cliente guardada", "success");
     },
     [customers, logActivity, showToast]
@@ -1582,7 +1590,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (id: string) => {
       const target = customers.find((c) => c.id === id);
       setCustomers((prev) => prev.filter((c) => c.id !== id));
-      logActivity("EliminaciÃ³n CRM", `${target?.name} ${target?.lastName}` || id, "Cliente retirado de la base de datos");
+      logActivity("Eliminación CRM", `${target?.name} ${target?.lastName}` || id, "Cliente retirado de la base de datos");
       showToast("Cliente eliminado", "info");
     },
     [customers, logActivity, showToast]
@@ -1627,8 +1635,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         usedCount: 0,
       };
       setPromotions((prev) => [newPromo, ...prev]);
-      logActivity("Nueva PromociÃ³n", newPromo.title, `CÃ³digo: ${newPromo.code}, Tipo: ${newPromo.type}`);
-      showToast(`PromociÃ³n "${newPromo.code}" creada`, "success");
+      logActivity("Nueva Promoción", newPromo.title, `Código: ${newPromo.code}, Tipo: ${newPromo.type}`);
+      showToast(`Promoción "${newPromo.code}" creada`, "success");
     },
     [logActivity, showToast]
   );
@@ -1637,8 +1645,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (id: string, updates: Partial<PromotionRule>) => {
       setPromotions((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
       const target = promotions.find((p) => p.id === id);
-      logActivity("ModificaciÃ³n de PromociÃ³n", target?.title || id, "Regla de descuento actualizada");
-      showToast("PromociÃ³n actualizada", "success");
+      logActivity("Modificación de Promoción", target?.title || id, "Regla de descuento actualizada");
+      showToast("Promoción actualizada", "success");
     },
     [promotions, logActivity, showToast]
   );
@@ -1647,8 +1655,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (id: string) => {
       const target = promotions.find((p) => p.id === id);
       setPromotions((prev) => prev.filter((p) => p.id !== id));
-      logActivity("EliminaciÃ³n de PromociÃ³n", target?.title || id, `CÃ³digo ${target?.code} eliminado`);
-      showToast("PromociÃ³n eliminada", "info");
+      logActivity("Eliminación de Promoción", target?.title || id, `Código ${target?.code} eliminado`);
+      showToast("Promoción eliminada", "info");
     },
     [promotions, logActivity, showToast]
   );
@@ -1659,8 +1667,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         prev.map((p) => {
           if (p.id !== id) return p;
           const next = !p.isActive;
-          logActivity("Estado de PromociÃ³n", p.title, next ? "PromociÃ³n Activada" : "PromociÃ³n Desactivada");
-          showToast(`CupÃ³n ${p.code} ${next ? "activado" : "desactivado"}`, "info");
+          logActivity("Estado de Promoción", p.title, next ? "Promoción Activada" : "Promoción Desactivada");
+          showToast(`Cupón ${p.code} ${next ? "activado" : "desactivado"}`, "info");
           return { ...p, isActive: next };
         })
       );
@@ -1683,8 +1691,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         updatedAt: new Date().toISOString(),
       };
       setCampaigns((prev) => [newCampaign, ...prev]);
-      logActivity("Nueva CampaÃ±a Promocional", newCampaign.internalName, `Tipo: ${newCampaign.type}`);
-      showToast(`CampaÃ±a "${newCampaign.internalName}" creada`, "success");
+      logActivity("Nueva Campaña Promocional", newCampaign.internalName, `Tipo: ${newCampaign.type}`);
+      showToast(`Campaña "${newCampaign.internalName}" creada`, "success");
     },
     [logActivity, showToast]
   );
@@ -1695,8 +1703,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         prev.map((c) => (c.id === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c))
       );
       const target = campaigns.find((c) => c.id === id);
-      logActivity("CampaÃ±a Modificada", target?.internalName || id, "ParÃ¡metros actualizados");
-      showToast("CampaÃ±a actualizada", "success");
+      logActivity("Campaña Modificada", target?.internalName || id, "Parámetros actualizados");
+      showToast("Campaña actualizada", "success");
     },
     [campaigns, logActivity, showToast]
   );
@@ -1705,8 +1713,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (id: string) => {
       const target = campaigns.find((c) => c.id === id);
       setCampaigns((prev) => prev.filter((c) => c.id !== id));
-      logActivity("CampaÃ±a Eliminada", target?.internalName || id, "Registro borrado");
-      showToast("CampaÃ±a eliminada", "info");
+      logActivity("Campaña Eliminada", target?.internalName || id, "Registro borrado");
+      showToast("Campaña eliminada", "info");
     },
     [campaigns, logActivity, showToast]
   );
@@ -1719,7 +1727,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         id: "bnr-" + Date.now(),
       };
       setBanners((prev) => [...prev, newBanner]);
-      logActivity("Nuevo Banner", newBanner.title, `UbicaciÃ³n: ${newBanner.placement}`);
+      logActivity("Nuevo Banner", newBanner.title, `Ubicación: ${newBanner.placement}`);
       showToast(`Banner "${newBanner.title}" agregado`, "success");
     },
     [logActivity, showToast]
@@ -1729,7 +1737,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (id: string, updates: Partial<BannerItem>) => {
       setBanners((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
       const target = banners.find((b) => b.id === id);
-      logActivity("EdiciÃ³n de Banner", target?.title || id, "Banner actualizado");
+      logActivity("Edición de Banner", target?.title || id, "Banner actualizado");
       showToast("Banner actualizado", "success");
     },
     [banners, logActivity, showToast]
@@ -1772,8 +1780,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   const updateSiteDesign = useCallback(
     (updates: Partial<SiteDesignConfig>) => {
       setSiteDesign((prev) => ({ ...prev, ...updates }));
-      logActivity("DiseÃ±o del Sitio", "CMS Visual", "ConfiguraciÃ³n de diseÃ±o actualizada");
-      showToast("DiseÃ±o del sitio actualizado", "success");
+      logActivity("Diseño del Sitio", "CMS Visual", "Configuración de diseño actualizada");
+      showToast("Diseño del sitio actualizado", "success");
     },
     [logActivity, showToast]
   );
@@ -1784,11 +1792,11 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         const currentVal = prev.homepageSections[sectionKey];
         const nextVal = !currentVal;
         logActivity(
-          "SecciÃ³n de Home",
+          "Sección de Home",
           String(sectionKey),
-          nextVal ? "SecciÃ³n Visible en portada" : "SecciÃ³n Oculta"
+          nextVal ? "Sección Visible en portada" : "Sección Oculta"
         );
-        showToast(`SecciÃ³n "${String(sectionKey)}" ${nextVal ? "activada" : "ocultada"}`, "info");
+        showToast(`Sección "${String(sectionKey)}" ${nextVal ? "activada" : "ocultada"}`, "info");
         return {
           ...prev,
           homepageSections: {
@@ -1809,7 +1817,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         setSiteDesign((sd) => ({ ...sd, colors: next }));
         return next;
       });
-      logActivity("Paleta de Colores", "DiseÃ±o Visual", "Colores institucionales actualizados");
+      logActivity("Paleta de Colores", "Diseño Visual", "Colores institucionales actualizados");
       showToast("Colores institucionales actualizados en vivo", "success");
     },
     [logActivity, showToast]
@@ -1818,7 +1826,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   const resetThemeColors = useCallback(() => {
     setThemeColors(initialSiteDesign.colors);
     setSiteDesign((sd) => ({ ...sd, colors: initialSiteDesign.colors }));
-    logActivity("Restablecer Colores", "DiseÃ±o Visual", "Paleta restaurada a valores por defecto");
+    logActivity("Restablecer Colores", "Diseño Visual", "Paleta restaurada a valores por defecto");
     showToast("Colores restaurados por defecto", "info");
   }, [logActivity, showToast]);
 
@@ -1826,8 +1834,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   const updateSeo = useCallback(
     (updates: Partial<SeoConfig>) => {
       setSeo((prev) => ({ ...prev, ...updates }));
-      logActivity("ConfiguraciÃ³n SEO", "Posicionamiento", "Metadatos globales actualizados");
-      showToast("ConfiguraciÃ³n SEO guardada", "success");
+      logActivity("Configuración SEO", "Posicionamiento", "Metadatos globales actualizados");
+      showToast("Configuración SEO guardada", "success");
     },
     [logActivity, showToast]
   );
@@ -1841,8 +1849,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         publishDate: new Date().toLocaleDateString("es-CO", { day: "2-digit", month: "short", year: "numeric" }),
       };
       setBlogPosts((prev) => [newPost, ...prev]);
-      logActivity("Nuevo ArtÃ­culo", newPost.title, `CategorÃ­a: ${newPost.category}, Estado: ${newPost.isPublished ? "Publicado" : "Borrador"}`);
-      showToast(`ArtÃ­culo "${newPost.title}" creado`, "success");
+      logActivity("Nuevo Artículo", newPost.title, `Categoría: ${newPost.category}, Estado: ${newPost.isPublished ? "Publicado" : "Borrador"}`);
+      showToast(`Artículo "${newPost.title}" creado`, "success");
     },
     [logActivity, showToast]
   );
@@ -1851,8 +1859,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (id: string, updates: Partial<BlogPost>) => {
       setBlogPosts((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
       const target = blogPosts.find((p) => p.id === id);
-      logActivity("EdiciÃ³n de ArtÃ­culo", target?.title || id, "Contenido actualizado");
-      showToast("ArtÃ­culo de blog guardado", "success");
+      logActivity("Edición de Artículo", target?.title || id, "Contenido actualizado");
+      showToast("Artículo de blog guardado", "success");
     },
     [blogPosts, logActivity, showToast]
   );
@@ -1872,8 +1880,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
       };
       setTrash((prev) => [trashItem, ...prev]);
       setBlogPosts((prev) => prev.filter((p) => p.id !== id));
-      logActivity("Papelera ArtÃ­culo", target.title, "ArtÃ­culo movido a papelera");
-      showToast("ArtÃ­culo enviado a papelera", "info");
+      logActivity("Papelera Artículo", target.title, "Artículo movido a papelera");
+      showToast("Artículo enviado a papelera", "info");
     },
     [blogPosts, currentAdmin, logActivity, showToast]
   );
@@ -1882,8 +1890,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   const updateStoreSettings = useCallback(
     (updates: Partial<CommercialStoreSettings>) => {
       setStoreSettings((prev) => ({ ...prev, ...updates }));
-      logActivity("Datos Comerciales", "ConfiguraciÃ³n de Tienda", "InformaciÃ³n legal y telÃ©fonos actualizados");
-      showToast("ConfiguraciÃ³n comercial guardada", "success");
+      logActivity("Datos Comerciales", "Configuración de Tienda", "Información legal y teléfonos actualizados");
+      showToast("Configuración comercial guardada", "success");
     },
     [logActivity, showToast]
   );
@@ -1948,7 +1956,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   const updatePickupPoint = useCallback(
     (id: string, updates: Partial<PickupPoint>) => {
       setPickupPoints((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
-      logActivity("Actualizar Punto Recogida", `Punto ID ${id}`, "InformaciÃ³n modificada");
+      logActivity("Actualizar Punto Recogida", `Punto ID ${id}`, "Información modificada");
       showToast("Punto de recogida actualizado", "success");
     },
     [logActivity, showToast]
@@ -2000,17 +2008,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (updates: Partial<IntegrationsConfig>) => {
       setIntegrations((prev) => ({ ...prev, ...updates }));
       logActivity("Integraciones", "Pasarelas & Pixels", "Llaves y credenciales actualizadas de forma segura");
-      showToast("Integraciones actualizadas con Ã©xito", "success");
-    },
-    [logActivity, showToast]
-  );
-
-
-  const updateInserboyConfig = useCallback(
-    (updates: Partial<InserboyConfig>) => {
-      setInserboyConfig((prev) => ({ ...prev, ...updates }));
-      logActivity("Páginas", "Inserboy", "Configuración de Inserboy actualizada");
-      showToast("Página Inserboy actualizada con éxito", "success");
+      showToast("Integraciones actualizadas con éxito", "success");
     },
     [logActivity, showToast]
   );
@@ -2032,7 +2030,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
       }
 
       setTrash((prev) => prev.filter((t) => t.id !== trashId));
-      logActivity("RestauraciÃ³n", item.title, `Elemento (${item.entityType}) restaurado desde la papelera`);
+      logActivity("Restauración", item.title, `Elemento (${item.entityType}) restaurado desde la papelera`);
       showToast(`"${item.title}" restaurado exitosamente`, "success");
     },
     [trash, logActivity, showToast]
@@ -2042,7 +2040,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     (trashId: string) => {
       const item = trash.find((t) => t.id === trashId);
       setTrash((prev) => prev.filter((t) => t.id !== trashId));
-      logActivity("EliminaciÃ³n Definitiva", item?.title || trashId, "Elemento purgado permanentemente");
+      logActivity("Eliminación Definitiva", item?.title || trashId, "Elemento purgado permanentemente");
       showToast("Elemento eliminado definitivamente", "info");
     },
     [trash, logActivity, showToast]
@@ -2055,6 +2053,15 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     showToast(`Papelera vaciada (${count} elementos)`, "info");
   }, [trash, logActivity, showToast]);
 
+  const updateInserboyConfig = useCallback(
+    (updates: Partial<InserboyConfig>) => {
+      setInserboyConfig((prev) => ({ ...prev, ...updates }));
+      logActivity("Páginas", "Inserboy", "Configuración de Inserboy actualizada");
+      showToast("Página Inserboy actualizada con éxito", "success");
+    },
+    [logActivity, showToast]
+  );
+
   // Factory Reset
   // Cron Timer Simulation for Campaigns - auto-activates and expires campaigns by date
   const [cronTime, setCronTime] = useState(Date.now());
@@ -2066,11 +2073,9 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         prev.map((c) => {
           const start = new Date(c.startDate);
           const end = new Date(c.endDate);
-          // Auto-activate: was PROGRAMADA and start date has arrived
           if ((c.status === "PROGRAMADA" || c.status === "BORRADOR") && start <= now && end > now) {
             return { ...c, status: "ACTIVA" as const };
           }
-          // Auto-expire: was ACTIVA and end date has passed
           if (c.status === "ACTIVA" && end <= now) {
             return { ...c, status: "FINALIZADA" as const };
           }
@@ -2079,7 +2084,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
       );
     };
     runCron(); // Run immediately on mount
-    const interval = setInterval(runCron, 60000); // Then every minute
+    const interval = setInterval(runCron, 60000); // Check every minute
     return () => clearInterval(interval);
   }, []);
 
@@ -2096,22 +2101,22 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
       id: `cat-${Date.now()}`,
     };
     setCategories((prev) => [...prev, newCat]);
-    logActivity("Crear CategorÃ­a", "CatÃ¡logo", `CategorÃ­a "${newCat.name}" creada.`);
-    showToast(`CategorÃ­a "${newCat.name}" agregada`, "success");
+    logActivity("Crear Categoría", "Catálogo", `Categoría "${newCat.name}" creada.`);
+    showToast(`Categoría "${newCat.name}" agregada`, "success");
   }, [logActivity, showToast]);
 
   const updateCategory = useCallback((id: string, updates: Partial<CatalogCategory>) => {
     setCategories((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
     );
-    logActivity("Actualizar CategorÃ­a", "CatÃ¡logo", `CategorÃ­a ID ${id} modificada.`);
-    showToast("CategorÃ­a actualizada con Ã©xito", "success");
+    logActivity("Actualizar Categoría", "Catálogo", `Categoría ID ${id} modificada.`);
+    showToast("Categoría actualizada con éxito", "success");
   }, [logActivity, showToast]);
 
   const deleteCategory = useCallback((id: string) => {
     setCategories((prev) => prev.filter((c) => c.id !== id));
-    logActivity("Eliminar CategorÃ­a", "CatÃ¡logo", `CategorÃ­a ID ${id} eliminada.`);
-    showToast("CategorÃ­a eliminada", "info");
+    logActivity("Eliminar Categoría", "Catálogo", `Categoría ID ${id} eliminada.`);
+    showToast("Categoría eliminada", "info");
   }, [logActivity, showToast]);
 
   const reorderCategories = useCallback((orderedIds: string[]) => {
@@ -2122,14 +2127,14 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         return item ? { ...item, order: index + 1 } : null;
       }).filter(Boolean) as CatalogCategory[];
     });
-    logActivity("Reordenar CategorÃ­as", "CatÃ¡logo", "Orden de categorÃ­as actualizado.");
-    showToast("Orden de categorÃ­as guardado", "success");
+    logActivity("Reordenar Categorías", "Catálogo", "Orden de categorías actualizado.");
+    showToast("Orden de categorías guardado", "success");
   }, [logActivity, showToast]);
 
   const updateCatalogCardConfig = useCallback((updates: Partial<CatalogCardConfig>) => {
     setCatalogCardConfig((prev) => ({ ...prev, ...updates }));
-    logActivity("ConfiguraciÃ³n de Tarjetas", "DiseÃ±o", "ConfiguraciÃ³n de tarjeta de producto actualizada.");
-    showToast("DiseÃ±o de tarjetas de catÃ¡logo actualizado", "success");
+    logActivity("Configuración de Tarjetas", "Diseño", "Configuración de tarjeta de producto actualizada.");
+    showToast("Diseño de tarjetas de catálogo actualizado", "success");
   }, [logActivity, showToast]);
 
   const resetAllToFactoryDefaults = useCallback(() => {
@@ -2157,8 +2162,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (e) {}
-    logActivity("Reinicio de FÃ¡brica", "Sistema Completo", "Se restauraron todos los datos predeterminados");
-    showToast("Datos restaurados a valores de fÃ¡brica", "warning");
+    logActivity("Reinicio de Fábrica", "Sistema Completo", "Se restauraron todos los datos predeterminados");
+    showToast("Datos restaurados a valores de fábrica", "warning");
   }, [logActivity, showToast]);
 
   return (
@@ -2269,7 +2274,3 @@ export const useAdminStore = () => {
   }
   return context;
 };
-
-
-
-

@@ -58,26 +58,30 @@ export default function TransporteAsistencialPage() {
             <div className="lg:col-span-7 space-y-6">
               <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-teal-400/20 text-teal-300 border border-teal-400/30">
                 <Ambulance className="w-3.5 h-3.5" />
-                <span>INSERBOY â€“ SERVICIOS DE SALUD</span>
+                <span>INSERBOY – SERVICIOS DE SALUD</span>
               </span>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                {inserboyConfig?.heroTitle || 'Brindamos soluciones confiables para el cuidado y traslado de pacientes'}
+                {inserboyConfig?.heroTitle || "Brindamos soluciones confiables para el cuidado y traslado de pacientes"}
               </h1>
 
               <div className="space-y-5 pt-2">
                 <div className="flex items-start gap-4">
-                  <span className="text-3xl drop-shadow-lg">ðŸš‘</span>
+                  <span className="text-3xl drop-shadow-lg">🚑</span>
                   <div>
-                    <h3 className="font-extrabold text-white text-lg tracking-wide">Ambulancia BÃ¡sica</h3>
-                    <p className="text-slate-300 text-sm leading-relaxed mt-1">Servicio de traslado asistencial con personal capacitado y dotaciÃ³n requerida para la atenciÃ³n y movilizaciÃ³n segura de pacientes.</p>
+                    <h3 className="font-extrabold text-white text-lg tracking-wide">Ambulancia Básica</h3>
+                    <p className="text-slate-300 text-sm leading-relaxed mt-1">
+                      {inserboyConfig?.heroBasicAmbulance || "Servicio de traslado asistencial con personal capacitado y dotación requerida para la atención y movilización segura de pacientes."}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
-                  <span className="text-3xl drop-shadow-lg">ðŸ«</span>
+                  <span className="text-3xl drop-shadow-lg">🫁</span>
                   <div>
-                    <h3 className="font-extrabold text-white text-lg tracking-wide">Alquiler de OxÃ­geno Medicinal</h3>
-                    <p className="text-slate-300 text-sm leading-relaxed mt-1">Disponibilidad de equipos y elementos para suministro de oxÃ­geno medicinal, segÃºn las necesidades del paciente.</p>
+                    <h3 className="font-extrabold text-white text-lg tracking-wide">Alquiler de Oxígeno Medicinal</h3>
+                    <p className="text-slate-300 text-sm leading-relaxed mt-1">
+                      {inserboyConfig?.heroOxygen || "Disponibilidad de equipos y elementos para suministro de oxígeno medicinal, según las necesidades del paciente."}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -91,7 +95,7 @@ export default function TransporteAsistencialPage() {
                   <ArrowRight className="w-4 h-4" />
                 </a>
                 <a
-                  href="https://wa.me/573223863977?text=Hola INSERBOY, requiero informaciÃ³n de sus servicios."
+                  href="https://wa.me/573223863977?text=Hola INSERBOY, requiero información de sus servicios."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="py-3.5 px-6 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm sm:text-base border border-white/20 transition-all flex items-center justify-center gap-2 touch-target"
@@ -114,9 +118,9 @@ export default function TransporteAsistencialPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 text-white text-xs">
                   <span className="font-bold text-teal-300 block text-sm mb-0.5">
-                    INSERBOY â€“ SERVICIOS DE SALUD
+                    INSERBOY – SERVICIOS DE SALUD
                   </span>
-                  <span className="text-slate-300">Personal capacitado y movilizaciÃ³n segura</span>
+                  <span className="text-slate-300">Personal capacitado y movilización segura</span>
                 </div>
               </div>
             </div>
@@ -125,7 +129,7 @@ export default function TransporteAsistencialPage() {
         </div>
       </section>
 
-      {/* QuÃ© ofrece el servicio y cuÃ¡ndo solicitarlo */}
+      {/* Qué ofrece el servicio y cuándo solicitarlo */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -134,10 +138,10 @@ export default function TransporteAsistencialPage() {
               Modalidad & Cobertura
             </span>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-primary">
-              Â¿En quÃ© situaciones solicitar nuestro transporte asistencial?
+              ¿En qué situaciones solicitar nuestro transporte asistencial?
             </h2>
             <p className="mt-3 text-base text-slate-600">
-              Servicio orientado a garantizar el traslado seguro de pacientes que no se encuentran en emergencia crÃ­tica pero requieren movilizaciÃ³n asistida:
+              Servicio orientado a garantizar el traslado seguro de pacientes que no se encuentran en emergencia crítica pero requieren movilización asistida:
             </p>
           </div>
 
@@ -147,10 +151,10 @@ export default function TransporteAsistencialPage() {
                 <Calendar className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-primary mb-2">
-                Citas mÃ©dicas y tratamientos programados
+                Citas médicas y tratamientos programados
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Traslado puntual de pacientes desde su hogar hacia consultas con especialistas, terapias, hemodiÃ¡lisis o estudios de diagnÃ³stico en BoyacÃ¡.
+                Traslado puntual de pacientes desde su hogar hacia consultas con especialistas, terapias, hemodiálisis o estudios de diagnóstico en Boyacá.
               </p>
             </div>
 
@@ -162,7 +166,7 @@ export default function TransporteAsistencialPage() {
                 Egresos hospitalarios y retorno a casa
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                MovilizaciÃ³n cÃ³moda y asistida al momento de recibir el alta mÃ©dica en clÃ­nicas u hospitales, brindando tranquilidad a la familia.
+                Movilización cómoda y asistida al momento de recibir el alta médica en clínicas u hospitales, brindando tranquilidad a la familia.
               </p>
             </div>
 
@@ -174,7 +178,7 @@ export default function TransporteAsistencialPage() {
                 Traslados interinstitucionales
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                MovilizaciÃ³n coordinada entre diferentes centros de salud o IPS para la continuidad de planes de atenciÃ³n en la regiÃ³n.
+                Movilización coordinada entre diferentes centros de salud o IPS para la continuidad de planes de atención en la región.
               </p>
             </div>
           </div>
@@ -183,23 +187,23 @@ export default function TransporteAsistencialPage() {
           <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 text-white border border-slate-800 space-y-4">
             <div className="flex items-center gap-2 text-teal-300 text-xs font-bold uppercase tracking-wider">
               <ShieldCheck className="w-4 h-4" />
-              <span>Especificaciones TÃ©cnicas del Servicio [Campos Editables para Farmaboy]</span>
+              <span>Especificaciones Técnicas del Servicio [Campos Editables para Farmaboy]</span>
             </div>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              * Los detalles tÃ©cnicos especÃ­ficos (tipologÃ­a de vehÃ­culos, personal sanitario a bordo, equipamiento a bordo y nÃºmeros de habilitaciÃ³n expedidos por la SecretarÃ­a de Salud de BoyacÃ¡) serÃ¡n incorporados oficialmente una vez suministrados por la administraciÃ³n de la empresa.
+              * Los detalles técnicos específicos (tipología de vehículos, personal sanitario a bordo, equipamiento a bordo y números de habilitación expedidos por la Secretaría de Salud de Boyacá) serán incorporados oficialmente una vez suministrados por la administración de la empresa.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 text-xs text-slate-300">
               <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
-                <span className="font-bold text-white block mb-1">Zona de OperaciÃ³n:</span>
-                <span>BoyacÃ¡ (Tunja, Duitama, Sogamoso y municipios vinculados)</span>
+                <span className="font-bold text-white block mb-1">Zona de Operación:</span>
+                <span>Boyacá (Tunja, Duitama, Sogamoso y municipios vinculados)</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
                 <span className="font-bold text-white block mb-1">Modalidad de Solicitud:</span>
-                <span>CoordinaciÃ³n previa y programada</span>
+                <span>Coordinación previa y programada</span>
               </div>
               <div className="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
-                <span className="font-bold text-white block mb-1">AtenciÃ³n Humanizada:</span>
-                <span>Enfoque en confort, empatÃ­a y respeto al paciente</span>
+                <span className="font-bold text-white block mb-1">Atención Humanizada:</span>
+                <span>Enfoque en confort, empatía y respeto al paciente</span>
               </div>
             </div>
           </div>
@@ -207,7 +211,7 @@ export default function TransporteAsistencialPage() {
         </div>
       </section>
 
-      {/* Equipamiento y OxÃ­geno */}
+      {/* Equipamiento y Oxígeno */}
       <section className="py-16 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -216,30 +220,30 @@ export default function TransporteAsistencialPage() {
                 Soporte Vital y Equipamiento
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-primary mb-4">
-                {inserboyConfig?.sectionOxygenTitle || 'Suministro de Oxígeno Medicinal y Equipos Especializados'}
+                {inserboyConfig?.sectionOxygenTitle || "Suministro de Oxígeno Medicinal y Equipos Especializados"}
               </h2>
               <p className="text-slate-600 mb-6 leading-relaxed">
-                Contamos con balas y cilindros de oxÃ­geno medicinal, reguladores, humidificadores y todo el equipamiento necesario para pacientes que requieren soporte ventilatorio. Garantizamos la disponibilidad inmediata y el transporte seguro de estos elementos vitales.
+                {inserboyConfig?.sectionOxygenDesc || "Contamos con balas y cilindros de oxígeno medicinal, reguladores, humidificadores y todo el equipamiento necesario para pacientes que requieren soporte ventilatorio. Garantizamos la disponibilidad inmediata y el transporte seguro de estos elementos vitales."}
               </p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-700">Cilindros de oxÃ­geno medicinal de diferentes capacidades (para hogar, empresas y eventos).</span>
+                  <span className="text-sm text-slate-700">Cilindros de oxígeno medicinal de diferentes capacidades (para hogar, empresas y eventos).</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-700">Equipos complementarios: cÃ¡nulas, mascarillas y humidificadores.</span>
+                  <span className="text-sm text-slate-700">Equipos complementarios: cánulas, mascarillas y humidificadores.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-700">Suministro para clÃ­nicas, instituciones y pacientes particulares.</span>
+                  <span className="text-sm text-slate-700">Suministro para clínicas, instituciones y pacientes particulares.</span>
                 </li>
               </ul>
             </div>
             <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[4/3] bg-slate-100">
               <Image
                 src="/images/oxigeno.jpg"
-                alt="Suministro de OxÃ­geno Medicinal"
+                alt="Suministro de Oxígeno Medicinal"
                 fill
                 className="object-cover"
               />
@@ -249,24 +253,39 @@ export default function TransporteAsistencialPage() {
       </section>
 
       {/* Productos Destacados Inserboy */}
-      {inserboyConfig?.featuredProducts?.length > 0 && (
+      {inserboyConfig?.featuredProducts && inserboyConfig.featuredProducts.length > 0 && (
         <section className="py-16 bg-slate-50 border-t border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10">
+              <span className="text-xs font-bold uppercase tracking-wider text-secondary block mb-2">
+                Catálogo Especializado
+              </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-primary">Equipos y Suministros Destacados</h2>
-              <p className="text-slate-600 mt-2">Encuentra los insumos médicos que necesitas.</p>
+              <p className="text-slate-600 mt-2 text-sm">Dispositivos médicos e insumos de soporte vital disponibles para adquisición inmediata.</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {inserboyConfig.featuredProducts.map(productId => {
-                const product = allCatalogProducts?.find(p => p.id === productId);
+              {inserboyConfig.featuredProducts.map((productId) => {
+                const product = allCatalogProducts?.find((p) => p.id === productId);
                 if (!product) return null;
                 return (
-                  <a key={product.id} href={`/producto/${product.slug}`} className="bg-white rounded-2xl p-4 border border-slate-200 hover:border-teal-500 transition-colors shadow-sm block">
+                  <a
+                    key={product.id}
+                    href={`/producto/${product.slug}`}
+                    className="bg-white rounded-2xl p-4 border border-slate-200 hover:border-teal-500 transition-all shadow-sm hover:shadow-md block group"
+                  >
                     <div className="aspect-square relative rounded-xl overflow-hidden mb-3 bg-slate-100">
-                      {product.imageUrl && <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />}
+                      {product.imageUrl && (
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform"
+                        />
+                      )}
                     </div>
-                    <h3 className="font-bold text-sm text-slate-900 line-clamp-2">{product.name}</h3>
-                    <p className="text-teal-600 font-extrabold mt-1">${product.priceCOP.toLocaleString('es-CO')}</p>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">{product.brand || "FarmaBoy"}</span>
+                    <h3 className="font-bold text-sm text-slate-900 line-clamp-2 mt-0.5 group-hover:text-teal-600 transition-colors">{product.name}</h3>
+                    <p className="text-teal-600 font-extrabold mt-2 text-base">${product.priceCOP.toLocaleString("es-CO")}</p>
                   </a>
                 );
               })}
@@ -281,10 +300,10 @@ export default function TransporteAsistencialPage() {
           <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-clinical border border-slate-200">
             <div className="text-center mb-8">
               <span className="text-xs font-bold uppercase tracking-wider text-secondary block mb-1">
-                CoordinaciÃ³n Directa
+                Coordinación Directa
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-primary">
-                Solicitar coordinaciÃ³n de transporte asistencial
+                Solicitar coordinación de transporte asistencial
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-2">
                 Completa los datos del traslado para abrir un canal prioritario con nuestro coordinador de servicio.
@@ -308,7 +327,7 @@ export default function TransporteAsistencialPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    TelÃ©fono de Contacto *
+                    Teléfono de Contacto *
                   </label>
                   <input
                     type="tel"
@@ -324,7 +343,7 @@ export default function TransporteAsistencialPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Lugar de Origen (Municipio / DirecciÃ³n) *
+                    Lugar de Origen (Municipio / Dirección) *
                   </label>
                   <input
                     type="text"
@@ -337,12 +356,12 @@ export default function TransporteAsistencialPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Lugar de Destino (Municipio / ClÃ­nica) *
+                    Lugar de Destino (Municipio / Clínica) *
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="Ej. Duitama - Centro MÃ©dico"
+                    placeholder="Ej. Duitama - Centro Médico"
                     value={formData.destino}
                     onChange={(e) => setFormData({ ...formData, destino: e.target.value })}
                     className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-secondary outline-none"
@@ -357,7 +376,7 @@ export default function TransporteAsistencialPage() {
                 <input
                   type="text"
                   required
-                  placeholder="Ej. MaÃ±ana 8:00 a.m. o Fecha especÃ­fica"
+                  placeholder="Ej. Mañana 8:00 a.m. o Fecha específica"
                   value={formData.fecha}
                   onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
                   className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm focus:border-secondary outline-none"
@@ -366,11 +385,11 @@ export default function TransporteAsistencialPage() {
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Observaciones sobre la condiciÃ³n del paciente
+                  Observaciones sobre la condición del paciente
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Indica si requiere silla de ruedas, camilla o acompaÃ±amiento de familiar..."
+                  placeholder="Indica si requiere silla de ruedas, camilla o acompañamiento de familiar..."
                   value={formData.detalles}
                   onChange={(e) => setFormData({ ...formData, detalles: e.target.value })}
                   className="w-full p-3 rounded-xl border border-slate-300 text-sm focus:border-secondary outline-none"
@@ -382,7 +401,7 @@ export default function TransporteAsistencialPage() {
                 className="w-full py-3.5 px-6 rounded-xl bg-teal-500 text-slate-950 font-extrabold text-sm sm:text-base hover:bg-teal-400 shadow-clinical transition-all flex items-center justify-center gap-2 touch-target"
               >
                 <MessageCircle className="w-5 h-5" />
-                <span>Solicitar coordinaciÃ³n por WhatsApp</span>
+                <span>Solicitar coordinación por WhatsApp</span>
               </button>
             </form>
           </div>
@@ -394,5 +413,3 @@ export default function TransporteAsistencialPage() {
     </>
   );
 }
-
-
