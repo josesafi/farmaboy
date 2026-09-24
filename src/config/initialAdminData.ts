@@ -1292,3 +1292,12 @@ import { PromotionCampaign } from "@/types/admin";
 export const initialCampaigns: PromotionCampaign[] = [];
 
 
+import { InserboyConfig } from '@/types/admin';
+export const initialInserboyConfig: InserboyConfig = {
+  heroTitle: 'Brindamos soluciones confiables para el cuidado y traslado de pacientes',
+  heroBasicAmbulance: 'Servicio de traslado asistencial con personal capacitado y dotación requerida para la atención y movilización segura de pacientes.',
+  heroOxygen: 'Disponibilidad de equipos y elementos para suministro de oxígeno medicinal, según las necesidades del paciente.',
+  sectionOxygenTitle: 'Suministro de Oxígeno Medicinal y Equipos Especializados',
+  sectionOxygenDesc: 'Contamos con balas y cilindros de oxígeno medicinal, reguladores, humidificadores y todo el equipamiento necesario para pacientes que requieren soporte ventilatorio. Garantizamos la disponibilidad inmediata y el transporte seguro de estos elementos vitales.',
+  featuredProducts: []
+};

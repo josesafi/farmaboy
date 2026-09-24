@@ -41,6 +41,7 @@ import {
   AlertCircle,
   HelpCircle,
   FileCheck,
+  Ambulance,
   ShieldCheck,
   Bell,
   Mail,
@@ -127,6 +128,7 @@ export const AdminSidebar: React.FC = () => {
       items: [
         { title: "Banners", href: "/admin/banners", icon: ImageIcon },
         { title: "Blog de salud", href: "/admin/blog", icon: FileText },
+        { title: "P�gina Inserboy", href: "/admin/inserboy", icon: Ambulance },
         { title: "Páginas legales", href: "/admin/diseno?tab=legales", icon: FileCheck },
         { title: "Preguntas frecuentes", href: "/admin/diseno?tab=faq", icon: HelpCircle },
         { title: "Reseñas", href: "/admin/clientes?tab=resenas", icon: MessageSquare },
@@ -371,3 +373,4 @@ export const AdminSidebar: React.FC = () => {
     </aside>
   );
 };
+

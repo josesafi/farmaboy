@@ -19,8 +19,10 @@ import {
   Send,
 } from "lucide-react";
 import { QuickContactCta } from "@/components/home/QuickContactCta";
+import { useAdminStore } from "@/context/AdminStoreContext";
 
 export default function TransporteAsistencialPage() {
+  const { inserboyConfig, allCatalogProducts } = useAdminStore();
   const [formData, setFormData] = useState({
     nombre: "",
     telefono: "",
@@ -60,7 +62,7 @@ export default function TransporteAsistencialPage() {
               </span>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-                Brindamos soluciones confiables para el cuidado y traslado de pacientes
+                {inserboyConfig?.heroTitle || 'Brindamos soluciones confiables para el cuidado y traslado de pacientes'}
               </h1>
 
               <div className="space-y-5 pt-2">
@@ -214,7 +216,7 @@ export default function TransporteAsistencialPage() {
                 Soporte Vital y Equipamiento
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-primary mb-4">
-                Suministro de OxÃ­geno Medicinal y Equipos Especializados
+                {inserboyConfig?.sectionOxygenTitle || 'Suministro de Oxígeno Medicinal y Equipos Especializados'}
               </h2>
               <p className="text-slate-600 mb-6 leading-relaxed">
                 Contamos con balas y cilindros de oxÃ­geno medicinal, reguladores, humidificadores y todo el equipamiento necesario para pacientes que requieren soporte ventilatorio. Garantizamos la disponibilidad inmediata y el transporte seguro de estos elementos vitales.
@@ -245,6 +247,33 @@ export default function TransporteAsistencialPage() {
           </div>
         </div>
       </section>
+
+      {/* Productos Destacados Inserboy */}
+      {inserboyConfig?.featuredProducts?.length > 0 && (
+        <section className="py-16 bg-slate-50 border-t border-slate-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-primary">Equipos y Suministros Destacados</h2>
+              <p className="text-slate-600 mt-2">Encuentra los insumos médicos que necesitas.</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              {inserboyConfig.featuredProducts.map(productId => {
+                const product = allCatalogProducts?.find(p => p.id === productId);
+                if (!product) return null;
+                return (
+                  <a key={product.id} href={`/producto/${product.slug}`} className="bg-white rounded-2xl p-4 border border-slate-200 hover:border-teal-500 transition-colors shadow-sm block">
+                    <div className="aspect-square relative rounded-xl overflow-hidden mb-3 bg-slate-100">
+                      {product.imageUrl && <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />}
+                    </div>
+                    <h3 className="font-bold text-sm text-slate-900 line-clamp-2">{product.name}</h3>
+                    <p className="text-teal-600 font-extrabold mt-1">${product.priceCOP.toLocaleString('es-CO')}</p>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Formulario de Solicitud de Traslado */}
       <section id="solicitar-traslado" className="py-20 bg-white border-t border-slate-200">
@@ -365,3 +394,5 @@ export default function TransporteAsistencialPage() {
     </>
   );
 }
+
+

@@ -28,6 +28,7 @@ import {
   DeliveryRate,
   PickupPoint,
   PromotionCampaign,
+  InserboyConfig,
 } from "@/types/admin";
 import {
   initialAdminUsers,
@@ -47,6 +48,7 @@ import {
   initialActivityLogs,
   initialDeliveryRates,
   initialPickupPoints,
+  initialInserboyConfig,
 } from "@/config/initialAdminData";
 
 export interface ToastNotification {
@@ -174,7 +176,8 @@ interface AdminStoreContextType {
   activityLogs: ActivityLog[];
   logActivity: (action: string, entity: string, details: string) => void;
 
-  // Trash Bin (Soft delete)
+
+// Trash Bin (Soft delete)
   trash: TrashItem[];
   purgeTrashItem: (trashId: string) => void;
   restoreTrashItem: (id: string) => void;
@@ -190,6 +193,10 @@ interface AdminStoreContextType {
   toasts: ToastNotification[];
   showToast: (message: string, type?: "success" | "error" | "info" | "warning") => void;
   removeToast: (id: string) => void;
+
+  // Inserboy
+  inserboyConfig: InserboyConfig;
+  updateInserboyConfig: (config: Partial<InserboyConfig>) => void;
 
   // Factory reset
   resetAllToFactoryDefaults: () => void;
@@ -223,6 +230,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
   const [integrations, setIntegrations] = useState<IntegrationsConfig>(initialIntegrations);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>(initialActivityLogs);
   const [trash, setTrash] = useState<TrashItem[]>([]);
+  const [inserboyConfig, setInserboyConfig] = useState<InserboyConfig>(initialInserboyConfig);
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -355,6 +363,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         if (parsed.integrations) setIntegrations(parsed.integrations);
         if (parsed.activityLogs) setActivityLogs(parsed.activityLogs);
         if (parsed.trash) setTrash(parsed.trash);
+        if (parsed.inserboyConfig) setInserboyConfig(parsed.inserboyConfig);
       }
     } catch (e) {
       console.warn("Could not read admin state from localStorage", e);
@@ -389,6 +398,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         integrations,
         activityLogs,
         trash,
+        inserboyConfig,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
     } catch (e) {
@@ -418,6 +428,7 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     integrations,
     activityLogs,
     trash,
+    inserboyConfig,
   ]);
 
   // Dynamic CSS variables injector for theme colors
@@ -1994,6 +2005,16 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
     [logActivity, showToast]
   );
 
+
+  const updateInserboyConfig = useCallback(
+    (updates: Partial<InserboyConfig>) => {
+      setInserboyConfig((prev) => ({ ...prev, ...updates }));
+      logActivity("Páginas", "Inserboy", "Configuración de Inserboy actualizada");
+      showToast("Página Inserboy actualizada con éxito", "success");
+    },
+    [logActivity, showToast]
+  );
+
   // Trash Bin
   const restoreTrashItem = useCallback(
     (trashId: string) => {
@@ -2222,6 +2243,8 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
         getActiveShippingRate,
         integrations,
         updateIntegrations,
+        inserboyConfig,
+        updateInserboyConfig,
         activityLogs,
         logActivity,
         trash,
@@ -2246,3 +2269,7 @@ export const useAdminStore = () => {
   }
   return context;
 };
+
+
+
+

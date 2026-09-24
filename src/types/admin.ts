@@ -508,3 +508,11 @@ export interface PromotionCampaign {
 
 
 
+export interface InserboyConfig {
+  heroTitle: string;
+  heroBasicAmbulance: string;
+  heroOxygen: string;
+  sectionOxygenTitle: string;
+  sectionOxygenDesc: string;
+  featuredProducts: string[];
+}
