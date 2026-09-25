@@ -133,9 +133,16 @@ export const CatalogFilters: React.FC<CatalogFiltersProps> = ({
             </span>
           </button>
           {categories.map((cat) => {
-            const count = allProducts.filter(
-              (p) => p.categorySlug === cat.slug
-            ).length;
+            const isOfertas = cat.slug === "ofertas" || cat.slug?.includes("oferta");
+            const count = isOfertas
+              ? allProducts.filter(
+                  (p) =>
+                    p.isOffer ||
+                    (p.discountPercentage !== undefined && p.discountPercentage > 0) ||
+                    p.categorySlug === "ofertas" ||
+                    p.category.toLowerCase().includes("oferta")
+                ).length
+              : allProducts.filter((p) => p.categorySlug === cat.slug).length;
             const isSelected = filterState.category === cat.slug;
             return (
               <button

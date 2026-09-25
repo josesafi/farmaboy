@@ -33,6 +33,15 @@ export default function CategoriaDetailPage() {
 
   // Filter products for this category
   const categoryProducts = useMemo(() => {
+    if (slug === "ofertas" || slug?.includes("oferta")) {
+      return allCatalogProducts.filter(
+        (p) =>
+          p.isOffer ||
+          (p.discountPercentage !== undefined && p.discountPercentage > 0) ||
+          p.categorySlug === "ofertas" ||
+          p.category.toLowerCase().includes("oferta")
+      );
+    }
     return allCatalogProducts.filter((p) => p.categorySlug === slug);
   }, [allCatalogProducts, slug]);
 

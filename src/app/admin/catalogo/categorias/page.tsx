@@ -247,9 +247,16 @@ export default function AdminCategoriasPage() {
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium">
               {filteredCategories.map((cat) => {
-                const productCount = allCatalogProducts.filter(
-                  (p) => p.categorySlug === cat.slug
-                ).length;
+                const isOfertas = cat.slug === "ofertas" || cat.slug?.includes("oferta");
+                const productCount = isOfertas
+                  ? allCatalogProducts.filter(
+                      (p) =>
+                        p.isOffer ||
+                        (p.discountPercentage !== undefined && p.discountPercentage > 0) ||
+                        p.categorySlug === "ofertas" ||
+                        p.category.toLowerCase().includes("oferta")
+                    ).length
+                  : allCatalogProducts.filter((p) => p.categorySlug === cat.slug).length;
                 return (
                   <tr key={cat.id} className="hover:bg-slate-50/70 transition-colors">
                     <td className="py-3.5 px-4 text-center font-bold text-slate-500">

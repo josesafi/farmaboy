@@ -2123,10 +2123,10 @@ export const AdminStoreProvider: React.FC<{ children: ReactNode }> = ({ children
 
   // Unified Catalog List (Reactive & Real-time with Campaigns)
   const allCatalogProducts = React.useMemo<CatalogProduct[]>(() => {
-    const meds = medicines.map((m) => enrichProductToCatalog(m, "medicine", campaigns));
-    const rets = retailProducts.map((p) => enrichProductToCatalog(p, "retail", campaigns));
+    const meds = medicines.map((m) => enrichProductToCatalog(m, "medicine", campaigns, categories));
+    const rets = retailProducts.map((p) => enrichProductToCatalog(p, "retail", campaigns, categories));
     return [...meds, ...rets];
-  }, [medicines, retailProducts, campaigns, cronTime]);
+  }, [medicines, retailProducts, campaigns, categories, cronTime]);
 
   const addCategory = useCallback((cat: Omit<CatalogCategory, "id">) => {
     const newCat: CatalogCategory = {

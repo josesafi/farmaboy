@@ -36,7 +36,7 @@ const emptyProduct: Omit<RetailProductItem, "id"> = {
 };
 
 export default function AdminProductosRetailPage() {
-  const { retailProducts, addRetailProduct, updateRetailProduct, deleteRetailProduct, hasPermission } = useAdminStore();
+  const { retailProducts, addRetailProduct, updateRetailProduct, deleteRetailProduct, hasPermission, categories: storeCategories } = useAdminStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("TODOS");
@@ -47,7 +47,26 @@ export default function AdminProductosRetailPage() {
 
   const canWrite = hasPermission("productos:write");
 
-  const categories = Array.from(new Set(retailProducts.map((p) => p.category)));
+  const availableCategories = useMemo(() => {
+    const defaultList = [
+      "Cuidado Personal",
+      "Dermocosmética",
+      "Dispositivos Médicos",
+      "Insumos Hospitalarios",
+      "Medicamentos",
+      "Bebés y Maternidad",
+      "Higiene y Salud Oral",
+      "Salud Sexual y Reproductiva",
+      "Vitaminas y Suplementos",
+      "Belleza y Bienestar",
+      "Ofertas y Descuentos",
+    ];
+    const fromStore = (storeCategories || []).map((c) => c.name);
+    const fromProducts = retailProducts.map((p) => p.category).filter(Boolean);
+    return Array.from(new Set([...fromStore, ...defaultList, ...fromProducts]));
+  }, [storeCategories, retailProducts]);
+
+  const categories = availableCategories;
 
   const handleOpenAdd = () => {
     setEditingProd(null);
@@ -316,12 +335,11 @@ export default function AdminProductosRetailPage() {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white"
                   >
-                    <option value="Cuidado Personal">Cuidado Personal</option>
-                    <option value="Dermocosmética">Dermocosmética</option>
-                    <option value="Bebés y Maternidad">Bebés y Maternidad</option>
-                    <option value="Higiene y Cuidado Oral">Higiene y Cuidado Oral</option>
-                    <option value="Dispositivos Médicos">Dispositivos Médicos</option>
-                    <option value="Nutrición y Bienestar">Nutrición y Bienestar</option>
+                    {availableCategories.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>

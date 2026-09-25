@@ -27,7 +27,7 @@ const emptyMedicine: Omit<MedicineItem, "id"> = {
   genericName: "",
   barcode: "",
   sku: "",
-  category: "Medicamentos Éticos",
+  category: "Medicamentos",
   subCategory: "Analgésicos",
   imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=800",
   description: "",
@@ -61,7 +61,7 @@ const emptyMedicine: Omit<MedicineItem, "id"> = {
 };
 
 export default function AdminMedicamentosPage() {
-  const { medicines, addMedicine, updateMedicine, deleteMedicine, hasPermission } = useAdminStore();
+  const { medicines, addMedicine, updateMedicine, deleteMedicine, hasPermission, categories: storeCategories } = useAdminStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("TODOS");
@@ -144,7 +144,27 @@ export default function AdminMedicamentosPage() {
     });
   }, [medicines, searchQuery, selectedCategory, filterStock]);
 
-  const categories = Array.from(new Set(medicines.map((m) => m.category)));
+  const availableCategories = useMemo(() => {
+    const defaultList = [
+      "Medicamentos",
+      "Medicamentos Éticos",
+      "Dispositivos Médicos",
+      "Insumos Hospitalarios",
+      "Cuidado Personal",
+      "Dermocosmética",
+      "Vitaminas y Suplementos",
+      "Bebés y Maternidad",
+      "Higiene y Salud Oral",
+      "Salud Sexual y Reproductiva",
+      "Belleza y Bienestar",
+      "Ofertas y Descuentos",
+    ];
+    const fromStore = (storeCategories || []).map((c) => c.name);
+    const fromMedicines = medicines.map((m) => m.category).filter(Boolean);
+    return Array.from(new Set([...fromStore, ...defaultList, ...fromMedicines]));
+  }, [storeCategories, medicines]);
+
+  const categories = availableCategories;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
@@ -256,11 +276,21 @@ export default function AdminMedicamentosPage() {
                             <p className="text-[11px] text-slate-400 truncate">
                               {med.genericName} • {med.pharmaInfo.principioActivo}
                             </p>
-                            {med.requiresPrescription && (
-                              <span className="inline-block mt-0.5 px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                                Requiere Fórmula
+                            <div className="flex items-center gap-1.5 mt-1">
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                {med.category || "Medicamentos"}
                               </span>
-                            )}
+                              {med.subCategory && (
+                                <span className="text-[10px] text-slate-400 truncate max-w-[120px]">
+                                  / {med.subCategory}
+                                </span>
+                              )}
+                              {med.requiresPrescription && (
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                  Receta
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -421,6 +451,54 @@ export default function AdminMedicamentosPage() {
                 </div>
               </div>
 
+              {/* Categorización del Producto en Tienda */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-3.5 bg-slate-950/40 rounded-2xl border border-slate-800/80">
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">Categoría en Tienda *</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500 font-semibold"
+                  >
+                    {availableCategories.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">Subcategoría</label>
+                  <input
+                    type="text"
+                    value={formData.subCategory || ""}
+                    onChange={(e) => setFormData({ ...formData, subCategory: e.target.value })}
+                    placeholder="Ej. Analgésicos / Insumos / Cánulas"
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">Código SKU</label>
+                  <input
+                    type="text"
+                    value={formData.sku}
+                    onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                    placeholder="MED-..."
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">Código de Barras</label>
+                  <input
+                    type="text"
+                    value={formData.barcode}
+                    onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                    placeholder="770..."
+                    className="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono"
+                  />
+                </div>
+              </div>
+
               {/* Pharmaceutical Regulation & INVIMA */}
               <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-3">
                 <h4 className="font-bold text-emerald-400 text-xs flex items-center gap-1.5">
@@ -478,6 +556,23 @@ export default function AdminMedicamentosPage() {
                       <option value="Crema / Ungüento">Crema / Ungüento</option>
                       <option value="Inyectable">Inyectable</option>
                       <option value="Inhalador">Inhalador</option>
+                      <option value="Supositorios / Óvulos">Supositorios / Óvulos</option>
+                      <option value="Polvos / Granulados">Polvos / Granulados</option>
+                      <option value="Soluciones / Ampollas">Soluciones / Ampollas</option>
+                      <option value="Colirios">Colirios</option>
+                      <option value="Geles">Geles</option>
+                      <option value="Nebulizadores">Nebulizadores</option>
+                      <option value="Gases medicinales">Gases medicinales</option>
+                      <option value="Implementos médicos">Implementos médicos</option>
+                      {formData.pharmaInfo.formaFarmaceutica && 
+                        ![
+                          "Tabletas", "Cápsulas", "Jarabe", "Suspensión", "Gotas", "Crema / Ungüento",
+                          "Inyectable", "Inhalador", "Supositorios / Óvulos", "Polvos / Granulados",
+                          "Soluciones / Ampollas", "Colirios", "Geles", "Nebulizadores",
+                          "Gases medicinales", "Implementos médicos"
+                        ].includes(formData.pharmaInfo.formaFarmaceutica) && (
+                          <option value={formData.pharmaInfo.formaFarmaceutica}>{formData.pharmaInfo.formaFarmaceutica}</option>
+                      )}
                     </select>
                   </div>
                   <div>

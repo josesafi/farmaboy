@@ -165,24 +165,107 @@ export function slugify(text: string): string {
     .replace(/-+$/, ""); // Trim - from end
 }
 
-export function mapCategoryToSlug(categoryName: string): string {
-  const norm = categoryName.toLowerCase();
-  if (norm.includes("medicamento") || norm.includes("salud") || norm.includes("etico")) return "medicamentos";
-  if (norm.includes("dermo") || norm.includes("solar") || norm.includes("facial")) return "dermocosmetica";
-  if (norm.includes("vitamina") || norm.includes("suplemento") || norm.includes("nutricion")) return "vitaminas-y-suplementos";
-  if (norm.includes("bebe") || norm.includes("infantil") || norm.includes("pañal")) return "bebes";
-  if (norm.includes("personal") || norm.includes("corporal")) return "cuidado-personal";
-  if (norm.includes("higiene") || norm.includes("oral") || norm.includes("dental")) return "higiene";
-  if (norm.includes("dispositivo") || norm.includes("equipo") || norm.includes("presion")) return "dispositivos-medicos";
-  if (norm.includes("sexual") || norm.includes("intimo") || norm.includes("preservativo")) return "salud-sexual";
-  if (norm.includes("belleza") || norm.includes("estetica")) return "belleza";
+export function mapCategoryToSlug(categoryName: string, storeCategories?: CatalogCategory[]): string {
+  if (!categoryName) return "medicamentos";
+
+  // 1. Direct match with existing store categories (by slug or name)
+  if (storeCategories && storeCategories.length > 0) {
+    const direct = storeCategories.find(
+      (c) =>
+        c.name.toLowerCase().trim() === categoryName.toLowerCase().trim() ||
+        c.slug.toLowerCase().trim() === categoryName.toLowerCase().trim()
+    );
+    if (direct) return direct.slug;
+  }
+
+  const norm = categoryName
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  // 2. Offers / Descuentos
+  if (norm.includes("oferta") || norm.includes("descuento") || norm.includes("promocion") || norm.includes("rebaja")) {
+    return "ofertas";
+  }
+
+  // 3. Dispositivos e Implementos Médicos / Insumos hospitalarios / Cánulas
+  if (
+    norm.includes("dispositivo") ||
+    norm.includes("implemento") ||
+    norm.includes("insumo") ||
+    norm.includes("canula") ||
+    norm.includes("equipo") ||
+    norm.includes("presion") ||
+    norm.includes("nebulizador") ||
+    norm.includes("oximetro") ||
+    norm.includes("tensiometro") ||
+    norm.includes("gas medicinal") ||
+    norm.includes("gases medicinal") ||
+    norm.includes("hospitalario") ||
+    norm.includes("quirurgico") ||
+    norm.includes("jeringa") ||
+    norm.includes("cateter") ||
+    norm.includes("sonda") ||
+    norm.includes("oxigeno")
+  ) {
+    return "dispositivos-medicos";
+  }
+
+  // 4. Dermocosmética
+  if (norm.includes("dermo") || norm.includes("solar") || norm.includes("facial")) {
+    return "dermocosmetica";
+  }
+
+  // 5. Vitaminas y Suplementos
+  if (norm.includes("vitamina") || norm.includes("suplemento") || norm.includes("nutricion")) {
+    return "vitaminas-y-suplementos";
+  }
+
+  // 6. Bebés y Maternidad
+  if (norm.includes("bebe") || norm.includes("infantil") || norm.includes("maternidad") || norm.includes("panal")) {
+    return "bebes";
+  }
+
+  // 7. Salud Sexual
+  if (norm.includes("sexual") || norm.includes("intimo") || norm.includes("preservativo") || norm.includes("reproductiv")) {
+    return "salud-sexual";
+  }
+
+  // 8. Higiene y Salud Oral
+  if (norm.includes("higiene") || norm.includes("oral") || norm.includes("dental")) {
+    return "higiene";
+  }
+
+  // 9. Belleza
+  if (norm.includes("belleza") || norm.includes("estetica") || norm.includes("cosmetic")) {
+    return "belleza";
+  }
+
+  // 10. Cuidado Personal
+  if (norm.includes("personal") || norm.includes("corporal")) {
+    return "cuidado-personal";
+  }
+
+  // 11. Medicamentos (éticos, genéricos, fármacos)
+  if (
+    norm.includes("medicamento") ||
+    norm.includes("etico") ||
+    norm.includes("farmaco") ||
+    norm.includes("generico") ||
+    norm.includes("receta") ||
+    norm.includes("pos")
+  ) {
+    return "medicamentos";
+  }
+
   return slugify(categoryName);
 }
 
 export function enrichProductToCatalog(
   item: MedicineItem | RetailProductItem,
   type: "medicine" | "retail",
-  campaigns: PromotionCampaign[] = []
+  campaigns: PromotionCampaign[] = [],
+  storeCategories: CatalogCategory[] = []
 ): CatalogProduct {
   const isMed = type === "medicine";
   const med = isMed ? (item as MedicineItem) : null;
@@ -236,21 +319,23 @@ export function enrichProductToCatalog(
     badge = "MÁS VENDIDO";
   }
 
-  // Extract presentation from name or defaults
-  let presentation = "Unidad";
+  // Extract presentation from name or pharmaInfo
+  let presentation = med?.pharmaInfo?.formaFarmaceutica || "Unidad";
   if (name.toLowerCase().includes("tab")) {
     const match = name.match(/(\d+\s*(tab|tabletas|capsulas|cápsulas))/i);
-    presentation = match ? match[0] : "Tabletas";
+    presentation = match ? match[0] : (med?.pharmaInfo?.formaFarmaceutica || "Tabletas");
   } else if (name.toLowerCase().includes("ml")) {
     const match = name.match(/(\d+\s*ml)/i);
-    presentation = match ? match[0] : "Frasco";
-  } else if (name.toLowerCase().includes("g")) {
+    presentation = match ? match[0] : (med?.pharmaInfo?.formaFarmaceutica || "Frasco");
+  } else if (name.toLowerCase().includes("g") && !name.toLowerCase().includes("gel")) {
     const match = name.match(/(\d+\s*g)/i);
-    presentation = match ? match[0] : "Tubo";
+    presentation = match ? match[0] : (med?.pharmaInfo?.formaFarmaceutica || "Tubo");
+  } else if (med?.pharmaInfo?.formaFarmaceutica) {
+    presentation = med.pharmaInfo.formaFarmaceutica;
   }
 
   const categoryName = item.category || "Medicamentos";
-  const categorySlug = mapCategoryToSlug(categoryName);
+  const categorySlug = mapCategoryToSlug(categoryName, storeCategories);
 
   const variants = item.variants;
 
